@@ -8,12 +8,14 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ../../modules/greetd.nix
+      ../../modules/niri/default.nix
     ];
 
   # Bootloader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
-  boot.loader.grub.useOSProber = true;
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+  boot.initrd.luks.devices."luks-ecfee8fe-d5b0-4792-bef7-6610b5bfbc95".device = "/dev/disk/by-uuid/ecfee8fe-d5b0-4792-bef7-6610b5bfbc95";
 
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
