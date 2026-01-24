@@ -3,9 +3,8 @@
 {
 
   imports = [
-    ./programs/default.nix
-    ./niri/default.nix
-    ./git.nix
+    ../../programs/default.nix
+    ../../git.nix
   ];
 
   home.username = "foxtrot";
@@ -33,13 +32,6 @@
     usbutils
   ];
 
-  programs.git = {
-    settings = {
-      user.Name = "Foxtrot";
-      user.Email = "jjones213067@proton.me";
-    };
-  };
-
   programs.bash = {
     enable = true;
     enableCompletion = true;
@@ -53,6 +45,8 @@
       rebuild = "sudo nixos-rebuild switch --flake /home/foxtrot/olympus-nixos/";
     };
    };
+
+   xdg.configFile."niri/config.kdl".source = ./niri/config.kdl;
    
    # Nicely reload system units when changing configs
    systemd.user.startServices = "sd-switch";

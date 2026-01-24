@@ -8,6 +8,8 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ../../modules/greetd.nix
+      ../../modules/niri/default.nix
     ];
 
   # Bootloader.
@@ -33,13 +35,6 @@
 
   # Set your time zone.
   time.timeZone = "America/New_York";
-
-  # Enable the X11 windowing system.
-  services.xserver.enable = true;
-
-  # Enable the LXQT Desktop Environment.
-  services.xserver.displayManager.lightdm.enable = true;
-  services.xserver.desktopManager.lxqt.enable = true;
 
   # Configure keymap in X11
   services.xserver.xkb = {
@@ -72,12 +67,9 @@
     description = "Socks";
     extraGroups = [ "networkmanager" "wheel" ];
     packages = with pkgs; [
-      zellij
+
     ];
   };
-
-  # Install firefox.
-  programs.firefox.enable = true;
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;

@@ -14,15 +14,18 @@
     nixosConfigurations = {
       athena-nixos = nixpkgs.lib.nixosSystem {
         modules = [
-          ./configuration.nix
+          ./hosts/athena/configuration.nix
 
 	  home-manager.nixosModules.home-manager
-	  {
-	    home-manager.useGlobalPkgs = true;
-	    home-manager.useUserPackages = true;
+	  ./home/default.nix
+        ];
+      };
+      circe-nixos = nixpkgs.lib.nixosSystem {
+        modules = [
+          ./hosts/circe/configuration.nix
 
-	    home-manager.users.foxtrot = import ./home/core.nix;
-	   }
+	  home-manager.nixosModules.home-manager
+	  ./home/default.nix
         ];
       };
     };
