@@ -29,6 +29,7 @@
 
   # Enable networking
   networking.networkmanager.enable = true;
+  networking.wireless.iwd.enable = true;
 
   # Set your time zone.
   time.timeZone = "America/New_York";

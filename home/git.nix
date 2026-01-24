@@ -3,8 +3,8 @@
   programs.git = {
     enable = true;
     settings = {
-     user.Name = "foxtrottt";
-     user.Email = "dawn.spinal795@passmail.net";
+     user.name = "foxtrottt";
+     user.email = "dawn.spinal795@passmail.net";
     };
   };
 }
