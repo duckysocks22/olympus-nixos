@@ -1,0 +1,62 @@
+{ config, pkgs, ... }:
+
+{
+
+  imports = [
+    ./programs/default.nix
+    ./niri/default.nix
+    ./git.nix
+  ];
+
+  home.username = "foxtrot";
+  home.homeDirectory = "/home/foxtrot";
+
+  home.packages = with pkgs; [
+    fastfetch
+    ranger
+    zellij
+
+    p7zip
+
+    eza
+
+    dnsutils
+    nmap
+
+    gnupg
+
+    nix-output-monitor
+
+    btop
+
+    pciutils
+    usbutils
+  ];
+
+  programs.git = {
+    settings = {
+      user.Name = "Foxtrot";
+      user.Email = "jjones213067@proton.me";
+    };
+  };
+
+  programs.bash = {
+    enable = true;
+    enableCompletion = true;
+
+    bashrcExtra = ''
+      export PATH="$PATH:$HOME/bin:$HOME/.local/bin:$HOME/go/bin"
+    '';
+
+    shellAliases = {
+      vi = "nvim";
+      rebuild = "sudo nixos-rebuild switch --flake /home/foxtrot/olympus-nixos/";
+    };
+   };
+   
+   # Nicely reload system units when changing configs
+   systemd.user.startServices = "sd-switch";
+
+   # Home-Manager Version
+   home.stateVersion = "25.11";
+}
