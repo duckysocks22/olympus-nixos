@@ -11,7 +11,7 @@
       ../../modules/greetd.nix
       ../../modules/portals.nix
       ../../modules/system.nix
-      ../../modules/shell.nix
+      ../../modules/foxtrot.nix
     ];
 
   # Bootloader.
