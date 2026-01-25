@@ -10,5 +10,6 @@
 
   xdg.configFile = {
     "niri/config.kdl".source = ./niri.kdl;
+    "niri/noctalia.kdl".source = ./noctalia.kdl;
   };
 }
