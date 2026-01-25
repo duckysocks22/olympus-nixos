@@ -10,5 +10,6 @@
     pkgs.gptfdisk
     pkgs.gparted
     pkgs.xfsprogs
+    pkgs.cifs-utils
   ];
 }

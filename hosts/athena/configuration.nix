@@ -12,6 +12,7 @@
       ../../modules/portals.nix
       ../../modules/system.nix
       ../../modules/foxtrot.nix
+      ../../modules/samba-local.nix
     ];
 
   # Bootloader.
