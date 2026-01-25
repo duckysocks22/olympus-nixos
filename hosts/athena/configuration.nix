@@ -10,6 +10,8 @@
       ./hardware-configuration.nix
       ../../modules/greetd.nix
       ../../modules/portals.nix
+      ../../modules/system.nix
+      ../../modules/foxtrot.nix
     ];
 
   # Bootloader.
@@ -27,9 +29,6 @@
   # Configure network proxy if necessary
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
-
-  # Enable networking
-  networking.networkmanager.enable = true;
 
   # Enable network manager applet
   programs.nm-applet.enable = true;
@@ -61,16 +60,6 @@
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
-
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.foxtrot = {
-    isNormalUser = true;
-    description = "Socks";
-    extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-
-    ];
-  };
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;

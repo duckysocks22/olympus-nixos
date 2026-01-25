@@ -1,4 +1,7 @@
-{ pkgs, config, ...}:
+{ pkgs, ...}:
 
 {
+  home.packages = [
+    pkgs.steam
+  ];
 }

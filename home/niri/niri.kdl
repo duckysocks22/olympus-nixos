@@ -36,6 +36,14 @@ input {
     focus-follows-mouse
 }
 
+cursor {
+    xcursor-theme "breeze_cursors"
+    xcursor-size 18
+
+    hide-when-typing
+    hide-after-inactive-ms 1000
+}
+
 // You can configure outputs by their name, which you can find
 // by running `niri msg outputs` while inside a niri instance.
 // The built-in laptop monitor is usually called "eDP-1".
@@ -458,4 +466,4 @@ binds {
 debug {
     honor-xdg-activation-with-invalid-serial
 }    
-include "./noctalia.kdl"
+// include "./noctalia.kdl"
