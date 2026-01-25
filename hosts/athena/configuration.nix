@@ -13,9 +13,10 @@
     ];
 
   # Bootloader.
-  boot.loader.grub.enable = true;
-  boot.loader.grub.device = "/dev/sda";
-  boot.loader.grub.useOSProber = true;
+  boot.loader.systemd-boot.enable = true;
+  boot.loader.efi.canTouchEfiVariables = true;
+
+  boot.initrd.luks.devices."luks-54236609-4086-41ec-a07f-21d1ba3bd0fc".device = "/dev/disk/by-uuid/54236609-4086-41ec-a07f-21d1ba3bd0fc";
 
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;

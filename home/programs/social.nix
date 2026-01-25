@@ -1,7 +1,7 @@
 { pkgs, ...}:
-
 {
   home.packages = [
-    pkgs.firefox
+    pkgs.equibop
+    pkgs.signal-desktop
   ];
 }

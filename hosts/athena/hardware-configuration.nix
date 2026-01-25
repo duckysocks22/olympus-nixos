@@ -5,22 +5,31 @@
 
 {
   imports =
-    [ (modulesPath + "/profiles/qemu-guest.nix")
+    [ (modulesPath + "/installer/scan/not-detected.nix")
     ];
 
-  boot.initrd.availableKernelModules = [ "ahci" "xhci_pci" "virtio_pci" "virtio_scsi" "sd_mod" "sr_mod" ];
+  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "thunderbolt" "usb_storage" "usbhid" "sd_mod" "sr_mod" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
   fileSystems."/" =
-    { device = "/dev/disk/by-uuid/229f3581-08db-47b6-9b3a-72d21bfe4997";
+    { device = "/dev/mapper/luks-7fc9a9ab-823c-4584-9b3d-1d1507d4fdf5";
       fsType = "ext4";
     };
 
+  boot.initrd.luks.devices."luks-7fc9a9ab-823c-4584-9b3d-1d1507d4fdf5".device = "/dev/disk/by-uuid/7fc9a9ab-823c-4584-9b3d-1d1507d4fdf5";
+
+  fileSystems."/boot" =
+    { device = "/dev/disk/by-uuid/746C-E970";
+      fsType = "vfat";
+      options = [ "fmask=0077" "dmask=0077" ];
+    };
+
   swapDevices =
-    [ { device = "/dev/disk/by-uuid/e6fd9209-7cde-43e9-b492-1ca66ec034f2"; }
+    [ { device = "/dev/mapper/luks-54236609-4086-41ec-a07f-21d1ba3bd0fc"; }
     ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
 }

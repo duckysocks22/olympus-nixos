@@ -11,28 +11,6 @@
   home.username = "foxtrot";
   home.homeDirectory = "/home/foxtrot";
 
-  home.packages = with pkgs; [
-    fastfetch
-    ranger
-    zellij
-
-    p7zip
-
-    eza
-
-    dnsutils
-    nmap
-
-    gnupg
-
-    nix-output-monitor
-
-    btop
-
-    pciutils
-    usbutils
-  ];
-
   programs.bash = {
     enable = true;
     enableCompletion = true;

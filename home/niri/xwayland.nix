@@ -1,7 +1,6 @@
 { pkgs, ...}:
-
 {
   home.packages = [
-    pkgs.firefox
+    pkgs.xwayland-satellite
   ];
 }

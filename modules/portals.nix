@@ -8,5 +8,8 @@
     extraPortals = with pkgs; [
       xdg-desktop-portal-gtk
     ];
+    config.niri = {
+      "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
+    };
   };
 }

@@ -2,7 +2,10 @@
 
 {
 
-  imports = [ inputs.noctalia.homeModules.default ];
+  imports = [
+    inputs.noctalia.homeModules.default
+    ./xwayland.nix
+    ];
   home.packages = [ pkgs.niri ];
 
   xdg.configFile = {
@@ -14,4 +17,7 @@
     enable = true;
     systemd.enable = true;
   };
+
+  services.mako.enable = true;
+  services.polkit-gnome.enable = true;
 }
