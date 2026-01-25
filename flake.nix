@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOs/nixpkgs/nixos-25.11";
+    nixpkgs-unstable.url = "github:NixOs/nixpkgs/nixos-unstable";
     
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
@@ -10,24 +11,33 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, home-manager, ... }: {
-    nixosConfigurations = {
-      athena-nixos = nixpkgs.lib.nixosSystem {
-        modules = [
-          ./hosts/athena/configuration.nix
-
-	  home-manager.nixosModules.home-manager
-	  ./home/default.nix
-        ];
-      };
-      circe-nixos = nixpkgs.lib.nixosSystem {
-        modules = [
-          ./hosts/circe/configuration.nix
-
-	  home-manager.nixosModules.home-manager
-	  ./home/default.nix
-        ];
+  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, ... }: 
+    let
+      system = "x86_64-linux";
+      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs-unstable = nixpkgs-unstable.legacyPackages.${system};
+    in {
+      nixosConfigurations = {
+        athena-nixos = nixpkgs.lib.nixosSystem {
+          modules = [
+            ./hosts/athena/configuration.nix
+	    ./home/default.nix
+          ];
+	  specialArgs = { 
+	    inherit inputs; 
+            inherit pkgs-unstable;
+	  };
+        };
+        circe-nixos = nixpkgs.lib.nixosSystem {
+          modules = [
+            ./hosts/circe/configuration.nix
+	    ./home/default.nix
+          ];
+	  specialArgs = { 
+	    inherit inputs; 
+	    inherit pkgs-unstable; 
+	  };
+        };
       };
     };
-  };
 }

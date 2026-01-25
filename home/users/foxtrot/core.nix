@@ -5,6 +5,7 @@
   imports = [
     ../../programs/default.nix
     ../../git.nix
+    ../../niri/default.nix
   ];
 
   home.username = "foxtrot";
@@ -46,8 +47,6 @@
     };
    };
 
-   xdg.configFile."niri/config.kdl".source = ./niri/config.kdl;
-   
    # Nicely reload system units when changing configs
    systemd.user.startServices = "sd-switch";
 
