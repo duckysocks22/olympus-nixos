@@ -37,9 +37,6 @@ input {
 }
 
 cursor {
-    xcursor-theme "breeze_cursors"
-    xcursor-size 18
-
     hide-when-typing
     hide-after-inactive-ms 1000
 }

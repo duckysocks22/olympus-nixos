@@ -1,4 +1,4 @@
-{ config, pkgs, ... }:
+{ config, lib, ... }:
 
 {
   imports = [
@@ -10,7 +10,7 @@
 
   home.username = "foxtrot";
   home.homeDirectory = "/home/foxtrot";
-  
+
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
 
