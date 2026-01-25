@@ -147,7 +147,7 @@
       wallpaper = {
         enabled = true;
 	overviewEnabled = false;
-	directory = "";
+	directory = ../wallpapers;
 	monitorDirectories = [ ];
 	enableMultiMonitorDirectories = false;
 	showHiddenFiles = false;
