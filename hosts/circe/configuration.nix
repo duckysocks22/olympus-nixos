@@ -9,7 +9,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/greetd.nix
-      ../../modules/niri/default.nix
+      ../../modules/portals.nix
     ];
 
   # Bootloader.

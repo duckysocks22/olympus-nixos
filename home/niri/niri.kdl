@@ -134,7 +134,7 @@ overview {
 // See the binds section below for more spawn examples.
 // This line starts waybar, a commonly used bar for Wayland compositors.
 spawn-at-startup "bash" "-c" "wl-paste --watch cliphist store &"
-spawn-at-startup "qs" "-c" "noctalia-shell"
+spawn-at-startup "noctalia-shell"
 spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 spawn-at-startup "/home/foxtrot/.scripts/gpu_replay_startup.sh"
 environment {
@@ -264,10 +264,10 @@ binds {
     // === Application Launchers ===
     Mod+Q hotkey-overlay-title="Open Terminal" { spawn "kitty"; }
     Mod+R hotkey-overlay-title="Application Launcher" { 
-        spawn "qs" "-c" "noctalia-shell" "ipc" "call" "launcher" "toggle"; 
+        spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; 
     }
     Mod+V hotkey-overlay-title="Clipboard Manager" { 
-        spawn "qs" "-c" "noctalia-shell" "ipc" "call" "launcher" "clipboard"; 
+        spawn "noctalia-shell" "ipc" "call" "launcher" "clipboard"; 
     }
     Mod+M hotkey-overlay-title="Task Manager" { 
         spawn "dms" "ipc" "call" "processlist" "toggle"; 
@@ -285,7 +285,7 @@ binds {
     
     // === Security ===
     Mod+L hotkey-overlay-title="Lock Screen" { 
-        spawn "qs" "-c" "noctalia-shell" "ipc" "call" "lockScreen" "lock";
+        spawn "noctalia-shell" "ipc" "call" "lockScreen" "lock";
     }
     Mod+Shift+E { quit; }
     Ctrl+Alt+Delete hotkey-overlay-title="Task Manager" { 
