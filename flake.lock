@@ -1,5 +1,48 @@
 {
   "nodes": {
+    "elysia": {
+      "inputs": {
+        "fenix": "fenix",
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1769467140,
+        "narHash": "sha256-2SkQ/oCW+yIrm/pstyC0zpmrG4m2nyPAohTlyYUGw94=",
+        "ref": "refs/heads/master",
+        "rev": "31c4f9b7ccdc6559968be38358bc93e871d4ab14",
+        "revCount": 8,
+        "type": "git",
+        "url": "https://dawn.wine/foxtrottt/elysia-on-nix.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://dawn.wine/foxtrottt/elysia-on-nix.git"
+      }
+    },
+    "fenix": {
+      "inputs": {
+        "nixpkgs": [
+          "elysia",
+          "nixpkgs"
+        ],
+        "rust-analyzer-src": "rust-analyzer-src"
+      },
+      "locked": {
+        "lastModified": 1769410490,
+        "narHash": "sha256-Qnn9S6QJ2vJtDNRRi6smKpbbyTwjv3fCqqdF3uguVnc=",
+        "owner": "nix-community",
+        "repo": "fenix",
+        "rev": "c08dfc7c3c62a9947db50782aa8e2fe065056efd",
+        "type": "github"
+      },
+      "original": {
+        "owner": "nix-community",
+        "repo": "fenix",
+        "type": "github"
+      }
+    },
     "home-manager": {
       "inputs": {
         "nixpkgs": [
@@ -75,10 +118,28 @@
     },
     "root": {
       "inputs": {
+        "elysia": "elysia",
         "home-manager": "home-manager",
         "nixpkgs": "nixpkgs",
         "nixpkgs-unstable": "nixpkgs-unstable",
         "noctalia": "noctalia"
+      }
+    },
+    "rust-analyzer-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1769335258,
+        "narHash": "sha256-sPt2PMeN1rhczLfbrOKK1tOx8UmA4KkhpPkokO0YAMc=",
+        "owner": "rust-lang",
+        "repo": "rust-analyzer",
+        "rev": "2532c48f1ed25de1b90d0287c364ee4f306bec0e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "rust-lang",
+        "ref": "nightly",
+        "repo": "rust-analyzer",
+        "type": "github"
       }
     }
   },
