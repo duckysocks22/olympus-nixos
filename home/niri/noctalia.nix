@@ -293,7 +293,6 @@
 	onlySameOutput = true;
 	monitors = [ ];
 	pinnedApps = [ ];
-	colorizeIcons = false;
 	pinnedStatic = false;
 	inactiveIndicators = false;
 	deadOpacity = 0.6;
@@ -395,16 +394,6 @@
         brightnessStep = 5;
         enforceMinimum = true;
         enableDdcSupport = false;
-      };
-      colorSchemes = {
-        useWallpaperColors = false;
-        predefinedScheme = "Noctalia (default)";
-        darkMode = true;
-        schedulingMode = "off";
-        manualSunrise = "06:30";
-        manualSunset = "18:30";
-        generationMethod = "tonal-spot";
-        monitorForColors = "";
       };
       templates = {
         activeTemplates = [ ];
