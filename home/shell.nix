@@ -20,6 +20,11 @@
       src = "${pkgs.zsh-fzf-tab}/share/fzf-tab";
       file = "fzf-tab.plugin.zsh";
     }
+    {
+      name = pkgs.zsh-autosuggestions.pname;
+      src = pkgs.zsh-autosuggestions.src;
+      file = "zsh-autosuggestions.plugin.zsh";
+    }
     ];
 
     initContent = ''
