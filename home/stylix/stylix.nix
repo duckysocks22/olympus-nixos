@@ -22,5 +22,8 @@
   stylix.targets.qt = {
     enable = true;
   };
+  stylix.targets.nixvim = {
+    enable = true;
+  };
 }
 

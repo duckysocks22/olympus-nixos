@@ -12,5 +12,6 @@
     pkgs.xfsprogs
     pkgs.cifs-utils
     pkgs.nix-prefetch-git
+    #pkgs.neovim
   ];
 }

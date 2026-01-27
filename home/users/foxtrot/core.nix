@@ -1,4 +1,4 @@
-{ config, lib, stylix, ... }:
+{ config, lib, stylix, inputs, ... }:
 
 {
   imports = [
@@ -7,6 +7,7 @@
     ../../niri/default.nix
     ../../shell.nix
     ../../stylix/stylix.nix
+    ../../programs/nixvim.nix
   ];
 
   home.username = "foxtrot";
