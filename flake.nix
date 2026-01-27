@@ -35,6 +35,7 @@
             ./hosts/athena/configuration.nix
 	    ./home/default.nix
 	    ./modules/stylix/stylix.nix
+	    ./modules/lix.nix
           ];
 	  specialArgs = { 
 	    inherit inputs; 
@@ -46,6 +47,7 @@
             ./hosts/circe/configuration.nix
 	    ./home/default.nix
 	    ./modules/stylix/stylix.nix
+	    ./modules/lix.nix
           ];
 	  specialArgs = { 
 	    inherit inputs; 
