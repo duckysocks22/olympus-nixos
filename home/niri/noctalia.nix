@@ -14,6 +14,19 @@
 
   programs.noctalia-shell = {
     enable = true;
+    plugins = {
+      sources = [
+        {
+          name = "Official Noctalia Plugins";
+	  url = "https://github.com/noctalia-dev/noctalia-plugins";
+	}
+      ];
+      states = {
+        screen-recorder = {
+	  enabled = true;
+	};
+      };
+    };
     settings = {
       settingsVersion = 0;
       bar = {
@@ -66,6 +79,9 @@
 	    }
 	    {
 	      id = "Brightness";
+	    }
+	    {
+	      id = "plugin:screen-recorder";
 	    }
 	    {
 	      id = "ControlCenter";
