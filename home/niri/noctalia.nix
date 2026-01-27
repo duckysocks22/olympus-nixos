@@ -27,6 +27,21 @@
 	};
       };
     };
+    pluginSettings = {
+      screen-recorder = {
+	directory = "";
+	filenamePattern = "recording_yyyyMMdd_HHmmss";
+	videoSource = "screen";
+	audioSource = "default_output";
+	frameRate = "30";
+	videoCodec = "h264";
+	audioCodec = "opus";
+	quality = "very_high";
+	colorRange = "limited";
+	showCursor = "true";
+	copyToClipboard = "true";
+      };
+    };
     settings = {
       settingsVersion = 0;
       bar = {

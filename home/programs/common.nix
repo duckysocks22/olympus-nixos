@@ -6,6 +6,7 @@
   pkgs.fastfetch
   pkgs.xfce.thunar
   pkgs.bottles
+  pkgs.vlc
   ];
 
   programs.kitty = {
