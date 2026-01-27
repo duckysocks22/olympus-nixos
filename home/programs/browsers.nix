@@ -2,6 +2,19 @@
 
 {
   home.packages = [
-    pkgs.firefox
   ];
+
+  programs.firefox = {
+    enable = true;
+  
+    profiles."default" = {
+      name = "default";
+      userChrome = ''
+        .tab-text { font-size: 14px !important; }
+      '';
+      settings = {
+
+      };
+    };
+  };
 }

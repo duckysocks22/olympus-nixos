@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, stylix, ... }:
 
 {
   imports = [
@@ -6,6 +6,7 @@
     ../../git.nix
     ../../niri/default.nix
     ../../shell.nix
+    ../../stylix/stylix.nix
   ];
 
   home.username = "foxtrot";
@@ -13,6 +14,7 @@
 
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
+
 
   # Home-Manager Version
   home.stateVersion = "25.11";

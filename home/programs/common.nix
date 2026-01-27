@@ -5,6 +5,7 @@
   pkgs.zellij
   pkgs.fastfetch
   pkgs.xfce.thunar
+  pkgs.bottles
   ];
 
   programs.kitty = {

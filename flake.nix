@@ -9,9 +9,12 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-
     noctalia = {
       url = "github:noctalia-dev/noctalia-shell";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    stylix = {
+      url = "github:nix-community/stylix/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     elysia = {
@@ -20,7 +23,7 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, ... }: 
+  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, stylix, ... }: 
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -31,6 +34,7 @@
           modules = [
             ./hosts/athena/configuration.nix
 	    ./home/default.nix
+	    ./modules/stylix/stylix.nix
           ];
 	  specialArgs = { 
 	    inherit inputs; 
@@ -41,6 +45,7 @@
           modules = [
             ./hosts/circe/configuration.nix
 	    ./home/default.nix
+	    ./modules/stylix/stylix.nix
           ];
 	  specialArgs = { 
 	    inherit inputs; 
