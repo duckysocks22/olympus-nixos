@@ -12,15 +12,22 @@
 
 	};
       };
+      indent-blankline = {
+	enable = true;
+	settings = {
+
+	};
+      };
     };
     opts = {
       shiftwidth = 2;
+      expandtab = true;
       list = true;
       listchars = {
         tab = "▸ ";
         trail = "·";
         eol = "↵";
-        space = "·";
+        #space = "·";
       };
     };
   };
