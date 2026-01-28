@@ -25,6 +25,9 @@
       url = "git+https://dawn.wine/foxtrottt/elysia-on-nix.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    impermanence = {
+      url = "github:nix-community/impermanence";
+    };
     jovian = {
       url = "github:Jovian-Experiments/Jovian-NixOS";
     };

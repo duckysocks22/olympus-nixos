@@ -16,7 +16,7 @@
       ../../modules/common.nix
     ];
 
-  home-manager.users.foxtrot = import ./users/foxtrot/core.nix
+  home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
