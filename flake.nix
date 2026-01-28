@@ -25,6 +25,9 @@
       url = "git+https://dawn.wine/foxtrottt/elysia-on-nix.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    jovian = {
+      url = "github:Jovian-Experiments/Jovian-NixOS";
+    };
   };
 
   outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, stylix, nixvim, ... }: 
@@ -60,8 +63,8 @@
         };
         dionysus-nixos = nixpkgs.lib.nixosSystem {
           modules = [
-            ./home/dionysus/configuration.nix
-            ./home/default
+            ./hosts/dionysus/configuration.nix
+            ./home/default.nix
             ./modules/stylix/stylix.nix
             ./modules/lix.nix
         ];

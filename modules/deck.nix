@@ -1,8 +1,8 @@
 { pkgs, ... }:
 {
-  users.users.foxtrot = {
+  users.users.deck = {
     isNormalUser = true;
-    home = "/home/foxtrot";
+    home = "/home/deck";
     extraGroups = [
       "audio"
       "input"
@@ -11,5 +11,5 @@
     ];
     shell = pkgs.zsh;
   };
-  home-manager.users.foxtrot = import ../home/users/foxtrot/core.nix;
+  home-manager.users.deck = import ../home/users/deck/core.nix;
 }

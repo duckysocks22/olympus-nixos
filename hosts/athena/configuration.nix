@@ -16,6 +16,8 @@
       ../../modules/common.nix
     ];
 
+  home-manager.users.foxtrot = import ./users/foxtrot/core.nix
+
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;

@@ -8,6 +8,4 @@
         inherit inputs;
 	inherit pkgs-unstable;
       };
-
-      home-manager.users.foxtrot = import ./users/foxtrot/core.nix;
 }
