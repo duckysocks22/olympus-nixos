@@ -58,6 +58,18 @@
 	    inherit pkgs-unstable; 
 	  };
         };
+        dionysus-nixos = nixpkgs.lib.nixosSystem {
+          modules = [
+            ./home/dionysus/configuration.nix
+            ./home/default
+            ./modules/stylix/stylix.nix
+            ./modules/lix.nix
+        ];
+        specialArgs = {
+          inherit inputs;
+          inherit pkgs-unstable;
+        };
       };
     };
+  };
 }
