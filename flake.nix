@@ -61,7 +61,7 @@
 	    inherit pkgs-unstable; 
 	  };
         };
-        dionysus-nixos = nixpkgs.lib.nixosSystem {
+        dionysus-nixos = nixpkgs-unstable.lib.nixosSystem {
           modules = [
             ./hosts/dionysus/configuration.nix
             ./home/default.nix

@@ -12,6 +12,7 @@
       ../../modules/system.nix
       ../../modules/deck.nix
       ../../modules/common.nix
+      ../../modules/jovian/default.nix
 
     ];
 
@@ -22,7 +23,7 @@
   # Use latest kernel.
   boot.kernelPackages = pkgs.linuxPackages_latest;
 
-  networking.hostName = "nixos"; # Define your hostname.
+  networking.hostName = "dionysus-nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
   # Configure network proxy if necessary

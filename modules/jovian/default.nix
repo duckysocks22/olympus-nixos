@@ -1,10 +1,12 @@
-{ config, lib, pkgs, inputs, ...}:
+{ config, lib, pkgs-unstable, inputs, ...}:
 {
 imports = [ inputs.jovian.nixosModules.jovian ];
   jovian = {
     steam = {
       enable = true;
       autoStart = true;
+      user = "deck";
+      desktopSession = "plasma";
     };
     devices = {
       steamdeck = {
@@ -14,9 +16,6 @@ imports = [ inputs.jovian.nixosModules.jovian ];
     };
     decky-loader = {
       enable = true;
-    };
-    hardware = {
-      has.amd.gpu = true;
     };
   };
 }
