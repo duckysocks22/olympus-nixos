@@ -1,4 +1,4 @@
-{ config, lib, pkgs-unstable, inputs, ...}:
+{ config, lib, pkgs, inputs, ...}:
 {
 imports = [ inputs.jovian.nixosModules.jovian ];
   jovian = {
