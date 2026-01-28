@@ -13,5 +13,9 @@
     pkgs.cifs-utils
     pkgs.nix-prefetch-git
     #pkgs.neovim
+    pkgs.curl
+    pkgs.torrent7z
+    pkgs.python3
+    pkgs.mktorrent
   ];
 }
