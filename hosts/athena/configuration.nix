@@ -13,6 +13,7 @@
       ../../modules/system.nix
       ../../modules/foxtrot.nix
       ../../modules/samba-local.nix
+      ../../modules/common.nix
     ];
 
   # Bootloader.

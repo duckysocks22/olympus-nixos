@@ -4,7 +4,6 @@
   imports = [
     ../../programs/default.nix
     ../../git.nix
-    ../../niri/default.nix
     ../../shell.nix
     ../../stylix/stylix.nix
     ../../programs/nixvim.nix
