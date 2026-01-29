@@ -1,6 +1,7 @@
 { pkgs, config, ... }:
 
 {
+
   programs.zsh = {
     enable = true;
     syntaxHighlighting.enable = true;
@@ -31,8 +32,6 @@
     initContent = ''
     export FZF_DEFAULT_OPTS="${config.home.sessionVariables.FZF_DEFAULT_OPTS}"
 zstyle ':fzf-tab:*' use-fzf-default-opts yes
-eval 
-"$(direnv hook zsh)
     '';
   };
 
@@ -61,6 +60,11 @@ eval
 
   programs.ranger = {
     enable = true;
+  };
+
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
   };
 
 }
