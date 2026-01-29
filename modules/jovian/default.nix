@@ -18,6 +18,7 @@ imports = [ inputs.jovian.nixosModules.jovian ];
       enableBluetoothConfig = true;
       enableEarlyOOM = true;
       enableZram = true;
+      useSteamOSConfig = true;
     };
     decky-loader = {
       enable = true;
