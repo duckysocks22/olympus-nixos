@@ -6,7 +6,7 @@ imports = [ inputs.jovian.nixosModules.jovian ];
       enable = true;
       autoStart = true;
       user = "deck";
-      desktopSession = "plasma";
+      desktopSession = "gnome";
       updater.splash = "jovian";
     };
     devices = {
@@ -19,7 +19,6 @@ imports = [ inputs.jovian.nixosModules.jovian ];
       enableBluetoothConfig = true;
       enableEarlyOOM = true;
       enableZram = true;
-      updater.splash = "jovian";
       enableAutoMountUdevRules = true;
     };
     decky-loader = {
@@ -27,5 +26,4 @@ imports = [ inputs.jovian.nixosModules.jovian ];
       user = "decky";
       };
     };
-  };
 }

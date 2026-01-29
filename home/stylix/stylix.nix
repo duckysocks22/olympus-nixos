@@ -9,6 +9,10 @@
     enable = true;
   };
 
+  stylix.targets.gnome = {
+    enable = true;
+  };
+
   stylix.targets.firefox = {
     enable = true;
     profileNames = [ "default" ];

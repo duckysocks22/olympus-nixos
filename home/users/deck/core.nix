@@ -1,4 +1,4 @@
-{ config, lib, stylix, inputs, ... }:
+{ config, lib, inputs, ... }:
 
 {
   imports = [
