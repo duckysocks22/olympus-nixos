@@ -31,6 +31,8 @@
     initContent = ''
     export FZF_DEFAULT_OPTS="${config.home.sessionVariables.FZF_DEFAULT_OPTS}"
 zstyle ':fzf-tab:*' use-fzf-default-opts yes
+eval 
+"$(direnv hook zsh)
     '';
   };
 
