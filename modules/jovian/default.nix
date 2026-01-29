@@ -19,7 +19,7 @@ imports = [ inputs.jovian.nixosModules.jovian ];
       enableBluetoothConfig = true;
       enableEarlyOOM = true;
       enableZram = true;
-      enableAutoMountUdevRules = true;
+      enableAutoMountUdevRules = false;
     };
     decky-loader = {
       enable = true;
