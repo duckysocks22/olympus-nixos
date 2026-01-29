@@ -71,7 +71,6 @@
           modules = [
             ./hosts/dionysus/configuration.nix
             ./home/default-unstable.nix
-            ./modules/stylix/stylix.nix
             ./modules/lix.nix
         ];
         specialArgs = {

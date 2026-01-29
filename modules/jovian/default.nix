@@ -15,13 +15,17 @@ imports = [ inputs.jovian.nixosModules.jovian ];
       };
     };
     steamos = {
+      useSteamOSConfig = true;
       enableBluetoothConfig = true;
       enableEarlyOOM = true;
       enableZram = true;
-      useSteamOSConfig = true;
+      updater.splash = "jovian";
+      enableAutoMountUdevRules = true;
     };
     decky-loader = {
       enable = true;
+      user = "decky";
+      };
     };
   };
 }
