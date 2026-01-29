@@ -18,6 +18,9 @@
 
 	};
       };
+      direnv = {
+        enable = true;
+      };
     };
     opts = {
       shiftwidth = 2;

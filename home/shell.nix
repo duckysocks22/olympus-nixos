@@ -1,6 +1,7 @@
 { pkgs, config, ... }:
 
 {
+
   programs.zsh = {
     enable = true;
     syntaxHighlighting.enable = true;
@@ -59,6 +60,11 @@ zstyle ':fzf-tab:*' use-fzf-default-opts yes
 
   programs.ranger = {
     enable = true;
+  };
+
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
   };
 
 }
