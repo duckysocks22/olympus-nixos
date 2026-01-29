@@ -1,0 +1,11 @@
+{ inputs, pkgs-unstable, ...}:
+{
+
+      imports = [ inputs.home-manager-unstable.nixosModules.home-manager ];
+      home-manager.useGlobalPkgs = true;
+      home-manager.useUserPackages = true;
+      home-manager.extraSpecialArgs = {
+        inherit inputs;
+	inherit pkgs-unstable;
+      };
+}

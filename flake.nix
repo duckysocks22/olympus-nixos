@@ -9,9 +9,9 @@
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    #home-manager-unstable = {
-      #url = "github:nix-community/home-maanger";
-    #};
+    home-manager-unstable = {
+      url = "github:nix-community/home-manager";
+    };
     noctalia = {
       url = "github:noctalia-dev/noctalia-shell";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -70,7 +70,7 @@
         dionysus-nixos = nixpkgs-unstable.lib.nixosSystem {
           modules = [
             ./hosts/dionysus/configuration.nix
-            ./home/default.nix
+            ./home/default-unstable.nix
             ./modules/stylix/stylix.nix
             ./modules/lix.nix
         ];

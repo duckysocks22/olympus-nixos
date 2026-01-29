@@ -1,4 +1,5 @@
 { pkgs, config, ... }:
+
 {
   programs.zsh = {
     enable = true;
@@ -6,7 +7,7 @@
 
     shellAliases = {
       vi = "nvim";
-      rebuild = "sudo nixos-rebuild switch --flake /home/foxtrot/olympus-nixos/";
+      rebuild = "sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/olympus-nixos";
     };
 
     oh-my-zsh = {
