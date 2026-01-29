@@ -7,6 +7,7 @@
     ../../shell.nix
     ../../stylix/stylix.nix
     ../../programs/nixvim.nix
+    ../../programs/common.nix
   ];
 
   home.username = "deck";
