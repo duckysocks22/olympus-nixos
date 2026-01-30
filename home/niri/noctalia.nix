@@ -106,7 +106,7 @@
 	screenOverrides = [ ];
       };
       general = {
-        avatarImage = "";
+        avatarImage = ../pfp/catboy.jpg;
         dimmerOpacity = 0.2;
 	showScreenCorners = true;
 	forceBlackScreenCorners = false;
@@ -190,7 +190,7 @@
 	solidColor = "#1a1a2e";
 	automationEnabled = true;
 	wallpaperChangeMode = "random";
-	randomIntervalSec = 300;
+	randomIntervalSec = 600;
 	transitionDuration = 3500;
 	transitionType = "stripes";
 	transitionEdgeSmoothness = 0.50;
