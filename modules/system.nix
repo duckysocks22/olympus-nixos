@@ -18,4 +18,9 @@
     pkgs.python3
     pkgs.mktorrent
   ];
+
+  programs.fuse = {
+    enable = true;
+    userAllowOther = true;
+  };
 }
