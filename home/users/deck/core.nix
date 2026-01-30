@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../../programs/default.nix
+    ../../programs/default-deck.nix
     ../../git.nix
     ../../shell.nix
     ../../stylix/stylix.nix
