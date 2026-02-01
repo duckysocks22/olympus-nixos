@@ -77,18 +77,23 @@
             ./modules/stylix/stylix.nix
             ./modules/lix.nix
         ];
-        specialArgs = {
-          inherit inputs;
-          inherit pkgs-unstable;
+          specialArgs = {
+            inherit inputs;
+            inherit pkgs-unstable;
+          };
         };
         nyx-nixos = nixpkgs.lib.nixosSystem {
           modules = [
             ./hosts/nyx/configuration.nix
+            ./modules/stylix/stylix.nix
             ./home/default.nix
             ./modules/lix.nix
           ];
+          specialArgs = {
+            inherit inputs;
+            inherit pkgs-unstable;
+          };
         };
-      };
     };
   };
 }
