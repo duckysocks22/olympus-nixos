@@ -22,6 +22,7 @@
 
   security.polkit.enable = true;
   services.gnome.gnome-keyring.enable = true;
+  programs.dconf.enable = true;
 
   security.pam.services.niri.enableGnomeKeyring = true;
 }
