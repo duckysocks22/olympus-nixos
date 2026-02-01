@@ -9,6 +9,7 @@
     shellAliases = {
       vi = "nvim";
       rebuild = "sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/olympus-nixos";
+      cleanup = "sudo nix-collect-garbage --delete-old";
     };
 
     oh-my-zsh = {
