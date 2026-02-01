@@ -17,10 +17,11 @@
     pkgs.torrent7z
     pkgs.python3
     pkgs.mktorrent
+    pkgs.bashmount
   ];
 
-  programs.fuse = {
-    enable = true;
-    userAllowOther = true;
-  };
+  security.polkit.enable = true;
+  services.gnome.gnome-keyring.enable = true;
+
+  security.pam.services.niri.enableGnomeKeyring = true;
 }
