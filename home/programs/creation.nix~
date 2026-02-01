@@ -1,8 +1,0 @@
-{ pkgs, ...}:
-
-{
-  home.packages = [
-    pkgs.gimp-with-plugins
-    pkgs.gpu-screen-recorder-gtk
-  ];
-}

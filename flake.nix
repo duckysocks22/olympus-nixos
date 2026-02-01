@@ -81,6 +81,13 @@
           inherit inputs;
           inherit pkgs-unstable;
         };
+        nyx-nixos = nixpkgs.lib.nixosSystem {
+          modules = [
+            ./hosts/nyx/configuration.nix
+            ./home/default.nix
+            ./modules/lix.nix
+          ];
+        };
       };
     };
   };
