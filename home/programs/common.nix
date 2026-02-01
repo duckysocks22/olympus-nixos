@@ -5,8 +5,10 @@
   pkgs.zellij
   pkgs.fastfetch
   pkgs.xfce.thunar
-  pkgs.bottles
   pkgs.vlc
+  (pkgs.bottles.override {
+    removeWarningPopup = true;
+  })
   ];
 
   programs.kitty = {
