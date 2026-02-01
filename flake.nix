@@ -34,6 +34,9 @@
     jovian = {
       url = "github:Jovian-Experiments/Jovian-NixOS";
     };
+    nixcord = {
+      url = "github:FlameFlag/nixcord";
+    };
   };
 
   outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, stylix, nixvim, ... }: 

@@ -7,7 +7,7 @@
     ./noctalia.nix
     ./cursors.nix
     ];
-  home.packages = [ pkgs.niri pkgs.dconf ];
+  home.packages = [ pkgs.niri pkgs.dconf pkgs.slurp ];
 
   xdg.configFile = {
     "niri/config.kdl".source = ./niri.kdl;
