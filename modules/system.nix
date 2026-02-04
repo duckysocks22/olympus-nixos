@@ -26,4 +26,6 @@
   programs.dconf.enable = true;
 
   security.pam.services.niri.enableGnomeKeyring = true;
+
+  services.thelounge.enable = true;
 }

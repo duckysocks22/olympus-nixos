@@ -15,6 +15,7 @@
       ../../modules/samba-local.nix
       ../../modules/common.nix
       ../../modules/network.nix
+      ../../modules/services/thelounge.nix
     ];
 
   home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
