@@ -29,9 +29,18 @@
     dnsovertls = "true";
   };
 
-  networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];
   networking.firewall.trustedInterfaces = [ "tailscale0" ];
   networking.firewall.checkReversePath = "loose";
+
+  networking.firewall = {
+    allowedTCPPorts = [
+      8080
+      8096
+    ];
+    allowedUDPPorts = [
+      config.services.tailscale.port
+    ];
+  };
 
   services.fail2ban = {
     enable = true;
