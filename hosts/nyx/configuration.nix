@@ -2,15 +2,14 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, ... }:
+{ config, pkgs, lib, ... }:
 
 {
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/system.nix
-      ../../modules/server.nix
-      ../../modules/server-network.nix
+      ../../modules/server/server.nix
     ];
 
   home-manager.users.server = import ../../home/users/server/core.nix;
@@ -26,8 +25,8 @@
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
-  # Enable networking
-  networking.networkmanager.enable = true;
+  networking.networkmanager.enable = lib.mkForce false;
+  networking.useDHCP = lib.mkForce false;
 
   # Set your time zone.
   time.timeZone = "America/New_York";

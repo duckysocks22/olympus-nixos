@@ -1,0 +1,53 @@
+{ config, ... }:
+{
+  services.tailscale = {
+    enable = true;
+  };
+
+  systemd.network.enable = true;
+
+  systemd.network.networks."enp34s0" = {
+    matchConfig.Name = "enp34s0";
+    networkConfig.DHCP = "no";
+    networkConfig.Address = "10.0.0.249/16";
+    networkConfig.Gateway = "10.0.0.1";
+    networkConfig.DNS = "9.9.9.9";
+    linkConfig.RequiredForOnline = "yes";
+  };
+
+  systemd.network.networks."tailscale0" = {
+    matchConfig.Name = "tailscale0";
+    networkConfig.DHCP = "ipv4";
+    linkConfig.RequiredForOnline = "no";
+  };
+
+  services.resolved = {
+    enable = true;
+    dnssec = "true";
+    domains = [ "~." ];
+    fallbackDns = [ "9.9.9.9" ];
+    dnsovertls = "true";
+  };
+
+  networking.firewall.allowedUDPPorts = [ config.services.tailscale.port ];
+  networking.firewall.trustedInterfaces = [ "tailscale0" ];
+  networking.firewall.checkReversePath = "loose";
+
+  services.fail2ban = {
+    enable = true;
+    maxretry = 5;
+    ignoreIP = [
+      "10.0.0.0/16"
+    ];
+    bantime = "24h";
+    bantime-increment = {
+      enable = true;
+      formula = "ban.Time * math.exp(float(ban.Count+1)*banFactor)/math.exp(1*banFactor)";
+      # multipliers = "1 2 4 8 16 32 64";
+      maxtime = "168h";
+      overalljails = true;
+    };
+    jails = {
+    };
+  };
+}
