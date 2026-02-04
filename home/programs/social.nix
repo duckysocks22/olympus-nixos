@@ -2,5 +2,6 @@
 {
   home.packages = [
     pkgs.signal-desktop
+    pkgs.weechat
   ];
 }
