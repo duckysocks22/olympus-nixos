@@ -7,6 +7,8 @@
   services.upower.enable = true;
   programs.zsh.enable = true;
 
+  boot.kernelPackages = pkgs.linuxPackages_zen;
+
   environment.systemPackages = [
     pkgs.gptfdisk
     pkgs.gparted
@@ -26,4 +28,6 @@
   programs.dconf.enable = true;
 
   security.pam.services.niri.enableGnomeKeyring = true;
+
+  services.thelounge.enable = true;
 }
