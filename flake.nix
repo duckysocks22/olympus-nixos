@@ -37,9 +37,13 @@
     nixcord = {
       url = "github:FlameFlag/nixcord";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, stylix, nixvim, ... }: 
+  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, stylix, nixvim, sops-nix, ... }: 
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -88,6 +92,7 @@
             ./modules/stylix/stylix.nix
             ./home/default.nix
             ./modules/lix.nix
+            sops-nix.nixosModules.sops
           ];
           specialArgs = {
             inherit inputs;

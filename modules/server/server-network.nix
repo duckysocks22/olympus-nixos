@@ -34,8 +34,12 @@
 
   networking.firewall = {
     allowedTCPPorts = [
+      80
+      443
       8080
       8096
+      8971
+      1984
     ];
     allowedUDPPorts = [
       config.services.tailscale.port
