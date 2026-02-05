@@ -37,10 +37,6 @@
     nixcord = {
       url = "github:FlameFlag/nixcord";
     };
-    sops-nix = {
-      url = "github:Mic92/sops-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
   outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, stylix, nixvim, sops-nix, ... }: 
