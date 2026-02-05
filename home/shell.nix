@@ -9,6 +9,10 @@
     shellAliases = {
       vi = "nvim";
       rebuild = "sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/olympus-nixos";
+      par = ''
+      cd ${config.home.homeDirectory}/olympus-nixos
+      git pull
+      sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/olympus-nixos'';
       cleanup = "sudo nix-collect-garbage --delete-old";
     };
 

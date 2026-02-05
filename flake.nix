@@ -39,7 +39,7 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, stylix, nixvim, sops-nix, ... }: 
+  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, stylix, nixvim, ... }: 
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -88,7 +88,6 @@
             ./modules/stylix/stylix.nix
             ./home/default.nix
             ./modules/lix.nix
-            sops-nix.nixosModules.sops
           ];
           specialArgs = {
             inherit inputs;
