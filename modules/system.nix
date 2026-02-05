@@ -7,6 +7,8 @@
   services.upower.enable = true;
   programs.zsh.enable = true;
 
+  boot.kernelPackages = pkgs.linuxPackages_zen;
+
   environment.systemPackages = [
     pkgs.gptfdisk
     pkgs.gparted

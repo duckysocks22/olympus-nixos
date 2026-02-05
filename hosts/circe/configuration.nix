@@ -25,7 +25,7 @@
   boot.initrd.luks.devices."luks-ecfee8fe-d5b0-4792-bef7-6610b5bfbc95".device = "/dev/disk/by-uuid/ecfee8fe-d5b0-4792-bef7-6610b5bfbc95";
 
   # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
+  #boot.kernelPackages = pkgs.linuxPackages_latest;
 
   networking.hostName = "circe-nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.

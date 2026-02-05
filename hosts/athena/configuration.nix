@@ -26,9 +26,6 @@
 
   boot.initrd.luks.devices."luks-54236609-4086-41ec-a07f-21d1ba3bd0fc".device = "/dev/disk/by-uuid/54236609-4086-41ec-a07f-21d1ba3bd0fc";
 
-  # Use latest kernel.
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
   networking.hostName = "athena-nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
