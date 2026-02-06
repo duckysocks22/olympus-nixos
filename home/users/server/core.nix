@@ -9,6 +9,8 @@
     ../../programs/nixvim.nix
     ../../functions.nix
     ../../services/qbittorrent.nix
+    ../../niri/default.nix
+    ../../stylix/stylix.nix
   ];
 
   home.username = "server";

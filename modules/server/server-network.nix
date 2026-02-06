@@ -39,7 +39,7 @@
       8080
       8096
       8971
-      1984
+      #1984
     ];
     allowedUDPPorts = [
       config.services.tailscale.port
