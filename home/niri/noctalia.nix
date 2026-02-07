@@ -146,7 +146,7 @@
 	boxBorderEnabled = false;
       };
       location = {
-        name = "New Castle";
+        name = "Pittsburgh";
 	weatherEnabled = true;
 	weatherShowEffects = true;
 	useFahrenheit = true;
