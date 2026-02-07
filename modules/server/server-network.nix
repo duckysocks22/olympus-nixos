@@ -9,7 +9,7 @@
   systemd.network.networks."enp34s0" = {
     matchConfig.Name = "enp34s0";
     networkConfig.DHCP = "no";
-    networkConfig.Address = "10.0.0.248/16";
+    networkConfig.Address = "10.0.100.1/16";
     networkConfig.Gateway = "10.0.0.1";
     networkConfig.DNS = "9.9.9.9";
     linkConfig.RequiredForOnline = "yes";
@@ -22,7 +22,7 @@
   };
 
   services.resolved = {
-    enable = true;
+    enable = false;
     dnssec = "true";
     domains = [ "~." ];
     fallbackDns = [ "9.9.9.9" ];
@@ -39,6 +39,8 @@
       8080
       8096
       8971
+      3003
+      53
       #1984
     ];
     allowedUDPPorts = [

@@ -8,5 +8,6 @@
     ./nvidia.nix
     ./packages.nix
     #./services/frigate.nix
+    ./services/adguardhome.nix
   ];
 }
