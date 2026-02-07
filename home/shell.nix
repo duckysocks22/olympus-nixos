@@ -14,6 +14,7 @@
       git pull
       sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/olympus-nixos'';
       cleanup = "sudo nix-collect-garbage --delete-old";
+      hb = "HandBrakeCLI";
     };
 
     oh-my-zsh = {
