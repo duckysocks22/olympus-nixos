@@ -16,6 +16,7 @@
       settings = {
         "brower.startup.homepage" = "https://duckduckgo.com";
         "privacy.resistFingerprinting" = true;
+        "browser.in-context.dark-mode" = true;
       };
     };
 
@@ -140,7 +141,7 @@
             {
               template = "https://search.nixos.org/options";
               params = [
-                { name = "channel"; value = "unstable"; }
+                { name = "channel"; value = "25.11"; }
                 { name = "query";   value = "{searchTerms}"; }
               ];
             }

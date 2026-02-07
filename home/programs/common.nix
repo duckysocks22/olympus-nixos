@@ -9,6 +9,7 @@
   (pkgs.bottles.override {
     removeWarningPopup = true;
   })
+  pkgs.libreoffice-qt-fresh
   ];
 
   programs.kitty = {
