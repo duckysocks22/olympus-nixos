@@ -33,9 +33,9 @@
       DisablePocket = true;
       DisableFormHistory = true;
       DisablePasswordReveal = true;
-      BlockAboutConfig = false;
+      BlockAboutConfig = true;
       BlockAboutProfiles = true;
-      BlockAboutSupport = false;
+      BlockAboutSupport = true;
 
       DisplayMenuBar = "never";
       DontCheckDefaultBrowser = true;
@@ -46,7 +46,7 @@
       ExtensionSettings = let
         moz = short: "https://addons.modzilla.org/firefox/downloads/latest/${short}/latest.xpi";
       in {
-        #"*".installation_mode = "blocked";
+        "*".installation_mode = "blocked";
 
         "uBlock0@raymondhill.net" = {
           install_url = moz "ublock-origin";
@@ -80,6 +80,12 @@
 
         "{e6e36c9a-8323-446c-b720-a176017e38ff}" = {
           install_url = moz "torrent-control";
+          installation_mode = "force_installed";
+          updates_disabled = true;
+        };
+
+        "{99c277af-d778-4a0b-9faa-b1d8165f0a55}" = {
+          install_url = moz "nicothin-dark-theme";
           installation_mode = "force_installed";
           updates_disabled = true;
         };
