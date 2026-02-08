@@ -7,6 +7,7 @@
     ../../stylix/stylix.nix
     ../../programs/common.nix
     ../../programs/nixvim.nix
+    ../../programs/browsers.nix
     ../../functions.nix
     ../../services/qbittorrent.nix
     ../../stylix/stylix.nix

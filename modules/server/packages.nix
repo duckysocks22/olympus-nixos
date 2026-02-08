@@ -2,5 +2,6 @@
 {
   environment.systemPackages = with pkgs; [
     pkgs.handbrake
+    pkgs.nicotine-plus
   ];
 }
