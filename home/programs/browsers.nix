@@ -219,6 +219,22 @@
                   url = "http://100.65.34.79:8080";
                   keyword = "qbit";
                 }
+                {
+                  name = "SkullXDCC";
+                  url = "https://skullxdcc.com";
+                  keyword = "skull";
+                }
+              ];
+            }
+            {
+              name = "Social";
+              toolbar = false;
+              bookmarks = [
+                {
+                  name = "The Lounge";
+                  url = "http://[::1]:9000";
+                  keyword = "irc";
+                }
               ];
             }
           ];
