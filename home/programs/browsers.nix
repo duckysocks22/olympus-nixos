@@ -89,6 +89,12 @@
           installation_mode = "force_installed";
           updates_disabled = true;
         };
+
+        "{174b2d58-b983-4501-ab4b-07e71203cb43}" = {
+          install_url = moz "dark-mode-webextension";
+          installation_mode = "force_installed";
+          updates_disabled = true;
+        };
       };
 
       "3rdparty".Extensions = {
