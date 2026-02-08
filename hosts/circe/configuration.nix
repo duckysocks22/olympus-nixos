@@ -8,13 +8,14 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ../../modules/greetd.nix
+      ../../modules/ly.nix
       ../../modules/portals.nix
       ../../modules/system.nix
       ../../modules/foxtrot.nix
       ../../modules/common.nix
       ../../modules/network.nix
       ../../modules/services/thelounge.nix
+      ../../modules/nix/default.nix
     ];
 
   home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;

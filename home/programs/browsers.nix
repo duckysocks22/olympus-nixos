@@ -35,7 +35,7 @@
       DisablePasswordReveal = true;
       BlockAboutConfig = false;
       BlockAboutProfiles = true;
-      BlockAboutSupport = true;
+      BlockAboutSupport = false;
 
       DisplayMenuBar = "never";
       DontCheckDefaultBrowser = true;
@@ -77,6 +77,12 @@
           installation_mode = "force_installed";
           updates_disabled = true;
         };
+
+        "{e6e36c9a-8323-446c-b720-a176017e38ff}" = {
+          install_url = moz "torrent-control";
+          installation_mode = "force_installed";
+          updates_disabled = true;
+        };
       };
 
       "3rdparty".Extensions = {
@@ -113,6 +119,10 @@
             "ublock-unbreak"
             "urlhaus-1"
           ];
+        };
+        # Torrent Control Settings
+        "{e6e36c9a-8323-446c-b720-a176017e38ff}".adminSettings = {
+          
         };
       };
     };
@@ -176,6 +186,38 @@
           definedAliases = [ "@noogle" ];
         };
       };
+    };
+    profiles.default.bookmarks = {
+      force = true;
+      settings = [
+        {
+          name = "Bookmarks Bar";
+          toolbar = true;
+          bookmarks = [
+            {
+              name = "E-Mail";
+              url = "https://mail.proton.me";
+              keyword = "mail";
+            }
+            {
+              name = "Torrents";
+              toolbar = false;
+              bookmarks = [
+                {
+                  name = "GazelleGames";
+                  url = "https://gazellegames.net";
+                  keyword = "ggn";
+                }
+                {
+                  name = "qBit - nyx-nixos";
+                  url = "http://100.65.34.79:8080";
+                  keyword = "qbit";
+                }
+              ];
+            }
+          ];
+        }
+      ];
     };
   };
 }

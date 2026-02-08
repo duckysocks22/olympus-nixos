@@ -1,7 +1,9 @@
 { pkgs, config, ... }:
 
 {
-
+  home.packages = with pkgs; [
+    ripgrep
+  ];
   programs.zsh = {
     enable = true;
     syntaxHighlighting.enable = true;

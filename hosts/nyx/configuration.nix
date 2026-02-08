@@ -10,6 +10,7 @@
       ./hardware-configuration.nix
       ../../modules/system.nix
       ../../modules/server/server.nix
+      ../../modules/nix/default.nix
     ];
 
   home-manager.users.server = import ../../home/users/server/core.nix;
