@@ -42,6 +42,9 @@
       3003
       53
       1984
+      3389
+      22
+      25
     ];
     allowedUDPPorts = [
       config.services.tailscale.port

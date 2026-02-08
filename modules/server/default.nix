@@ -9,5 +9,8 @@
     ./packages.nix
     ./services/frigate.nix
     ./services/adguardhome.nix
+    ./services/navidrome.nix
+    ../xfce/default.nix
+    ./services/x2go.nix
   ];
 }
