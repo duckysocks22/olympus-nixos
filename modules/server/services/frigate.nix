@@ -53,15 +53,15 @@
     enable = true;
     settings = {
       streams = {
-        entry-way-main = "rtsp://foxtrot:password@10.0.0.46/stream1";
-        entry-way-sub = "rtsp://foxtrot:password@10.0.0.46/stream1";
+        entry-way-main = "rtsp://foxtrot:password@10.0.150.1/stream1";
+        entry-way-sub = "rtsp://foxtrot:password@10.0.150.1/stream1";
       };
       rtsp = {
         listen = ":8554";
       };
       api = {
         username = "foxtrot";
-        password = "temp";
+        password = "admin";
       };
     };
   };
