@@ -210,11 +210,6 @@
               toolbar = false;
               bookmarks = [
                 {
-                  name = "GazelleGames";
-                  url = "https://gazellegames.net";
-                  keyword = "ggn";
-                }
-                {
                   name = "qBit - nyx-nixos";
                   url = "http://100.65.34.79:8080";
                   keyword = "qbit";
@@ -223,6 +218,33 @@
                   name = "SkullXDCC";
                   url = "https://skullxdcc.com";
                   keyword = "skull";
+                }
+                {
+                  name = "Private Trackers";
+                  toolbar = false;
+                  bookmarks = [
+                    {
+                      name = "GazelleGames";
+                      url = "https://gazellegames.net";
+                      keyword = "ggn";
+                    }
+                    {
+                      name = "SeedPool";
+                      url = "https://seedpool.org";
+                      keyword = "seed";
+                    }
+                  ];
+                }
+                {
+                  name = "Public Trackers";
+                  toolbar = false;
+                  bookmarks = [
+                    {
+                      name = "nyaa.si";
+                      url = "https://nyaa.si";
+                      keyword = "nya";
+                    }
+                  ];
                 }
               ];
             }
