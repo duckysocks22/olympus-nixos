@@ -36,6 +36,15 @@
       BlockAboutConfig = true;
       BlockAboutProfiles = true;
       BlockAboutSupport = true;
+      NewTabPage = false;
+      FirefoxHome = {
+        Search = true;
+        SponsoredTopSites = false;
+        Highlights = false;
+        Stories = false;
+        SponsoredStories = false;
+        Snippets = false;
+      };
 
       DisplayMenuBar = "never";
       DontCheckDefaultBrowser = true;
@@ -218,6 +227,11 @@
                   name = "SkullXDCC";
                   url = "https://skullxdcc.com";
                   keyword = "skull";
+                }
+                {
+                  name = "FMHY";
+                  url = "https://fmhy.net";
+                  keyword = "fmhy";
                 }
                 {
                   name = "Private Trackers";
