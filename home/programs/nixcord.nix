@@ -40,6 +40,7 @@
         translate.enable = true;
         unindent.enable = true;
         iLoveSpam.enable = true;
+        volumeBooster.enable = true;
       };
     };
   };
