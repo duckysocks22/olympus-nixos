@@ -8,8 +8,8 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ../../modules/ly.nix
-      #../../modules/gnome/gdm.nix
+      #../../modules/greeter/ly.nix
+      ../../modules/greeter/cosmic-greeter.nix
       ../../modules/portals.nix
       ../../modules/system.nix
       ../../modules/foxtrot.nix
