@@ -9,6 +9,7 @@
     vesktop.enable = true;
 
     config = {
+      useQuickCss = true;
       frameless = true;
       plugins = {
         noBlockedMessages = {
@@ -43,5 +44,9 @@
         volumeBooster.enable = true;
       };
     };
+    quickCss = "
+    @import url('https://abbie.github.io/discord-css/import.css');
+    @import url(https://codeberg.org/ridge/Discord-Adblock/raw/branch/main/discord-adblock.css);
+    ";
   };
 }
