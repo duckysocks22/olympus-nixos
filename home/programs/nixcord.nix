@@ -42,6 +42,12 @@
         unindent.enable = true;
         iLoveSpam.enable = true;
         volumeBooster.enable = true;
+        fakeNitro.enable = true;
+        USRBG.enable = true;
+        CustomRPC.enable = true;
+        newGuildSettings.enable = true;
+        noF1.enable = true;
+        petpet.enable = true;
       };
     };
     quickCss = "
