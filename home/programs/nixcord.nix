@@ -9,6 +9,7 @@
     vesktop.enable = true;
 
     config = {
+      useQuickCss = true;
       frameless = true;
       plugins = {
         noBlockedMessages = {
@@ -40,7 +41,18 @@
         translate.enable = true;
         unindent.enable = true;
         iLoveSpam.enable = true;
+        volumeBooster.enable = true;
+        fakeNitro.enable = true;
+        USRBG.enable = true;
+        CustomRPC.enable = true;
+        newGuildSettings.enable = true;
+        noF1.enable = true;
+        petpet.enable = true;
       };
     };
+    quickCss = "
+    @import url('https://abbie.github.io/discord-css/import.css');
+    @import url(https://codeberg.org/ridge/Discord-Adblock/raw/branch/main/discord-adblock.css);
+    ";
   };
 }

@@ -33,9 +33,18 @@
       DisablePocket = true;
       DisableFormHistory = true;
       DisablePasswordReveal = true;
-      BlockAboutConfig = false;
+      BlockAboutConfig = true;
       BlockAboutProfiles = true;
-      BlockAboutSupport = false;
+      BlockAboutSupport = true;
+      NewTabPage = false;
+      FirefoxHome = {
+        Search = true;
+        SponsoredTopSites = false;
+        Highlights = false;
+        Stories = false;
+        SponsoredStories = false;
+        Snippets = false;
+      };
 
       DisplayMenuBar = "never";
       DontCheckDefaultBrowser = true;
@@ -46,7 +55,7 @@
       ExtensionSettings = let
         moz = short: "https://addons.modzilla.org/firefox/downloads/latest/${short}/latest.xpi";
       in {
-        #"*".installation_mode = "blocked";
+        "*".installation_mode = "blocked";
 
         "uBlock0@raymondhill.net" = {
           install_url = moz "ublock-origin";
@@ -80,6 +89,12 @@
 
         "{e6e36c9a-8323-446c-b720-a176017e38ff}" = {
           install_url = moz "torrent-control";
+          installation_mode = "force_installed";
+          updates_disabled = true;
+        };
+
+        "{99c277af-d778-4a0b-9faa-b1d8165f0a55}" = {
+          install_url = moz "nicothin-dark-theme";
           installation_mode = "force_installed";
           updates_disabled = true;
         };
@@ -204,14 +219,57 @@
               toolbar = false;
               bookmarks = [
                 {
-                  name = "GazelleGames";
-                  url = "https://gazellegames.net";
-                  keyword = "ggn";
-                }
-                {
                   name = "qBit - nyx-nixos";
                   url = "http://100.65.34.79:8080";
                   keyword = "qbit";
+                }
+                {
+                  name = "SkullXDCC";
+                  url = "https://skullxdcc.com";
+                  keyword = "skull";
+                }
+                {
+                  name = "FMHY";
+                  url = "https://fmhy.net";
+                  keyword = "fmhy";
+                }
+                {
+                  name = "Private Trackers";
+                  toolbar = false;
+                  bookmarks = [
+                    {
+                      name = "GazelleGames";
+                      url = "https://gazellegames.net";
+                      keyword = "ggn";
+                    }
+                    {
+                      name = "SeedPool";
+                      url = "https://seedpool.org";
+                      keyword = "seed";
+                    }
+                  ];
+                }
+                {
+                  name = "Public Trackers";
+                  toolbar = false;
+                  bookmarks = [
+                    {
+                      name = "nyaa.si";
+                      url = "https://nyaa.si";
+                      keyword = "nya";
+                    }
+                  ];
+                }
+              ];
+            }
+            {
+              name = "Social";
+              toolbar = false;
+              bookmarks = [
+                {
+                  name = "The Lounge";
+                  url = "http://[::1]:9000";
+                  keyword = "irc";
                 }
               ];
             }
