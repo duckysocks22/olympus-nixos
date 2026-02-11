@@ -6,6 +6,7 @@
   pkgs.fastfetch
   pkgs.xfce.thunar
   pkgs.vlc
+  pkgs.jellyfin-desktop
   (pkgs.bottles.override {
     removeWarningPopup = true;
   })
