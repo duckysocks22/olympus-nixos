@@ -15,6 +15,7 @@
   programs.noctalia-shell = {
     enable = true;
     plugins = {
+    autoUpdate = true;
       sources = [
         {
           name = "Official Noctalia Plugins";
