@@ -4,6 +4,8 @@
   home.packages = with pkgs; [
     ripgrep
   ];
+
+  imports = [ ./shellscripts.nix ];
   programs.zsh = {
     enable = true;
     syntaxHighlighting.enable = true;

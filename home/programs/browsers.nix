@@ -229,6 +229,11 @@
                   keyword = "skull";
                 }
                 {
+                  name = "XDDC.eu";
+                  url = "https://xdcc.eu";
+                  keyword = "skulleu";
+                }
+                {
                   name = "FMHY";
                   url = "https://fmhy.net";
                   keyword = "fmhy";
