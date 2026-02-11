@@ -22,7 +22,7 @@
   };
 
   services.resolved = {
-    enable = false;
+    enable = true;
     dnssec = "true";
     domains = [ "~." ];
     fallbackDns = [ "9.9.9.9" ];
@@ -45,6 +45,7 @@
       3389
       22
       25
+      1883
     ];
     allowedUDPPorts = [
       config.services.tailscale.port

@@ -12,5 +12,6 @@
     ./services/navidrome.nix
     ../xfce/default.nix
     ./services/x2go.nix
+    ./services/owntracks.nix
   ];
 }
