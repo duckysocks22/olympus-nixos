@@ -1,11 +1,11 @@
-{ pkgs, config, ... }:
+{ pkgs, config, inputs, ... }:
 
 {
   home.packages = with pkgs; [
     ripgrep
   ];
 
-  imports = [ ./shellscripts.nix ];
+  imports = [ ./shellscripts.nix inputs.nix-index-database.homeModules.default ];
   programs.zsh = {
     enable = true;
     syntaxHighlighting.enable = true;
@@ -77,4 +77,5 @@ zstyle ':fzf-tab:*' use-fzf-default-opts yes
     enableZshIntegration = true;
   };
 
+  programs.nix-index-database.comma.enable = true;
 }

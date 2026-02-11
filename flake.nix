@@ -37,6 +37,10 @@
     nixcord = {
       url = "github:FlameFlag/nixcord";
     };
+    nix-index-database = {
+      url = "github:nix-community/nix-index-database";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, stylix, nixvim, ... }: 
