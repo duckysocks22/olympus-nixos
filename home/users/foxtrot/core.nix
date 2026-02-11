@@ -1,4 +1,4 @@
-{ config, lib, stylix, inputs, ... }:
+{ config, lib, stylix, inputs, pkgs, ... }:
 
 {
   imports = [
@@ -18,6 +18,9 @@
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
 
+  home.activation.xdgPortalRestart = config.lib.dag.entryAfter ["writeBoundary"] ''
+    run ${pkgs.systemd}/bin/systemctl --user restart xdg-desktop-portal.service
+  '';
 
   # Home-Manager Version
   home.stateVersion = "25.11";
