@@ -13,6 +13,9 @@
       removeWarningPopup = true;
     })
     libreoffice-qt-fresh
+    wine
+    winetricks
+    protontricks
   ];
 
   programs.kitty = {

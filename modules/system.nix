@@ -21,6 +21,9 @@
     pkgs.python3
     pkgs.mktorrent
     pkgs.bashmount
+    pkgs.qt6.qtbase
+    pkgs.qt6.qtwayland
+    pkgs.qt6.qttools
   ];
 
   security.polkit.enable = true;
