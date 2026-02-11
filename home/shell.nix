@@ -3,9 +3,10 @@
 {
   home.packages = with pkgs; [
     ripgrep
+    inputs.luxxy-pkgs.packages.${pkgs.system}.unscene
   ];
 
-  imports = [ ./shellscripts.nix inputs.nix-index-database.homeModules.default ];
+  imports = [ inputs.nix-index-database.homeModules.default ];
   programs.zsh = {
     enable = true;
     syntaxHighlighting.enable = true;

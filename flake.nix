@@ -41,6 +41,10 @@
       url = "github:nix-community/nix-index-database";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    luxxy-pkgs = {
+      url = "github:reedrw/nix-config";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, stylix, nixvim, ... }: 
