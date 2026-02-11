@@ -1,16 +1,18 @@
 { pkgs, ...}:
 {
-  home.packages = [ 
-  pkgs.kitty 
-  pkgs.zellij
-  pkgs.fastfetch
-  pkgs.xfce.thunar
-  pkgs.vlc
-  pkgs.jellyfin-desktop
-  (pkgs.bottles.override {
-    removeWarningPopup = true;
-  })
-  pkgs.libreoffice-qt-fresh
+  home.packages = with pkgs; [ 
+    kitty 
+    zellij
+    fastfetch
+    xfce.thunar
+    vlc
+    jellyfin-desktop
+    unrar
+    p7zip
+    (bottles.override {
+      removeWarningPopup = true;
+    })
+    libreoffice-qt-fresh
   ];
 
   programs.kitty = {
