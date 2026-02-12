@@ -4,6 +4,7 @@
   home.packages = with pkgs; [
     ripgrep
     inputs.luxxy-pkgs.packages.${pkgs.system}.unscene
+    inputs.luxxy-pkgs.packages.${pkgs.system}.mountiso
   ];
 
   imports = [ inputs.nix-index-database.homeModules.default ];

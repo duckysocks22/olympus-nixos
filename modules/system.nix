@@ -24,6 +24,9 @@
     pkgs.qt6.qtbase
     pkgs.qt6.qtwayland
     pkgs.qt6.qttools
+    pkgs.glibc
+    pkgs.fontconfig
+    pkgs.dbus
   ];
 
   security.polkit.enable = true;
@@ -33,4 +36,9 @@
   security.pam.services.niri.enableGnomeKeyring = true;
 
   services.thelounge.enable = true;
+
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
 }
