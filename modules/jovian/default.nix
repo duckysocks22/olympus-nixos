@@ -40,4 +40,13 @@ imports = [ inputs.jovian.nixosModules.jovian ];
     };
     wantedBy = [ "multi-user.target" ];
   };
+
+
+  # See https://github.com/Jovian-Experiments/Jovian-NixOS/issues/545
+  nixpkgs.overlays = [
+    (final: prev: {
+      inputplumber = inputs.nixpkgs.legacyPackages.${pkgs.system}.inputplumber;
+    })
+  ];
+  # -----------------------------------------------------------------
 }
