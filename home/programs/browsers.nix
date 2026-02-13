@@ -98,6 +98,12 @@
           installation_mode = "force_installed";
           updates_disabled = true;
         };
+
+        "{aecec67f-0d10-4fa7-b7c7-609a2db280cf}" = {
+          install_url = moz "violentmonkey";
+          installation_mode = "force_installed";
+          updates_disabled = true;
+        };
       };
 
       "3rdparty".Extensions = {
@@ -262,6 +268,17 @@
                       name = "nyaa.si";
                       url = "https://nyaa.si";
                       keyword = "nya";
+                    }
+                  ];
+                }
+                {
+                  name = "Tools";
+                  toolbar = false;
+                  bookmarks = [
+                    {
+                      name = "GGn Userscripts";
+                      url = "https://gazellegames.net/wiki.php?action=article&id=633";
+                      keyword = "ggnscript";
                     }
                   ];
                 }
