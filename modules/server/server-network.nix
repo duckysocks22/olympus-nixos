@@ -9,8 +9,8 @@
   systemd.network.networks."enp34s0" = {
     matchConfig.Name = "enp34s0";
     networkConfig.DHCP = "no";
-    networkConfig.Address = "10.0.100.1/16";
-    networkConfig.Gateway = "10.0.0.1";
+    networkConfig.Address = "172.17.100.1/16";
+    networkConfig.Gateway = "172.17.0.254";
     networkConfig.DNS = "9.9.9.9";
     linkConfig.RequiredForOnline = "yes";
   };
