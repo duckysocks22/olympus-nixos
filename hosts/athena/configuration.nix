@@ -27,6 +27,8 @@
   boot.loader.efi.canTouchEfiVariables = true;
 
   boot.initrd.luks.devices."luks-54236609-4086-41ec-a07f-21d1ba3bd0fc".device = "/dev/disk/by-uuid/54236609-4086-41ec-a07f-21d1ba3bd0fc";
+  boot.initrd.luks.devices."luks-54236609-4086-41ec-a07f-21d1ba3bd0fc".bypassWorkqueues = true;
+
 
   networking.hostName = "athena-nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
