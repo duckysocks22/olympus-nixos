@@ -24,6 +24,14 @@
         "https://adguardteam.github.io./HostlistsRegistry/assets/filter_9.txt"
         "https://adguardteam.github.io/HostlistsRegistry/assets/filter_11.txt"
         "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/light.txt"
+        "https://adguardteam.github.io/HostlistsRegistry/assets/filter_50.txt"
+        "https://adguardteam.github.io/HostlistsRegistry/assets/filter_71.txt"
+        "https://adguardteam.github.io/HostlistsRegistry/assets/filter_30.txt"
+        "https://adguardteam.github.io/HostlistsRegistry/assets/filter_7.txt"
+        "https://adguardteam.github.io/HostlistsRegistry/assets/filter_6.txt"
+        "https://adguardteam.github.io/HostlistsRegistry/assets/filter_47.txt"
+        "https://adguardteam.github.io/HostlistsRegistry/assets/filter_59.txt"
+        "https://adguardteam.github.io/HostlistsRegistry/assets/filter_24.txt"
       ];
     };
   };
