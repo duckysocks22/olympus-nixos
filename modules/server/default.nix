@@ -12,7 +12,8 @@
     ./services/navidrome.nix
     ../xfce/default.nix
     ./services/x2go.nix
-    ./services/owntracks.nix
+    ./services/dawarich.nix
+    ./services/avahi.nix
     ./services/minecraft.nix
   ];
 }
