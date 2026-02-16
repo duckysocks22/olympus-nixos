@@ -9,7 +9,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/portals.nix
-      ../../modules/system.nix
+      ../../modules/deck-system.nix
       ../../modules/deck.nix
       ../../modules/common.nix
       ../../modules/jovian/default.nix

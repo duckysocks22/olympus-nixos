@@ -43,10 +43,10 @@ imports = [ inputs.jovian.nixosModules.jovian ];
 
 
   # See https://github.com/Jovian-Experiments/Jovian-NixOS/issues/545
-  nixpkgs.overlays = [
-    (final: prev: {
-      inputplumber = inputs.nixpkgs.legacyPackages.${pkgs.system}.inputplumber;
-    })
-  ];
+  #nixpkgs.overlays = [
+  #  (final: prev: {
+  #    inputplumber = inputs.nixpkgs.legacyPackages.${pkgs.system}.inputplumber;
+  #  })
+  #];
   # -----------------------------------------------------------------
 }
