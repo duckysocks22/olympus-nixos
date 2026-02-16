@@ -1,7 +1,7 @@
 {
   services.adguardhome = {
     enable = true;
-    host = "10.0.100.1";
+    host = "0.0.0.0";
     port = 3003;
     settings = {
       dns = {

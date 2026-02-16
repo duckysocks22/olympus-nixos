@@ -45,10 +45,10 @@
       url = "github:reedrw/nix-config";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    #nix-minecraft = {
-    #  url = "github:Infinidoge/nix-minecraft";
-    #  inputs.nixpkgs.follows = "nixpkgs";
-    #};
+    nix-minecraft = {
+      url = "github:Infinidoge/nix-minecraft";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, stylix, nixvim, ... }: 

@@ -13,5 +13,6 @@
     ../xfce/default.nix
     ./services/x2go.nix
     ./services/owntracks.nix
+    ./services/minecraft.nix
   ];
 }
