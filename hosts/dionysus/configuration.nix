@@ -20,6 +20,21 @@
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
+  # Remote Configuration Building
+  nix.buildMachines = [{
+    hostName = "nyx-nixos";
+    system = "x86_64-linux";
+    protocol = "ssh-ng";
+    maxJobs = 3;
+    speedFactor = 2;
+    supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+    mandatoryFeatures = [ "nix-command" "flakes" ];
+  }];
+  nix.distributedBuilds = true;
+  nix.settings = {
+    builders-use-substitutes = true;
+  };
+
   # Use latest kernel.
   # boot.kernelPackages = pkgs.linuxPackages_latest;
 
