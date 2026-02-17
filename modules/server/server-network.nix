@@ -48,11 +48,15 @@
       1883
       53
       5353
+      67
+      68
     ];
     allowedUDPPorts = [
       config.services.tailscale.port
       53
       5353
+      67
+      68
     ];
   };
 
