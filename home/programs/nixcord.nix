@@ -48,6 +48,7 @@
         newGuildSettings.enable = true;
         noF1.enable = true;
         petpet.enable = true;
+        expressionCloner.enable = true;
       };
     };
     quickCss = "
