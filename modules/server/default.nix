@@ -15,5 +15,6 @@
     ./services/dawarich.nix
     ./services/avahi.nix
     ./services/minecraft.nix
+    ./services/homeassistant.nix
   ];
 }

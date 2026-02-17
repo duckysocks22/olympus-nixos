@@ -2,7 +2,7 @@
 {
   services.frigate = {
     enable = true;
-    hostname = "frigate.olympus.local";
+    hostname = "nyx-nixos.local";
     settings = {
       mqtt.enabled = false;
 
@@ -53,8 +53,8 @@
     enable = true;
     settings = {
       streams = {
-        entry-way-main = "rtsp://foxtrot:password@10.0.150.1/stream1";
-        entry-way-sub = "rtsp://foxtrot:password@10.0.150.1/stream1";
+        entry-way-main = "rtsp://foxtrot:password@172.17.150.1/stream1";
+        entry-way-sub = "rtsp://foxtrot:password@172.17.150.1/stream1";
       };
       rtsp = {
         listen = ":8554";
