@@ -9,5 +9,7 @@
     pkgs.bitwig-studio
     pkgs.kdePackages.kdenlive
     pkgs.handbrake
+    pkgs.rawtherapee
+    pkgs.darktable
   ];
 }
