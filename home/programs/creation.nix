@@ -10,6 +10,6 @@
     pkgs.kdePackages.kdenlive
     pkgs.handbrake
     pkgs.rawtherapee
-    pkgs.darktable
+    pkgs.ansel
   ];
 }
