@@ -1,5 +1,5 @@
 {
-  description = "A simple NixOS flake";
+  description = "Flake for 'Olympus' home network";
 
   inputs = {
     nixpkgs.url = "github:NixOs/nixpkgs/nixos-25.11";
@@ -49,9 +49,13 @@
       url = "github:Infinidoge/nix-minecraft";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    copyparty = {
+      url = "github:9001/copyparty";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, home-manager, stylix, nixvim, ... }: 
+  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, ... }: 
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
