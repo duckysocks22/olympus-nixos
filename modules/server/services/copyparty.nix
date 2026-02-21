@@ -14,7 +14,7 @@
 
       accounts = {
         socks = {
-          passwordFile = "/run/keys/copyparty/socks_password";
+          passwordFile = "/home/server/keys/copyparty/socks_password";
         };
       };
 
@@ -57,6 +57,8 @@
             e2d = true;
             d2t = true;
             nohash = "\.iso$";
+            dots = true;
+            dotsrch = true;
           };
           
         };
@@ -76,6 +78,8 @@
             e2d = true;
             d2t = true;
             nohash = "\.iso$";
+            dots = true;
+            dotssrch = true;
           };
           
         };
