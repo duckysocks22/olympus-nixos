@@ -7,5 +7,6 @@
     pkgs.xivlauncher
     (pkgs.olympus.override { celesteWrapper = "steam-run"; })
     pkgs.gamescope
+    pkgs.ludusavi
   ];
 }
