@@ -50,6 +50,8 @@
       5353
       67
       68
+      3210
+      3211
     ];
     allowedUDPPorts = [
       config.services.tailscale.port
