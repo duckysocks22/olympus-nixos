@@ -245,6 +245,16 @@
                   keyword = "fmhy";
                 }
                 {
+                  name = "GOG Games Downloader";
+                  url = "https://gog-games.to";
+                  keyword = "gog";
+                }
+                {
+                  name = "FitGirl Repacks";
+                  url = "https://fitgirl-repacks.site";
+                  keyword = "fitgirl";
+                }
+                {
                   name = "Private Trackers";
                   toolbar = false;
                   bookmarks = [

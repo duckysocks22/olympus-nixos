@@ -1,11 +1,15 @@
 { pkgs, config, inputs, ... }:
 
 {
-  home.packages = with pkgs; [
+  home.packages = (with pkgs; [
     ripgrep
-    inputs.luxxy-pkgs.packages.${pkgs.system}.unscene
-    inputs.luxxy-pkgs.packages.${pkgs.system}.mountiso
-  ];
+  ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.system}; [
+    unscene
+    mountiso
+    (jdownloader.override {
+      darkTheme = true;
+    })
+  ]);
 
   imports = [ inputs.nix-index-database.homeModules.default ];
   programs.zsh = {
@@ -51,6 +55,8 @@ zstyle ':fzf-tab:*' use-fzf-default-opts yes
     "fastfetch/config.jsonc".source = ./config/fastfetch.jsonc;
     #"noctalia/settings.json".force = true;
   };
+
+  programs.btop.enable = true;
 
   programs.fzf = {
     enable = true;

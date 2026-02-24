@@ -30,5 +30,10 @@
   stylix.targets.nixvim = {
     enable = true;
   };
+  
+  stylix.targets.btop = {
+    enable = true;
+    colors.enable = true;
+  };
 }
 

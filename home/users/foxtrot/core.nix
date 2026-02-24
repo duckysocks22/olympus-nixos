@@ -15,6 +15,18 @@
   home.username = "foxtrot";
   home.homeDirectory = "/home/foxtrot";
 
+  home = {
+    sessionVariables = {
+      SCREENDIR = "${config.xdg.dataHome}/screen";
+      _JAVA_OPTIONS="-Djava.util.prefs.userRoot=${config.xdg.dataHome}/java";
+      XDG_CONFIG_HOME = config.xdg.configHome;
+      XDG_CACHE_HOME = config.xdg.cacheHome;
+      XDG_DATA_HOME = config.xdg.dataHome;
+      XDG_STATE_HOME = config.xdg.stateHome;
+      _JAVA_AWT_WM_NONREPARENTING = 1;
+    };
+  };
+
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
 
