@@ -56,7 +56,7 @@ zstyle ':fzf-tab:*' use-fzf-default-opts yes
     #"noctalia/settings.json".force = true;
   };
 
-  programs.btop.enable = true;
+  #programs.btop.enable = true;
 
   programs.fzf = {
     enable = true;
