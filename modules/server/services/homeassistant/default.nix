@@ -1,4 +1,9 @@
 {
+
+  imports = [
+    ./govee2mqtt.nix
+  ];
+
   services.home-assistant = {
     enable = true;
     extraComponents = [
@@ -11,6 +16,9 @@
       # Recommended for fast zlib compression
       # https://www.home-assistant.io/integrations/isal
       "isal"
+      "samsungtv"
+      "govee_light_local"
+      "mqtt"
     ];
     config = {
       # Includes dependencies for a basic setup

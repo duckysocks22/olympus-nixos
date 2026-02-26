@@ -15,7 +15,9 @@
     #./services/dawarich.nix
     ./services/avahi.nix
     ./services/minecraft.nix
-    ./services/homeassistant.nix
+    ./services/homeassistant/default.nix
     ./services/copyparty.nix
+    ./services/docker.nix
+    ./services/mosquitto.nix
   ];
 }
