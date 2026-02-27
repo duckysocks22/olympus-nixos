@@ -29,9 +29,10 @@
         {
           alias = "Turn on lights at sunset";
           triggers = {
-            trigger = "state";
+            trigger = "numeric_state";
             entity_id = "sun.sun";
-            to = "below-horizon";
+            attribute = "elevation";
+            below = "-3.0";
           };
           actions = {
             action = "light.turn_on";
@@ -43,9 +44,10 @@
         {
           alias = "Turn off lights at sunrise";
           triggers = {
-            trigger = "state";
+            trigger = "numeric_state";
             entity_id = "sun.sun";
-            to = "above-horizon";
+            attribute = "elevation";
+            above = "-3.0";
           };
           actions = {
             action = "light.turn_off";
