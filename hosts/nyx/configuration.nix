@@ -20,6 +20,13 @@
   boot.loader.efi.canTouchEfiVariables = true;
   boot.loader.timeout = 5;
 
+  systemd.sleep.extraConfig = ''
+    AllowSuspend=no
+    AllowHibernation=no
+    AllowHybridSleep=no
+    AllowSuspendThenHibernation=no
+  '';
+
   networking.hostName = "nyx-nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
 
