@@ -19,5 +19,6 @@
     ./services/copyparty.nix
     ./services/docker.nix
     ./services/mosquitto.nix
+    ../power/disable-shutdown.nix
   ];
 }
