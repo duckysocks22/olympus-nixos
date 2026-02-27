@@ -1,3 +1,4 @@
+{ config, ...}:
 {
 
   imports = [
@@ -23,7 +24,58 @@
     config = {
       # Includes dependencies for a basic setup
       # https://www.home-assistant.io/integrations/default_config/
+      
+      "automation sunset_lights" = [
+        {
+          alias = "Turn on lights at sunset";
+          triggers = {
+            trigger = "state";
+            entity_id = "sun.sun";
+            to = "below-horizon";
+          };
+          actions = {
+            action = "light.turn_on";
+            entity_id = "all";
+          };
+        }
+      ];
+      "automation sunrise_lights" = [
+        {
+          alias = "Turn off lights at sunrise";
+          triggers = {
+            trigger = "state";
+            entity_id = "sun.sun";
+            to = "above-horizon";
+          };
+          actions = {
+            action = "light.turn_off";
+            entity_id = "all";
+          };
+        }
+      ];
+      "automation ui" = "!include automations.yaml";
+      "scene ui" = "!include scenes.yaml";
+      "script ui" = "!include scripts.yaml";
+
+      "lights" = [
+        {
+          unique_id = "light.all_lights";
+          platform = "group";
+          entities = [
+            "light.h6004_20de"
+            "light.h6004_c2be"
+            "light.h8072_796f"
+          ];
+        }
+      ];
+
       default_config = {};
     };
   };
+
+  systemd.tmpfiles.rules = [
+    "f ${config.services.home-assistant.configDir}/automations.yaml 0644 hass hass"
+    "f ${config.services.home-assistant.configDir}/scenes.yaml 0644 hass hass"
+    "f ${config.services.home-assistant.configDir}/scripts.yaml 0644 hass hass"
+  ];
 }
