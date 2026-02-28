@@ -25,11 +25,11 @@
     enable = false;
     dnssec = "true";
     domains = [ "~." ];
-    fallbackDns = [ "9.9.9.9" ];
+    fallbackDns = [ "127.0.0.1" ];
     dnsovertls = "true";
   };
 
-  networking.firewall.trustedInterfaces = [ "tailscale0" ];
+  networking.firewall.trustedInterfaces = [ "tailscale0" "enp34s0" ];
   networking.firewall.checkReversePath = "loose";
 
   networking.firewall = {
@@ -53,6 +53,8 @@
       3210
       3211
       config.services.home-assistant.config.http.server_port
+      25565
+      25575
     ];
     allowedUDPPorts = [
       config.services.tailscale.port

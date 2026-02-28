@@ -3,6 +3,7 @@
     mkSimpleService = {
       description ? "a description",
       ExecStart,
+      type ? "simple",
       user ? "root"
     }: {
         description = "${description}";
@@ -10,7 +11,7 @@
         after = [ "network.target" ];
         serviceConfig = {
           ExecStart = "${ExecStart}";
-          Type = "simple";
+          Type = "${type}";
           User = "${user}";
           Restart = "always";
       };

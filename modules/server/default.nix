@@ -14,7 +14,7 @@
     #./services/x2go.nix
     #./services/dawarich.nix
     ./services/avahi.nix
-    ./services/minecraft.nix
+    ./services/game-servers/minecraft.nix
     ./services/homeassistant/default.nix
     ./services/copyparty.nix
     ./services/docker.nix
