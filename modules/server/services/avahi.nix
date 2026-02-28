@@ -9,8 +9,8 @@
     publish = {
       enable = true;
       domain = true;
+      userServices = true;
     };
     nssmdns4 = true;
-    nssmdns6 = true;
   };
 }
