@@ -1,6 +1,18 @@
-@layer base, utils, components;
+@layer base, util, components;
 
 @import '@webtui/css';
+
+/* Import AFTER webtui components */
+@import '@webtui/theme-catppuccin';
+
+@layer base {
+  :root {
+    --font-size: 18px;
+    --font-weight-bold: 700;
+    --font-weight-normal: 400;
+    --font-family: 'JetBrainsMono', monospace;
+  }
+}
 
 
   .header {
@@ -17,5 +29,9 @@
   #buttons {
     display: flex;
     justify-content: flex-end;
+  }
+  .ascii {
+    white-space: pre;
+    font-family: monospace;
   }
 
