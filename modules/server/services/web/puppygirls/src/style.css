@@ -1,0 +1,21 @@
+@layer base, utils, components;
+
+@import '@webtui/css';
+
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+  }
+  #content {
+    padding: 0lh 1ch;
+    padding-top: 1lh;
+    display: flex;
+    flex-direction: column;
+    gap: 1lh;
+  }
+  #buttons {
+    display: flex;
+    justify-content: flex-end;
+  }
+

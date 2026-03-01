@@ -4,6 +4,7 @@
   home.packages = (with pkgs; [
     ripgrep
     tmux
+    nodePackages.npm
   ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.system}; [
     unscene
     mountiso
