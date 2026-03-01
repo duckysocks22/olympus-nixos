@@ -10,6 +10,7 @@
     ../../programs/nixvim.nix
     ../../programs/nixcord.nix
     ../../programs/easyeffects.nix
+    ../../programs/download.nix
   ];
 
   home.username = "foxtrot";

@@ -7,9 +7,6 @@
   ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.system}; [
     unscene
     mountiso
-    (jdownloader.override {
-      darkTheme = true;
-    })
   ]);
 
   imports = [ inputs.nix-index-database.homeModules.default ];
