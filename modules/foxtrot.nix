@@ -8,6 +8,7 @@
       "input"
       "networkmanager"
       "wheel"
+      "cdrom"
     ];
     shell = pkgs.zsh;
   };
