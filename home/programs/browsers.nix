@@ -264,6 +264,11 @@
                       keyword = "ggn";
                     }
                     {
+                      name = "GGn Status";
+                      url = "https://ggn.trackerstatus.info";
+                      keyword = "ggnstat";
+                    }
+                    {
                       name = "SeedPool";
                       url = "https://seedpool.org";
                       keyword = "seed";
@@ -290,7 +295,23 @@
                       url = "https://gazellegames.net/wiki.php?action=article&id=633";
                       keyword = "ggnscript";
                     }
+                    {
+                      name = "GGn Status";
+                      url = "https://ggn.trackerstatus.info";
+                      keyword = "ggnstat";
+                    }
                   ];
+                }
+              ];
+            }
+            {
+              name = "HomeLab";
+              toolbar = false;
+              bookmarks = [
+                {
+                  name = "Navidrome";
+                  url = "http://100.65.34.79:4533";
+                  keyword = "navi";
                 }
               ];
             }

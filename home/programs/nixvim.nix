@@ -21,6 +21,9 @@
       direnv = {
         enable = true;
       };
+      fugitive = {
+        enable = true;
+      };
     };
     opts = {
       shiftwidth = 2;
@@ -33,5 +36,10 @@
         #space = "·";
       };
     };
+    extraConfigVim = ''
+      if has('clipboard')
+        set clipboard=unnamedplus
+      end
+    '';
   };
 }
