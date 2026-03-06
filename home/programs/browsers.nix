@@ -325,7 +325,7 @@
               toolbar = false;
               bookmarks = [
                 {
-                  name = "XP.cs";
+                  name = "XP.css";
                   url = "https://botoxparty.github.io/XP.css/";
                   keyword = "xpcss";
                 }
