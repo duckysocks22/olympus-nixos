@@ -221,6 +221,11 @@
               keyword = "mail";
             }
             {
+              name = "Archive of Our Own";
+              url = "https://archiveofourown.org/";
+              keyword = "ao3";
+            }
+            {
               name = "Torrents";
               toolbar = false;
               bookmarks = [
