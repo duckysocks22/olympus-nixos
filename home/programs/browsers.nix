@@ -321,6 +321,17 @@
               ];
             }
             {
+              name = "Development";
+              toolbar = false;
+              bookmarks = [
+                {
+                  name = "XP.cs";
+                  url = "https://botoxparty.github.io/XP.css/";
+                  keyword = "xpcss";
+                }
+              ];
+            }
+            {
               name = "Social";
               toolbar = false;
               bookmarks = [
