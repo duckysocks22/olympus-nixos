@@ -18,9 +18,9 @@
     ExecStart = "${pkgs.writeShellScript "start.sh check" ''
       set -x
       PATH="${lib.makeBinPath [ pkgs.jre ]}:PATH"
-      if [ -d /media/hdd1/game-servers/minecraft/atm10/ ]; then
-        cd /media/hdd1/game-servers/minecraft/atm10
-        java -server -Xms6G -Xmx12G -jar server.jar
+      if [ -d /home/server/game-servers/minecraft/atm10/ ]; then
+        cd /home/server/game-servers/minecraft/atm10
+        java -server -Xms10G -Xmx12G -jar server.jar
       fi
     ''}";
     user = "server";
