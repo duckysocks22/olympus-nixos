@@ -24,6 +24,10 @@
       sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/olympus-nixos'';
       cleanup = "sudo nix-collect-garbage --delete-old";
       hb = "HandBrakeCLI";
+      buildiso = ''
+      cd ~/olympus-nixos
+      nix build .#nixosConfigurations.olympus-iso.config.system.build.isoImage -L
+      '';
     };
 
     oh-my-zsh = {

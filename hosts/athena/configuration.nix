@@ -20,7 +20,7 @@
       ../../modules/nix/default.nix
     ];
 
-  home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
+  #home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -58,6 +58,9 @@
     variant = "";
   };
 
+
+  # Please remove and make own module,,,,, -------------------------------------------------------------
+
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
@@ -77,6 +80,7 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -93,7 +97,7 @@
 
   services.openssh.enable = true;
 
- 
+  # -------------------------------------------------------------------------------------------------
 
   system.stateVersion = "25.11";
 

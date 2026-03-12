@@ -114,6 +114,18 @@
             inherit pkgs-unstable;
           };
         };
+        olympus-iso = nixpkgs.lib.nixosSystem {
+          modules = [
+            ./hosts/olympus-iso/configuration.nix
+	    ./home/default.nix
+	    ./modules/stylix/stylix.nix
+	    ./modules/lix.nix
+          ];
+          specialArgs = {
+            inherit inputs;
+            inherit pkgs-unstable;
+          };
+        };
     };
   };
 }
