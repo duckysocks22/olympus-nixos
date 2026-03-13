@@ -20,11 +20,17 @@
       ../../modules/nix/default.nix
     ];
 
-  home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
+  #home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
+
+  services.logind.settings.Login = {
+    HandlePowerKey = "ignore";
+    HandleRebootKey = "ignore";
+    HandleHibernateKey = "ignore";
+  };
 
   boot.initrd.luks.devices."luks-54236609-4086-41ec-a07f-21d1ba3bd0fc".device = "/dev/disk/by-uuid/54236609-4086-41ec-a07f-21d1ba3bd0fc";
   boot.initrd.luks.devices."luks-54236609-4086-41ec-a07f-21d1ba3bd0fc".bypassWorkqueues = true;
@@ -52,6 +58,9 @@
     variant = "";
   };
 
+
+  # Please remove and make own module,,,,, -------------------------------------------------------------
+
   # Enable sound with pipewire.
   services.pulseaudio.enable = false;
   security.rtkit.enable = true;
@@ -71,6 +80,7 @@
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
 
+
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -87,7 +97,7 @@
 
   services.openssh.enable = true;
 
- 
+  # -------------------------------------------------------------------------------------------------
 
   system.stateVersion = "25.11";
 

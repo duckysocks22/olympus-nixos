@@ -28,6 +28,10 @@
       url = "git+https://dawn.wine/foxtrottt/elysia-on-nix.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    px7-radio-git = {
+      url = "git+https://dawn.wine/foxtrottt/px7-radio-nix.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     impermanence = {
       url = "github:nix-community/impermanence";
     };
@@ -108,6 +112,18 @@
             ./modules/stylix/stylix.nix
             ./home/default.nix
             ./modules/lix.nix
+          ];
+          specialArgs = {
+            inherit inputs;
+            inherit pkgs-unstable;
+          };
+        };
+        olympus-iso = nixpkgs.lib.nixosSystem {
+          modules = [
+            ./hosts/olympus-iso/configuration.nix
+	    ./home/default.nix
+	    ./modules/stylix/stylix.nix
+	    ./modules/lix.nix
           ];
           specialArgs = {
             inherit inputs;

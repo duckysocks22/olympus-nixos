@@ -1,10 +1,14 @@
 { pkgs, config, inputs, ... }:
-
+let
+  pkg2zip = pkgs.callPackage ../modules/packages/pkg2zip.nix { };
+in
 {
   home.packages = (with pkgs; [
     ripgrep
     tmux
     nodePackages.npm
+    inputs.px7-radio-git.packages.${pkgs.system}.default
+    pkg2zip
   ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.system}; [
     unscene
     mountiso
@@ -24,6 +28,10 @@
       sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/olympus-nixos'';
       cleanup = "sudo nix-collect-garbage --delete-old";
       hb = "HandBrakeCLI";
+      buildiso = ''
+      cd ~/olympus-nixos
+      nix build .#nixosConfigurations.olympus-iso.config.system.build.isoImage -L
+      '';
     };
 
     oh-my-zsh = {

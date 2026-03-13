@@ -1418,6 +1418,26 @@
         "type": "github"
       }
     },
+    "px7-radio-git": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1773382210,
+        "narHash": "sha256-98RdaYUSz8+xPHgwbWMGcm1xiXWaox5vZE4+EKkSSE0=",
+        "ref": "refs/heads/main",
+        "rev": "3d5c34069cea031066801698f4eab7904335a1cc",
+        "revCount": 5,
+        "type": "git",
+        "url": "https://dawn.wine/foxtrottt/px7-radio-nix.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "https://dawn.wine/foxtrottt/px7-radio-nix.git"
+      }
+    },
     "root": {
       "inputs": {
         "compose2nix": "compose2nix",
@@ -1435,6 +1455,7 @@
         "nixpkgs-unstable": "nixpkgs-unstable",
         "nixvim": "nixvim",
         "noctalia": "noctalia",
+        "px7-radio-git": "px7-radio-git",
         "stylix": "stylix_2"
       }
     },
