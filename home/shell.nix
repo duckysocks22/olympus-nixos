@@ -5,6 +5,7 @@
     ripgrep
     tmux
     nodePackages.npm
+    inputs.px7-radio-git.packages.${pkgs.system}.default
   ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.system}; [
     unscene
     mountiso
