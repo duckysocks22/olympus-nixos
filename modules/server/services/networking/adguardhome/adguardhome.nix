@@ -37,7 +37,10 @@
         "https://raw.githubusercontent.com/Perflyst/PiHoleBlocklist/refs/heads/master/SmartTV.txt"
         "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.txt"
         "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/spam-tlds.txt"
-        ""
+      ];
+
+      whitelist_filters = map(url: { enabled = true; url = url; }) [
+        "https://dawn.wine/foxtrottt/olympus-nixos/raw/commit/4eb78296cfcaef47c7b155b24feba682c322b16d/modules/server/services/networking/adguardhome/allowlist.txt"
       ];
 
       protection_enabled = false;

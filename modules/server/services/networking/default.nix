@@ -1,6 +1,6 @@
 {
   imports = [
-    ./adguardhome.nix
+    ./adguardhome/adguardhome.nix
     ./avahi.nix
     ./dhcp.nix
   ];
