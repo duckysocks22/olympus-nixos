@@ -8,12 +8,11 @@
     ./nvidia.nix
     ./packages.nix
     ./services/frigate.nix
-    ./services/adguardhome.nix
     ./services/navidrome.nix
+    ./services/networking/default.nix
     #../xfce/default.nix
     #./services/x2go.nix
     #./services/dawarich.nix
-    ./services/avahi.nix
     ./services/game-servers/minecraft.nix
     ./services/homeassistant/default.nix
     ./services/copyparty.nix
