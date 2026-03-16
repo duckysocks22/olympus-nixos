@@ -14,14 +14,4 @@
     };
   };
   systemd.services.navidrome.serviceConfig.ProtectHome = lib.mkForce "read-only";
-
-  #https://github.com/NixOS/nixpkgs/issues/481611
-  nixpkgs.overlays = [
-    (self: super: {
-      navidrome = super.navidrome.overrideAttrs (oldAttrs: {
-        CGO_CFLAGS_ALLOW = "--define-prefix";
-      });
-    })
-  ];
-  # ---------------------------------------------
 }

@@ -2,11 +2,16 @@
   services.adguardhome = {
     enable = true;
     host = "0.0.0.0";
+    mutableSettings = false;
     port = 3003;
-    allowDHCP = true;
+    allowDHCP = false;
     settings = {
       dns = {
         upstream_dns = [
+          "9.9.9.9"
+          "75.75.75.75"
+        ];
+        bootstrap_dns = [
           "9.9.9.9"
           "75.75.75.75"
         ];
@@ -40,7 +45,7 @@
       ];
 
       whitelist_filters = map(url: { enabled = true; url = url; }) [
-        "https://dawn.wine/foxtrottt/olympus-nixos/raw/commit/4eb78296cfcaef47c7b155b24feba682c322b16d/modules/server/services/networking/adguardhome/allowlist.txt"
+        "https://dawn.wine/foxtrottt/olympus-nixos/raw/branch/main/modules/server/services/networking/adguardhome/allowlist.txt"
       ];
 
       protection_enabled = false;
