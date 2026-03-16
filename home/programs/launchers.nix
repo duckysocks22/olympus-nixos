@@ -8,5 +8,6 @@
     (pkgs.olympus.override { celesteWrapper = "steam-run"; })
     pkgs.gamescope
     pkgs.ludusavi
+    pkgs.r2modman
   ];
 }
