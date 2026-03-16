@@ -1,4 +1,4 @@
-{ pkgs, ...}:
+{ pkgs, config, ...}:
 {
 
   networking.networkmanager.enable = true;
@@ -8,6 +8,8 @@
   programs.zsh.enable = true;
 
   boot.kernelPackages = pkgs.linuxPackages_zen;
+  boot.kernelModules = [ "sg" ];
+
 
   environment.systemPackages = [
     pkgs.gptfdisk
