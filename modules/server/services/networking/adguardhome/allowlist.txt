@@ -1,9 +1,9 @@
 ! Personal Domain Allow List
 
 @@||dawn.wine^
-
-
-
+@@||*.discord.com^
+@@||*.discordapp.com^
+@@||*.discord.gg^
 
 
 ! =============== Nintendo ================
