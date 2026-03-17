@@ -269,11 +269,6 @@
                       keyword = "ggn";
                     }
                     {
-                      name = "GGn Status";
-                      url = "https://ggn.trackerstatus.info";
-                      keyword = "ggnstat";
-                    }
-                    {
                       name = "SeedPool";
                       url = "https://seedpool.org";
                       keyword = "seed";
@@ -299,6 +294,11 @@
                       name = "GGn Userscripts";
                       url = "https://gazellegames.net/wiki.php?action=article&id=633";
                       keyword = "ggnscript";
+                    }
+                    {
+                      name = "GGn Mass Downloader";
+                      url = "https://gazellegames.net/wiki.php?action=article&id=445";
+                      keyword = "ggndown";
                     }
                     {
                       name = "GGn Status";
