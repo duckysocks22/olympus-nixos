@@ -11,7 +11,7 @@
     networkConfig.DHCP = "no";
     networkConfig.Address = "172.17.100.1/16";
     networkConfig.Gateway = "172.17.0.254";
-    networkConfig.DNS = "75.75.75.75";
+    networkConfig.DNS = "9.9.9.9";
     linkConfig.RequiredForOnline = "yes";
   };
 
@@ -22,7 +22,7 @@
   };
 
   services.resolved = {
-    enable = false;
+    enable = true;
     dnssec = "true";
     domains = [ "~." ];
     fallbackDns = [ "9.9.9.9" ];
