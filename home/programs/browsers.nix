@@ -278,6 +278,11 @@
                       url = "https://seedpool.org";
                       keyword = "seed";
                     }
+                    {
+                      name = "Orpheus Network";
+                      url = "https://orpheus.network/";
+                      keyword = "orph";
+                    }
                   ];
                 }
                 {
