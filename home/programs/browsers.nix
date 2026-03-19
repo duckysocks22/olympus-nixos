@@ -226,6 +226,11 @@
               keyword = "ao3";
             }
             {
+              name = "How Long To Beat";
+              url = "https://howlongtobeat.com/";
+              keyword = "hltb";
+            }
+            {
               name = "Torrents";
               toolbar = false;
               bookmarks = [
