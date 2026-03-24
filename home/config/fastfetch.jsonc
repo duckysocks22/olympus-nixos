@@ -5,7 +5,7 @@
         "source": "~/.config/fastfetch/ascii.txt",
 	"color": {"1": "#B84F8E", "2": "#EB8034"},
         "height": 15,
-        "width": 12,
+        "width": 8,
         "padding": {
             "top": 5,
             "left": 3
