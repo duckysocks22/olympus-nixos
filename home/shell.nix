@@ -9,6 +9,7 @@ in
     nodePackages.npm
     inputs.px7-radio-git.packages.${pkgs.system}.default
     pkg2zip
+    jp2a # Image to ASCII Converter
   ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.system}; [
     unscene
     mountiso
