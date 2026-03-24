@@ -5,5 +5,6 @@
     ./launchers.nix
     ./social.nix
     ./creation.nix
+    ./player.nix
   ];
 }
