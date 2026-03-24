@@ -60,6 +60,7 @@ zstyle ':fzf-tab:*' use-fzf-default-opts yes
 
    xdg.configFile = {
     "fastfetch/config.jsonc".source = ./config/fastfetch.jsonc;
+    "fastfetch/ascii.txt".source = ./config/ascii.txt;
     #"noctalia/settings.json".force = true;
   };
 
