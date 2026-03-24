@@ -13,4 +13,20 @@
     nssmdns4 = true;
     nssmdns6 = true;
   };
+
+  networking.nameservers = [
+    "9.9.9.9"
+    "75.75.75.75"
+  ];
+
+  services.resolved = {
+    enable = true;
+    dnssec = "true";
+    domains = [ "~." ];
+    fallbackDns = [
+      "9.9.9.9"
+      "75.75.75.75"
+    ];
+    dnsovertls = "true";
+  };
 }
