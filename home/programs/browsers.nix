@@ -352,6 +352,48 @@
                 }
               ];
             }
+            {
+              name = "Information";
+              toolbar = false;
+              bookmarks = [
+                {
+                  name = "Linux";
+                  toolbar = false;
+                  bookmarks = [
+                    {
+                      name = "Command Line Gems";
+                      url = "https://www.commandlinefu.com/commands/browse";
+                      keyword = "cmd";
+                    }
+                    {
+                      name = "The Linux Documentation Project";
+                      url = "https://tldp.org/index.html";
+                      keyword = "tldp";
+                    }
+                    {
+                      name = "pure-sh-bible";
+                      url = "https://github.com/dylanaraps/pure-sh-bible";
+                      keyword = "sh";
+                    }
+                    {
+                      name = "pure-bash-bible";
+                      url = "https://github.com/dylanaraps/pure-bash-bible";
+                      keyword = "bash";
+                    }
+                    {
+                      name = "OverTheWire";
+                      url = "https://overthewire.org/wargames/";
+                      keyword = "otw";
+                    }
+                  ];
+                }
+                {
+                  name = "Awesome Lists";
+                  url = "https://github.com/sindresorhus/awesome?tab=readme-ov-file";
+                  keyword = "awelist";
+                }
+              ];
+            }
           ];
         }
       ];

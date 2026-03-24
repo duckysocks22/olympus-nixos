@@ -5,8 +5,6 @@
     zellij
     fastfetch
     xfce.thunar
-    vlc
-    jellyfin-desktop
     unrar
     p7zip
     (bottles.override {

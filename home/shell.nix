@@ -10,6 +10,7 @@ in
     inputs.px7-radio-git.packages.${pkgs.system}.default
     pkg2zip
     jp2a # Image to ASCII Converter
+    shellcheck # Shell script checker
   ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.system}; [
     unscene
     mountiso
@@ -33,6 +34,7 @@ in
       cd ~/olympus-nixos
       nix build .#nixosConfigurations.olympus-iso.config.system.build.isoImage -L
       '';
+      weather = ''curl "wttr.in/?u"'';
     };
 
     oh-my-zsh = {
