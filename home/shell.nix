@@ -11,6 +11,7 @@ in
     pkg2zip
     jp2a # Image to ASCII Converter
     shellcheck # Shell script checker
+    dust # Tree-formatted disk analyzer
   ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.system}; [
     unscene
     mountiso
