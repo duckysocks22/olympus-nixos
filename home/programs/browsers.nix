@@ -221,6 +221,11 @@
               keyword = "mail";
             }
             {
+              name = "Calender";
+              url = "https://calendar.proton.me";
+              keyword = "cal";
+            }
+            {
               name = "Archive of Our Own";
               url = "https://archiveofourown.org/";
               keyword = "ao3";
@@ -241,7 +246,7 @@
                 }
                 {
                   name = "SkullXDCC";
-                  url = "https://skullxdcc.com";
+                  url = "https://xdcc-search.com/";
                   keyword = "skull";
                 }
                 {
