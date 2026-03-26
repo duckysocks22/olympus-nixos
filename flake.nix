@@ -61,9 +61,13 @@
       url = "github:aksiksi/compose2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, ... }: 
+  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, sops-nix, ... }: 
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
