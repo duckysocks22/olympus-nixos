@@ -13,7 +13,7 @@
       ../../modules/portals.nix
       ../../modules/system.nix
       ../../modules/foxtrot.nix
-      #../../modules/webdav-local.nix
+      ../../modules/webdav-local.nix
       ../../modules/common.nix
       ../../modules/network.nix
       ../../modules/services/thelounge.nix

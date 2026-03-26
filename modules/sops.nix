@@ -10,9 +10,8 @@
 
   sops.age.keyFile = "${config.users.users.foxtrot.home}/.config/sops/age/keys.txt";
 
-  sops.secrets.example-key = { };
-  sops.secrets."myservice/my_subdir/my_secret" = { 
-    owner = config.users.users.foxtrot.name;
+  sops.secrets."webdav/copyparty" = { 
+    path = "/etc/davfs2/secrets";
   };
-
+  
 }
