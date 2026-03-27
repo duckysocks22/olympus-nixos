@@ -3,7 +3,7 @@
   imports = [
     ./services/jellyfin.nix
     ./services/qbittorrent.nix
-    ../functions.nix
+    ../global/functions.nix
     #./services/samba.nix
     ./nvidia.nix
     ./packages.nix
@@ -18,7 +18,7 @@
     ./services/copyparty.nix
     ./services/docker.nix
     ./services/mosquitto.nix
-    ../power/disable-shutdown.nix
+    ../global/power/disable-shutdown.nix
     #./services/web/default.nix
   ];
 }

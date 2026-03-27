@@ -8,9 +8,9 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
-      ../../modules/system.nix
-      ../../modules/server/server.nix
-      ../../modules/nix/default.nix
+      ../../modules/global/system.nix
+      ../../modules/nyx/server.nix
+      ../../modules/global/nix/default.nix
     ];
 
   home-manager.users.server = import ../../home/users/server/core.nix;

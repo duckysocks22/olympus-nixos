@@ -16,6 +16,12 @@
         socks = {
           passwordFile = "/home/server/keys/copyparty/socks_password";
         };
+        serena = {
+          passwordFile = "/home/server/keys/copyparty/serena_password";
+        };
+        zia = {
+          passwordFile = "/home/server/keys/copyparty/zia_password";
+        };
       };
 
       groups = {
@@ -30,7 +36,39 @@
           access = {
             r = "*";
 
-            rw = [ "socks" ];
+            rwd = [ "socks" ];
+          };
+
+          flags = {
+            fk = 4;
+            scan = 30;
+            e2d = true;
+            d2t = true;
+            nohash = "\.iso$";
+          };
+        };
+
+        "/shared" = {
+          path = "/media/hdd1/copyparty/shared";
+
+          access = {
+            rwd = "*";
+          };
+
+          flags = {
+            fk = 4;
+            scan = 30;
+            e2d = true;
+            d2t = true;
+            nohash = "\.iso$";
+          };
+        };
+
+       "/private" = {
+          path = "/media/hdd1/copyparty/private";
+
+          access = {
+            rwd = [ "socks"];
           };
 
           flags = {
@@ -46,9 +84,7 @@
           path = "/media/hdd1/copyparty/ludusavi";
 
           access = {
-            r = "*";
-
-            rw = [ "socks" ];
+            rwd = [ "socks" ];
           };
 
           flags = {
@@ -67,9 +103,7 @@
           path = "/media/hdd1/copyparty/phonebackup";
 
           access = {
-            r = "*";
-
-            rw = [ "socks" ];
+            rwd = [ "socks" ];
           };
 
           flags = {
