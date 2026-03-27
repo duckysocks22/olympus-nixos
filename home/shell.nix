@@ -1,6 +1,7 @@
 { pkgs, config, inputs, ... }:
 let
   pkg2zip = pkgs.callPackage ../modules/packages/pkg2zip.nix { };
+  carddump = pkgs.callPackage ../modules/scripts/carddump.nix { };
 in
 {
   home.packages = (with pkgs; [
@@ -9,6 +10,7 @@ in
     nodePackages.npm
     inputs.px7-radio-git.packages.${pkgs.system}.default
     pkg2zip
+    carddump
     jp2a # Image to ASCII Converter
     shellcheck # Shell script checker
     dust # Tree-formatted disk analyzer
