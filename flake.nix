@@ -78,8 +78,8 @@
           modules = [
             ./hosts/athena/configuration.nix
 	    ./home/default.nix
-	    ./modules/stylix/stylix.nix
-	    ./modules/lix.nix
+	    ./modules/global/stylix/stylix.nix
+	    ./modules/global/lix.nix
           ];
 	  specialArgs = { 
 	    inherit inputs; 
@@ -90,8 +90,8 @@
           modules = [
             ./hosts/circe/configuration.nix
 	    ./home/default.nix
-	    ./modules/stylix/stylix.nix
-	    ./modules/lix.nix
+	    ./modules/global/stylix/stylix.nix
+	    ./modules/global/lix.nix
           ];
 	  specialArgs = { 
 	    inherit inputs; 
@@ -102,8 +102,8 @@
           modules = [
             ./hosts/dionysus/configuration.nix
             ./home/default-unstable.nix
-            ./modules/stylix/stylix.nix
-            ./modules/lix.nix
+            ./modules/global/stylix/stylix.nix
+            ./modules/global/lix.nix
         ];
           specialArgs = {
             inherit inputs;
@@ -113,9 +113,9 @@
         nyx-nixos = nixpkgs.lib.nixosSystem {
           modules = [
             ./hosts/nyx/configuration.nix
-            ./modules/stylix/stylix.nix
+            ./modules/global/stylix/stylix.nix
             ./home/default.nix
-            ./modules/lix.nix
+            ./modules/global/lix.nix
           ];
           specialArgs = {
             inherit inputs;
@@ -126,8 +126,8 @@
           modules = [
             ./hosts/olympus-iso/configuration.nix
 	    ./home/default.nix
-	    ./modules/stylix/stylix.nix
-	    ./modules/lix.nix
+	    ./modules/global/stylix/stylix.nix
+	    ./modules/global/lix.nix
           ];
           specialArgs = {
             inherit inputs;
