@@ -9,14 +9,14 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       #../../modules/greeter/ly.nix
-      ../../modules/greeter/cosmic-greeter.nix
-      ../../modules/portals.nix
-      ../../modules/system.nix
-      ../../modules/foxtrot.nix
-      ../../modules/common.nix
-      ../../modules/network.nix
-      ../../modules/services/thelounge.nix
-      ../../modules/nix/default.nix
+      ../../modules/global/greeter/cosmic-greeter.nix
+      ../../modules/global/portals.nix
+      ../../modules/global/system.nix
+      ../../modules/global/users/foxtrot.nix
+      ../../modules/global/common.nix
+      ../../modules/global/network.nix
+      ../../modules/global/services/thelounge.nix
+      ../../modules/global/nix/default.nix
     ];
 
   home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
