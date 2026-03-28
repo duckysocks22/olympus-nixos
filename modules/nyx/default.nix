@@ -20,5 +20,6 @@
     ./services/mosquitto.nix
     ../global/power/disable-shutdown.nix
     #./services/web/default.nix
+    ./services/samba/samba.nix
   ];
 }

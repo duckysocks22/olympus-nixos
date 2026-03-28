@@ -48,38 +48,6 @@
           };
         };
 
-        "/shared" = {
-          path = "/media/hdd1/copyparty/shared";
-
-          access = {
-            rwd = "*";
-          };
-
-          flags = {
-            fk = 4;
-            scan = 30;
-            e2d = true;
-            d2t = true;
-            nohash = "\.iso$";
-          };
-        };
-
-       "/private" = {
-          path = "/media/hdd1/copyparty/private";
-
-          access = {
-            rwd = [ "socks"];
-          };
-
-          flags = {
-            fk = 4;
-            scan = 30;
-            e2d = true;
-            d2t = true;
-            nohash = "\.iso$";
-          };
-        };
-
         "/ludusavi" = {
           path = "/media/hdd1/copyparty/ludusavi";
 

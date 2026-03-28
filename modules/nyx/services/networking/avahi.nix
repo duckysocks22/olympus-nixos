@@ -4,7 +4,6 @@
     openFirewall = true;
     allowInterfaces = [
       "enp34s0"
-      "tailscale0"
     ];
     publish = {
       enable = true;

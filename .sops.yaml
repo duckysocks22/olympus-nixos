@@ -1,7 +1,9 @@
 keys:
   - &desktop_athena age10hnehjcrjrryv32zhzy72zefcsq6v77u0rsdmxrmevzsejvz4q0q5vwdmu
+  - &server_nyx age1upa07ee3tlz5saqlfl5qhzjjrxeq28yprpuw2qjs4v6xrc890gtq56xkr5
 creation_rules:
   - path_regex: secrets/secrets.yaml$
     key_groups:
     - age:
       - *desktop_athena
+      - *server_nyx

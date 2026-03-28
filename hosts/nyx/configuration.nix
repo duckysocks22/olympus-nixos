@@ -11,6 +11,7 @@
       ../../modules/global/system.nix
       ../../modules/nyx/server.nix
       ../../modules/global/nix/default.nix
+      ../../modules/nyx/sops.nix
     ];
 
   home-manager.users.server = import ../../home/users/server/core.nix;
