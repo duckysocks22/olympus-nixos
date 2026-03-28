@@ -1,6 +1,7 @@
 { pkgs, config, inputs, ... }:
 let
   pkg2zip = pkgs.callPackage ../modules/packages/pkg2zip.nix { };
+  carddump = pkgs.callPackage ../modules/scripts/carddump.nix { };
 in
 {
   home.packages = (with pkgs; [
@@ -9,9 +10,11 @@ in
     nodePackages.npm
     inputs.px7-radio-git.packages.${pkgs.system}.default
     pkg2zip
+    carddump
     jp2a # Image to ASCII Converter
     shellcheck # Shell script checker
     dust # Tree-formatted disk analyzer
+    rclone
   ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.system}; [
     unscene
     mountiso
@@ -98,4 +101,12 @@ zstyle ':fzf-tab:*' use-fzf-default-opts yes
   };
 
   programs.nix-index-database.comma.enable = true;
+
+  dconf.settings = {
+    "org/virt-manager/virt-manager/connections" = {
+      autoconnect = ["qemu:///system"];
+      uris = ["qemu:///system"];
+    };
+  };
+
 }

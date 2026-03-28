@@ -18,5 +18,6 @@
     ];
     shell = pkgs.zsh;
   };
+
   home-manager.users.server = import ../../home/users/server/core.nix;
 }
