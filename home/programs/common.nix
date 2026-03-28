@@ -4,7 +4,8 @@
     kitty 
     zellij
     fastfetch
-    xfce.thunar
+    #xfce.thunar // Issues viewing fileshare
+    kdePackages.dolphin
     unrar
     p7zip
     (bottles.override {
