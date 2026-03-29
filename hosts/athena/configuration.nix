@@ -13,7 +13,7 @@
       ../../modules/global/portals.nix
       ../../modules/global/system.nix
       ../../modules/global/users/foxtrot.nix
-      ../../modules/athena/webdav-local.nix
+      ../../modules/athena/samba-local.nix
       ../../modules/global/common.nix
       ../../modules/global/network.nix
       ../../modules/global/services/thelounge.nix
