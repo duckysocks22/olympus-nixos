@@ -5,6 +5,7 @@
     ./users/socks.nix
     ./users/zia.nix
     ./users/serena.nix
+    ./users/share.nix
   ];
   services.samba = {
     enable = true;
@@ -17,7 +18,7 @@
         "security" = "user";
         "hosts allow" = "172.17.0.";
         "hosts deny" = "0.0.0.0/0";
-        "guest account" = "nobody";
+        "guest account" = "share";
         "map to guest" = "bad user";
         "obey pam restrictions" = "no";
       };
@@ -26,15 +27,17 @@
         "browseable" = "yes";
         "read only" = "no";
         "guest okay" = "yes";
-        "create mask" = "0644";
-        "directory mask" = "0755";
+        "create mask" = "0777";
+        "directory mask" = "0777";
+        "force user" = "share";
+        "force group" = "users";
       };
       "private" = {
         "path" = "/media/hdd1/shares/private";
         "browseable" = "yes";
         "read only" = "no";
         "guest ok" = "no";
-        "create mask" = "0644";
+        "create mask" = "0755";
         "directory mask" = "0755";
         "valid users" = "socks";
       };
