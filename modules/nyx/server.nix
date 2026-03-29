@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 {
   imports = [
     ./default.nix   
@@ -7,6 +7,7 @@
   users.users.server = {
     isNormalUser = true;
     home = "/home/server";
+    hashedPasswordFile = config.sops.secrets."users/server".path;
     extraGroups = [
       "audio"
       "input"

@@ -2,9 +2,9 @@
 
   imports = [
     # Users
-    #./users/socks.nix
-    #./users/zia.nix
-    #./users/serena.nix
+    ./users/socks.nix
+    ./users/zia.nix
+    ./users/serena.nix
   ];
   services.samba = {
     enable = true;
@@ -12,13 +12,14 @@
     settings = {
       global = {
         "workgroup" = "WORKGROUP";
-        "server string" = "nyx-smb";
-        "netbios name" = "nyx-smb";
+        "server string" = "nyxsmb";
+        "netbios name" = "nyxsmb";
         "security" = "user";
-        "hosts allow" = "172.17.0. 127.0.0.1 localhost";
+        "hosts allow" = "172.17.0.";
         "hosts deny" = "0.0.0.0/0";
         "guest account" = "nobody";
         "map to guest" = "bad user";
+        "obey pam restrictions" = "no";
       };
       "shared" = {
         "path" = "/media/hdd1/shares/shared";
@@ -27,8 +28,6 @@
         "guest okay" = "yes";
         "create mask" = "0644";
         "directory mask" = "0755";
-        "force user" = "username";
-        "force group" = "groupname";
       };
       "private" = {
         "path" = "/media/hdd1/shares/private";
@@ -37,8 +36,6 @@
         "guest ok" = "no";
         "create mask" = "0644";
         "directory mask" = "0755";
-        "force user" = "username";
-        "force group" = "groupname";
         "valid users" = "socks";
       };
     };
