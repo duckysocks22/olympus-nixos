@@ -18,7 +18,7 @@
     # is repeated twice with newline characters as smbpasswd requires a password
     # confirmation even in non-interactive mode where input is piped in through stdin. 
     init_smbpasswd.text = ''
-      /run/current-system/sw/bin/printf "$(/run/current-system/sw/bin/cat ${config.sops.secrets."samba/serena".path})\n$(/run/current-system/sw/bin/cat ${config.sops.secrets."samba/serena".path})\n" | /run/current-system/sw/bin/smbpasswd -sa serena
+      /run/current-system/sw/bin/printf "$(/run/current-system/sw/bin/cat ${config.sops.secrets."samba-nyx/serena".path})\n$(/run/current-system/sw/bin/cat ${config.sops.secrets."samba-nyx/serena".path})\n" | /run/current-system/sw/bin/smbpasswd -sa serena
     '';
   };
 }

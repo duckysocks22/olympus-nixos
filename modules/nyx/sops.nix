@@ -14,24 +14,24 @@
   #  path = "/etc/davfs2/secrets";
   #};
 
-  sops.secrets."samba/socks" = {};
-  sops.secrets."samba/serena" = {};
-  sops.secrets."samba/zia" = {};
+  sops.secrets."samba-nyx/socks" = {};
+  sops.secrets."samba-nyx/serena" = {};
+  sops.secrets."samba-nyx/zia" = {};
   sops.secrets."users/server" = {};
 
   sops.secrets."users/server".neededForUsers = true;
 
-  sops.secrets."samba/socks".mode = "0440";
-  sops.secrets."samba/socks".owner = config.users.users.server.name;
-  sops.secrets."samba/socks".group = config.users.users.server.group;
+  sops.secrets."samba-nyx/socks".mode = "0440";
+  sops.secrets."samba-nyx/socks".owner = config.users.users.server.name;
+  sops.secrets."samba-nyx/socks".group = config.users.users.server.group;
 
-  sops.secrets."samba/serena".mode = "0440";
-  sops.secrets."samba/serena".owner = config.users.users.server.name;
-  sops.secrets."samba/serena".group = config.users.users.server.group;
+  sops.secrets."samba-nyx/serena".mode = "0440";
+  sops.secrets."samba-nyx/serena".owner = config.users.users.server.name;
+  sops.secrets."samba-nyx/serena".group = config.users.users.server.group;
 
-  sops.secrets."samba/zia".mode = "0440";
-  sops.secrets."samba/zia".owner = config.users.users.server.name;
-  sops.secrets."samba/zia".group = config.users.users.server.group;
+  sops.secrets."samba-nyx/zia".mode = "0440";
+  sops.secrets."samba-nyx/zia".owner = config.users.users.server.name;
+  sops.secrets."samba-nyx/zia".group = config.users.users.server.group;
   
 
   
