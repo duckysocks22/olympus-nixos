@@ -18,6 +18,7 @@
       ../../modules/global/services/thelounge.nix
       ../../modules/global/nix/default.nix
       ../../modules/global/sops.nix
+      ../../modules/global/virtualisation.nix
     ];
 
   home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
