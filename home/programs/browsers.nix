@@ -333,6 +333,11 @@
                   url = "http://100.65.34.79:4533";
                   keyword = "navi";
                 }
+                {
+                  name = "NextDNS";
+                  url = "https://my.nextdns.io/";
+                  keyword = "dns";
+                }
               ];
             }
             {

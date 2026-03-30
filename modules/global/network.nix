@@ -1,10 +1,6 @@
 { pkgs, pkgs-unstable, ... }:
 {
 
-  imports = [
-    ./nextdns.nix
-  ];
-
   services.tailscale = {
     enable = true;
   };
@@ -20,7 +16,10 @@
   };
 
   networking.nameservers = [
-    "9.9.9.9"
+    "45.90.28.0#b8ee67.dns.nextdns.io"
+    "2a07:a8c0::#b8ee67.dns.nextdns.io"
+    "45.90.30.0#b8ee67.dns.nextdns.io"
+    "2a07:a8c1::#b8ee67.dns.nextdns.io"
   ];
 
   services.resolved = {
