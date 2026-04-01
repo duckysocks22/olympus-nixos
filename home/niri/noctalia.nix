@@ -180,9 +180,9 @@
         enabled = true;
 	overviewEnabled = false;
 	directory = ../wallpapers;
-	monitorDirectories = [ ];
+	monitorDirectories = [ ../wallpapers ];
 	enableMultiMonitorDirectories = false;
-	showHiddenFiles = false;
+	showHiddenFiles = true;
 	viewMode = "single";
 	setWallpaperOnAllMonitors = true;
 	fillMod = "crop";
