@@ -6,4 +6,9 @@
       proton-ge-bin
     ];
   };
+
+  programs.localsend = {
+    enable = true;
+    openFirewall = true;
+  };
 }
