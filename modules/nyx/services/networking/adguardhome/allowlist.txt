@@ -5,6 +5,7 @@
 @@||*.discordapp.com^
 @@||*.discord.gg^
 @@||*.sunnyside.shop^
+@@||*.flake.parts^
 
 
 ! =============== Nintendo ================
