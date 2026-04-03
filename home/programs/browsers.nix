@@ -53,7 +53,7 @@
       DefaultDownloadDirectory = "${config.home.homeDirectory}/Downloads";
 
       ExtensionSettings = let
-        moz = short: "https://addons.modzilla.org/firefox/downloads/latest/${short}/latest.xpi";
+        moz = short: "https://addons.mozilla.org/firefox/downloads/latest/${short}/latest.xpi";
       in {
         "*".installation_mode = "blocked";
 
@@ -70,19 +70,19 @@
         };
 
         "sponsorBlocker@ajay.app" = {
-          install_url = moz "sponsor-block";
+          install_url = moz "sponsorblock";
           installation_mode = "force_installed";
           updates_disabled = true;
         };
 
         "vpn@proton.ch" = {
-          install_url = moz "protonvpn";
+          install_url = moz "proton-vpn-firefox-extension";
           installation_mode = "force_installed";
           updates_disabled = true;
         };
 
         "78272b6fa58f4a1abaac99321d503a20@proton.me" = {
-          install_url = moz "protonpass";
+          install_url = moz "proton-pass";
           installation_mode = "force_installed";
           updates_disabled = true;
         };
