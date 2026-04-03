@@ -12,6 +12,7 @@
       ../../modules/nyx/server.nix
       ../../modules/global/nix/default.nix
       ../../modules/nyx/sops.nix
+      ../../modules/global/netwatch.nix
     ];
 
   home-manager.users.server = import ../../home/users/server/core.nix;
