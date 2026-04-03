@@ -27,6 +27,7 @@
     dnssec = "true";
     domains = [ "~." ];
     fallbackDns = [
+      "172.17.100.1"
       "45.90.28.0#b8ee67.dns.nextdns.io"
       "2a07:a8c0::#b8ee67.dns.nextdns.io"
       "45.90.30.0#b8ee67.dns.nextdns.io"
@@ -36,6 +37,6 @@
       "1.1.1.1"
       "1.0.0.1"
     ];
-    dnsovertls = "true";
+    dnsovertls = "false";
   };
 }

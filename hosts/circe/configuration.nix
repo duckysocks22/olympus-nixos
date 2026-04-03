@@ -29,6 +29,11 @@
   boot.initrd.luks.devices."luks-ecfee8fe-d5b0-4792-bef7-6610b5bfbc95".device = "/dev/disk/by-uuid/ecfee8fe-d5b0-4792-bef7-6610b5bfbc95";
   boot.initrd.luks.devices."luks-ecfee8fe-d5b0-4792-bef7-6610b5bfbc95".bypassWorkqueues = true;
 
+  boot.resumeDevice = "/dev/dm-1";
+  systemd.sleep.extraConfig = ''
+    HibernationDelaySec=30m
+  '';
+
   # Use latest kernel.
   #boot.kernelPackages = pkgs.linuxPackages_latest;
 
