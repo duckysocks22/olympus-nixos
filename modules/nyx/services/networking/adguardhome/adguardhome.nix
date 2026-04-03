@@ -9,11 +9,13 @@
       dns = {
         upstream_dns = [
           "9.9.9.9"
-          "75.75.75.75"
+          "1.1.1.1"
+          "1.0.0.1"
         ];
         bootstrap_dns = [
           "9.9.9.9"
-          "75.75.75.75"
+          "1.1.1.1"
+          "1.0.0.1"
         ];
       };
       dhcp = {
@@ -45,7 +47,7 @@
       ];
 
       whitelist_filters = map(url: { enabled = true; url = url; }) [
-        "https://dawn.wine/foxtrottt/olympus-nixos/raw/branch/main/modules/server/services/networking/adguardhome/allowlist.txt"
+        "https://dawn.wine/foxtrottt/olympus-nixos/raw/branch/main/modules/nyx/services/networking/adguardhome/allowlist.txt"
       ];
 
       protection_enabled = false;
