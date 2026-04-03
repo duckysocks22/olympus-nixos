@@ -1,5 +1,10 @@
 { config, ... }:
 {
+
+  imports = [
+    ./services/networking/netbird.nix
+  ];
+
   services.tailscale = {
     enable = true;
   };
