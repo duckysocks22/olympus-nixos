@@ -1,16 +1,14 @@
-{ inputs, ... }:
+{ pkgs, ... }:
 {
-  flake.homeModules.creation = { pkgs, ...}: {
-    home.packages = [
-      pkgs.gimp-with-plugins
-      pkgs.gpu-screen-recorder
-      pkgs.gpu-screen-recorder-gtk
-      pkgs.blender-hip
-      pkgs.bitwig-studio
-      pkgs.kdePackages.kdenlive
-      pkgs.handbrake
-      pkgs.rawtherapee
-      pkgs.ansel
-    ];
-  };
+  home.packages = [
+    pkgs.gimp-with-plugins
+    pkgs.gpu-screen-recorder
+    pkgs.gpu-screen-recorder-gtk
+    pkgs.blender-hip
+    pkgs.bitwig-studio
+    pkgs.kdePackages.kdenlive
+    pkgs.handbrake
+    pkgs.rawtherapee
+    pkgs.ansel
+  ];
 }

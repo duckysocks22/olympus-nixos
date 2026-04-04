@@ -1,109 +1,107 @@
-{ inputs, ... }:
+{ inputs, pkgs, config, ... }:
 {
-  flake.homeModules.shell = { pkgs, config, inputs, ... }: {
-    home.packages = (with pkgs; [
-      ripgrep
-      tmux
-      nodePackages.npm
-      inputs.px7-radio-git.packages.${pkgs.system}.default
-      self.packages.${pkgs.system}.pkg2zip
-      self.packages.${pkgs.system}.carddump
-      jp2a # Image to ASCII Converter
-      shellcheck # Shell script checker
-      dust # Tree-formatted disk analyzer
-      rclone
-    ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.system}; [
-      unscene
-      mountiso
-    ]);
+  home.packages = (with pkgs; [
+    ripgrep
+    tmux
+    nodePackages.npm
+    inputs.px7-radio-git.packages.${pkgs.system}.default
+    self.packages.${pkgs.system}.pkg2zip
+    self.packages.${pkgs.system}.carddump
+    jp2a # Image to ASCII Converter
+    shellcheck # Shell script checker
+    dust # Tree-formatted disk analyzer
+    rclone
+  ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.system}; [
+    unscene
+    mountiso
+  ]);
 
-    imports = [ inputs.nix-index-database.homeModules.default ];
-    programs.zsh = {
-      enable = true;
-      syntaxHighlighting.enable = true;
+  imports = [ inputs.nix-index-database.homeModules.default ];
+  programs.zsh = {
+    enable = true;
+    syntaxHighlighting.enable = true;
 
-      shellAliases = {
-        vi = "nvim";
-        rebuild = "sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/olympus-nixos";
-        par = ''
-        cd ${config.home.homeDirectory}/olympus-nixos
-        git pull
-        sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/olympus-nixos'';
-        cleanup = "sudo nix-collect-garbage --delete-old";
-        hb = "HandBrakeCLI";
-        buildiso = ''
-        cd ~/olympus-nixos
-        nix build .#nixosConfigurations.olympus-iso.config.system.build.isoImage -L
-        '';
-        weather = ''curl "wttr.in/?u"'';
-      };
-
-      oh-my-zsh = {
-        enable = true;
-        theme = "candy";
-      };
-
-      plugins = [
-      {
-        name = pkgs.zsh-fzf-tab.pname;
-        src = "${pkgs.zsh-fzf-tab}/share/fzf-tab";
-        file = "fzf-tab.plugin.zsh";
-      }
-      {
-        name = pkgs.zsh-autosuggestions.pname;
-        src = pkgs.zsh-autosuggestions.src;
-        file = "zsh-autosuggestions.plugin.zsh";
-      }
-      ];
-
-      initContent = ''
-      export FZF_DEFAULT_OPTS="${config.home.sessionVariables.FZF_DEFAULT_OPTS}"
-  zstyle ':fzf-tab:*' use-fzf-default-opts yes
+    shellAliases = {
+      vi = "nvim";
+      rebuild = "sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/olympus-nixos";
+      par = ''
+      cd ${config.home.homeDirectory}/olympus-nixos
+      git pull
+      sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/olympus-nixos'';
+      cleanup = "sudo nix-collect-garbage --delete-old";
+      hb = "HandBrakeCLI";
+      buildiso = ''
+      cd ~/olympus-nixos
+      nix build .#nixosConfigurations.olympus-iso.config.system.build.isoImage -L
       '';
+      weather = ''curl "wttr.in/?u"'';
     };
 
-     xdg.configFile = {
-      "fastfetch/config.jsonc".source = ./config/fastfetch.jsonc;
-      "fastfetch/ascii.txt".source = ./config/ascii.txt;
-      #"noctalia/settings.json".force = true;
-    };
-
-    #programs.btop.enable = true;
-
-    programs.fzf = {
+    oh-my-zsh = {
       enable = true;
-      enableZshIntegration = true;
-      defaultOptions = [
-      "--ansi"
-      "--bind=tab:down,btab:up,change:top,ctrl-space:toggle"
-      "--border=rounded"
-      "--cycle"
-      "--ignore-case"
-      "--info=hidden"
-      "--layout=reverse"
-      "--multi"
-      "--tiebreak=begin"
+      theme = "candy";
+    };
+
+    plugins = [
+    {
+      name = pkgs.zsh-fzf-tab.pname;
+      src = "${pkgs.zsh-fzf-tab}/share/fzf-tab";
+      file = "fzf-tab.plugin.zsh";
+    }
+    {
+      name = pkgs.zsh-autosuggestions.pname;
+      src = pkgs.zsh-autosuggestions.src;
+      file = "zsh-autosuggestions.plugin.zsh";
+    }
     ];
-    };
 
-    stylix.targets.fzf.enable = true;
+    initContent = ''
+    export FZF_DEFAULT_OPTS="${config.home.sessionVariables.FZF_DEFAULT_OPTS}"
+zstyle ':fzf-tab:*' use-fzf-default-opts yes
+    '';
+  };
 
-    programs.ranger = {
-      enable = true;
-    };
+   xdg.configFile = {
+    "fastfetch/config.jsonc".source = ./config/fastfetch.jsonc;
+    "fastfetch/ascii.txt".source = ./config/ascii.txt;
+    #"noctalia/settings.json".force = true;
+  };
 
-    programs.direnv = {
-      enable = true;
-      enableZshIntegration = true;
-    };
+  #programs.btop.enable = true;
 
-    programs.nix-index-database.comma.enable = true;
+  programs.fzf = {
+    enable = true;
+    enableZshIntegration = true;
+    defaultOptions = [
+    "--ansi"
+    "--bind=tab:down,btab:up,change:top,ctrl-space:toggle"
+    "--border=rounded"
+    "--cycle"
+    "--ignore-case"
+    "--info=hidden"
+    "--layout=reverse"
+    "--multi"
+    "--tiebreak=begin"
+  ];
+  };
 
-    dconf.settings = {
-      "org/virt-manager/virt-manager/connections" = {
-        autoconnect = ["qemu:///system"];
-        uris = ["qemu:///system"];
-      };
+  stylix.targets.fzf.enable = true;
+
+  programs.ranger = {
+    enable = true;
+  };
+
+  programs.direnv = {
+    enable = true;
+    enableZshIntegration = true;
+  };
+
+  programs.nix-index-database.comma.enable = true;
+
+  dconf.settings = {
+    "org/virt-manager/virt-manager/connections" = {
+      autoconnect = ["qemu:///system"];
+      uris = ["qemu:///system"];
     };
   };
 }

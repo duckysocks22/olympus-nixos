@@ -1,8 +1,6 @@
-{ inputs, ... }:
+{ pkgs, ... }:
 {
-  flake.homeModules.xwayland = { pkgs, ... }: {
-    home.packages = [
-      pkgs.xwayland-satellite
-    ];
-  };
+  home.packages = [
+    pkgs.xwayland-satellite
+  ];
 }
