@@ -1,7 +1,9 @@
-{ pkgs, ...}:
+{ inputs, ... }:
 {
-  home.packages = [
-    pkgs.signal-desktop
-    pkgs.weechat
-  ];
+  flake.homeModules.social = { pkgs, ... }: {
+    home.packages = [
+      pkgs.signal-desktop
+      pkgs.weechat
+    ];
+  };
 }

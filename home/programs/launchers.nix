@@ -1,13 +1,14 @@
-{ pkgs, inputs, ...}:
-
+{ inputs, ... }:
 {
-  home.packages = [
-    pkgs.prismlauncher
-    inputs.elysia.packages.x86_64-linux.default
-    pkgs.xivlauncher
-    (pkgs.olympus.override { celesteWrapper = "steam-run"; })
-    pkgs.gamescope
-    pkgs.ludusavi
-    pkgs.r2modman
-  ];
+  flake.homeModules.launchers = { pkgs, inputs, ... }: {
+    home.packages = [
+      pkgs.prismlauncher
+      inputs.elysia.packages.x86_64-linux.default
+      pkgs.xivlauncher
+      (pkgs.olympus.override { celesteWrapper = "steam-run"; })
+      pkgs.gamescope
+      pkgs.ludusavi
+      pkgs.r2modman
+    ];
+  };
 }

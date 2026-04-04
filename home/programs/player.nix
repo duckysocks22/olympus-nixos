@@ -1,8 +1,10 @@
-{ pkgs, ...}:
+{ inputs, ... }:
 {
-  home.packages = with pkgs; [
-    vlc
-    jellyfin-desktop
-    feishin
-  ];
+  flake.homeModules.player = { pkgs, ... }: {
+    home.packages = with pkgs; [
+      vlc
+      jellyfin-desktop
+      feishin
+    ];
+  };
 }

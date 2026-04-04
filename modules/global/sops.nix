@@ -1,17 +1,18 @@
-{ inputs, config, ...}:
+{ inputs, ... }:
 {
-  imports =
-    [
-      inputs.sops-nix.nixosModules.sops
-    ];
+  flake.nixosModules.sops = { inputs, config, ...}: {
+    imports =
+      [
+        inputs.sops-nix.nixosModules.sops
+      ];
 
-  sops.defaultSopsFile = ../../secrets/secrets.yaml;
-  sops.defaultSopsFormat = "yaml";
+    sops.defaultSopsFile = ../../secrets/secrets.yaml;
+    sops.defaultSopsFormat = "yaml";
 
-  sops.age.keyFile = "${config.users.users.foxtrot.home}/.config/sops/age/keys.txt";
+    sops.age.keyFile = "${config.users.users.foxtrot.home}/.config/sops/age/keys.txt";
 
-  sops.secrets."samba/local" = { 
-    path = "/etc/nixos/smb-secrets";
+    sops.secrets."samba/local" = { 
+      path = "/etc/nixos/smb-secrets";
+    };
   };
-  
 }

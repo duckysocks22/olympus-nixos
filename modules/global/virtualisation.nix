@@ -1,11 +1,13 @@
-{ config, ...}:
+{ inputs, ... }:
 {
-  programs.virt-manager.enable = true;
+  flake.nixosModules.virtualisation = { config, ... }: {
+    programs.virt-manager.enable = true;
 
-  users.groups.libvirtd.members = [ "foxtrot" "server" ];
+    users.groups.libvirtd.members = [ "foxtrot" "server" ];
 
-  users.users.foxtrot.extraGroups = [ "libvirtd" ];
+    users.users.foxtrot.extraGroups = [ "libvirtd" ];
 
-  virtualisation.libvirtd.enable = true;
-  virtualisation.spiceUSBRedirection.enable = true;
+    virtualisation.libvirtd.enable = true;
+    virtualisation.spiceUSBRedirection.enable = true;
+  };
 }

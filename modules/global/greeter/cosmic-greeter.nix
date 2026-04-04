@@ -1,3 +1,6 @@
+{ inputs, ... }:
 {
-  services.displayManager.cosmic-greeter.enable = true;
+  flake.nixosModules.cosmic-greeter = { ... }: {
+    services.displayManager.cosmic-greeter.enable = true;
+  };
 }
