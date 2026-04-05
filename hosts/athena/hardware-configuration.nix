@@ -37,13 +37,13 @@
       options = [ "users" "exec" "noatime" ];
     };
 
-  fileSystems."/media/extra" =
+  fileSystems."/media/plus" =
     { device = "/dev/disk/by-uuid/860926a1-2c71-4d9e-9b7d-0788c5e2d089";
       fsType = "xfs";
       options = [ "users" "exec" ];
     };
 
-  fileSystems."/media/plus" =
+  fileSystems."/media/extra" =
     { device = "/dev/disk/by-uuid/a4f93efe-672d-4677-8b29-d0baa3b972e7";
       fsType = "xfs";
       options = [ "users" "exec" ];
