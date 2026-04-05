@@ -31,6 +31,24 @@
       options = [ "fmask=0077" "dmask=0077" ];
     };
 
+  fileSystems."/media/ssd2linux" =
+    { device = "/dev/disk/by-uuid/0cc5bd34-b0d7-44ef-8b5e-69ea53923b08";
+      fsType = "xfs";
+      options = [ "umask=0775" "gid=100" "uid=1000" ];
+    };
+
+  fileSystems."/media/plus" =
+    { device = "/dev/disk/by-uuid/860926a1-2c71-4d9e-9b7d-0788c5e2d089";
+      fsType = "xfs";
+      options = [ "umask=0775" "gid=100" "uid=1000" ];
+    };
+
+  fileSystems."/media/extra" =
+    { device = "/dev/disk/by-uuid/a4f93efe-672d-4677-8b29-d0baa3b972e7";
+      fsType = "xfs";
+      options = [ "umask=0775" "gid=100" "uid=1000" ];
+    };
+
   swapDevices =
     [ { device = "/dev/disk/by-uuid/861f99a4-62f5-4afd-acfa-3fcce11ee87c"; }
     ];
