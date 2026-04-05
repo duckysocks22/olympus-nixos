@@ -18,6 +18,7 @@
   sops.secrets."samba-nyx/serena" = {};
   sops.secrets."samba-nyx/zia" = {};
   sops.secrets."users/server" = {};
+  sops.secrets."netbird/routing-key" = {};
 
   sops.secrets."users/server".neededForUsers = true;
 
@@ -32,6 +33,9 @@
   sops.secrets."samba-nyx/zia".mode = "0440";
   sops.secrets."samba-nyx/zia".owner = config.users.users.server.name;
   sops.secrets."samba-nyx/zia".group = config.users.users.server.group;
+
+  #sops.secrets."netbird/routing-key".owner = "netbird";
+  #sops.secrets."netbird/routing-key".group = "netbird";
   
 
   
