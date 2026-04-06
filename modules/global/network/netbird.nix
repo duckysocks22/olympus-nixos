@@ -8,8 +8,6 @@
     login = {
       enable = true;
 
-      # Path to a file containing the setup key for your peer
-      # NOTE: if your setup key is reusable, make sure it is not copied to the Nix store.
       setupKeyFile = "${config.sops.secrets."netbird/client-key".path}";
     };
 

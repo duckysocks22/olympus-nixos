@@ -1,8 +1,12 @@
 { pkgs, pkgs-unstable, ... }:
 {
 
+  imports = [
+    ./netbird.nix
+  ];
+
   services.tailscale = {
-    enable = true;
+    enable = false;
   };
   
   services.avahi = {
