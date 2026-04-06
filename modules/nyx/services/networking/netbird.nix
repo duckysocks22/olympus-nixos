@@ -13,6 +13,9 @@
       setupKeyFile = "${config.sops.secrets."netbird/routing-key".path}";
     };
 
+    environment = {
+      NB_ALLOW_SERVER_SSH = "true";
+    };
     # Port used to listen to wireguard connections
     port = 51821;
 
