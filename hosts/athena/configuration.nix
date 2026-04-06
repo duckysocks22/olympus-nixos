@@ -15,7 +15,8 @@
       ../../modules/global/users/foxtrot.nix
       ../../modules/athena/samba-local.nix
       ../../modules/global/common.nix
-      ../../modules/global/network.nix
+      ../../modules/global/network/default-network.nix
+      ../../modules/global/network/netbird.nix
       ../../modules/global/services/thelounge.nix
       ../../modules/global/nix/default.nix
       ../../modules/global/sops.nix

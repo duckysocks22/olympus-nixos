@@ -14,7 +14,7 @@
       ../../modules/global/system.nix
       ../../modules/global/users/foxtrot.nix
       ../../modules/global/common.nix
-      ../../modules/global/network.nix
+      ../../modules/global/network/default-network.nix
       ../../modules/global/services/thelounge.nix
       ../../modules/global/nix/default.nix
       ../../modules/global/sops.nix
