@@ -18,6 +18,14 @@
           "1.0.0.1"
         ];
       };
+      tls = {
+        enabled = true;
+        server_name = "dns.puppygirls.net";
+        force_https = false;
+        port_dns_over_tls = 853;
+        certificate_path = "/var/lib/acme/puppygirls.net/cert.pem";
+        private_key_path = "/var/lib/acme/puppygirls.net/key.pem";
+      };
       dhcp = {
         enabled = false;
         interface_name = "enp34s0";

@@ -19,6 +19,7 @@
   sops.secrets."samba-nyx/zia" = {};
   sops.secrets."users/server" = {};
   sops.secrets."netbird/routing-key" = {};
+  sops.secrets."cloudflare/api" = {};
 
   sops.secrets."users/server".neededForUsers = true;
 

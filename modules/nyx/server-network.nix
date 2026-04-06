@@ -46,6 +46,7 @@
       8971
       3003
       53
+      853
       1984
       3389
       22
@@ -65,6 +66,7 @@
     allowedUDPPorts = [
       config.services.tailscale.port
       53
+      853
       5353
       67
       68
