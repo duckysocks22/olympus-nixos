@@ -241,7 +241,7 @@
               bookmarks = [
                 {
                   name = "qBit - nyx-nixos";
-                  url = "http://100.65.34.79:8080";
+                  url = "http://100.111.146.104:8080";
                   keyword = "qbit";
                 }
                 {
@@ -330,7 +330,7 @@
               bookmarks = [
                 {
                   name = "Navidrome";
-                  url = "http://100.65.34.79:4533";
+                  url = "http://100.111.146.104:4533";
                   keyword = "navi";
                 }
                 {
