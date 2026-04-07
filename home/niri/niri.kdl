@@ -273,7 +273,7 @@ window-rule {
 window-rule {
 	// make window non transparent when not focused
     match app-id="firefox"
-    match app-id="org.jellyfin.Jellyfindesktop"
+    match app-id="org.jellyfin.JellyfinDesktop"
     opacity 1.0
 }
 window-rule {
