@@ -10,6 +10,7 @@
     ./services/frigate.nix
     ./services/navidrome.nix
     ./services/networking/default.nix
+    ./services/attic.nix
     #../xfce/default.nix
     #./services/x2go.nix
     #./services/dawarich.nix
