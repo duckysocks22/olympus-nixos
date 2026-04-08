@@ -24,8 +24,8 @@ jobs:
       - run: apt install curl -y
       - run: sh <(curl -L https://nixos.org/nix/install) --daemon
       - run: . /etc/profile.d/nix.sh
-      - run: nix --version
+      - run: /usr/bin/nix --version
       - run: mkdir -p /etc/nix
       - run: echo "experimental-features = nix-command flakes" | tee -a /etc/nix/nix.conf
-      - run: nix flake --version
-      - run: nix flake update
+      - run: /usr/bin/nix flake --version
+      - run: /usr/bin/nix flake update
