@@ -21,5 +21,4 @@ jobs:
           pr-labels: |                  # Labels to be set on the PR
             dependencies
             automated
-          repository: https://codeberg.org/foxtrottt/olympus-nixos.git
       - run: nix flake update
