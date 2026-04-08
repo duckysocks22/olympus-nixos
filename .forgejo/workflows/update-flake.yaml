@@ -14,4 +14,6 @@ jobs:
     - name: Update flake inputs
       uses: Mic92/update-flake-inputs-gitea@main
       with:
-        gitea-token: ${{ secrets.GITEA_TOKEN }}
+        forgejo-token: ${{ secrets.FORGEJO-TOKEN }}
+        git-author-name: "prometheus"
+        git-committer-name: "prometheus"
