@@ -1,7 +1,8 @@
-{ pkgs, config, inputs, ... }:
+{ pkgs, config, inputs, pkgs-unstable, ... }:
 let
   pkg2zip = pkgs.callPackage ../modules/packages/pkg2zip.nix { };
   carddump = pkgs.callPackage ../modules/scripts/carddump.nix { };
+  attic-client = pkgs-unstable.attic-client;
 in
 {
   home.packages = (with pkgs; [
