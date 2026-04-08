@@ -21,6 +21,7 @@
   sops.secrets."netbird/routing-key" = {};
   sops.secrets."caddy/environment" = {};
   sops.secrets."attic/server-token" = {};
+  sops.secrets."forgejo-runner/environment" = {};
 
   sops.secrets."users/server".neededForUsers = true;
 
