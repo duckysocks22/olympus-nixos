@@ -15,6 +15,7 @@ in
     shellcheck # Shell script checker
     dust # Tree-formatted disk analyzer
     rclone
+    attic-client
   ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.system}; [
     unscene
     mountiso
