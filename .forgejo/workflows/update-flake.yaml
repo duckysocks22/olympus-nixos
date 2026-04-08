@@ -1,0 +1,31 @@
+name: "Flake.lock: update Nix dependencies"
+
+on:
+  workflow_dispatch: # allows manual triggering
+  schedule:
+    - cron: '0 0 * * 0' # runs weekly on Sunday at 00:00
+
+jobs:
+  nix-flake-update:
+    permissions:
+      contents: write
+      id-token: write
+      issues: write
+      pull-requests: write
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        # Mirrored Following from https://github.com/DeterminateSystems/
+        with:
+          pr-title: "Update Nix flake inputs" # Title of PR to be created
+          pr-labels: |                  # Labels to be set on the PR
+            dependencies
+            automated
+      - run: apt install curl -y
+      - run: sh <(curl -L https://nixos.org/nix/install) --daemon
+      - run: . /etc/profile.d/nix.sh
+      - run: /usr/bin/nix --version
+      - run: mkdir -p /etc/nix
+      - run: echo "experimental-features = nix-command flakes" | tee -a /etc/nix/nix.conf
+      - run: /usr/bin/nix flake --version
+      - run: /usr/bin/nix flake update
