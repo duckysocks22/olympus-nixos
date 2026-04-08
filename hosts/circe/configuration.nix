@@ -19,6 +19,7 @@
       ../../modules/global/nix/default.nix
       ../../modules/global/sops.nix
       ../../modules/global/virtualisation.nix
+      ../../modules/global/local-printing.nix
     ];
 
   home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;

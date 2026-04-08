@@ -41,6 +41,8 @@ in
       nix build .#nixosConfigurations.olympus-iso.config.system.build.isoImage -L
       '';
       weather = ''curl "wttr.in/?u"'';
+      cachestore = ''attic push --ignore-upstream-cache-filter main $(ls -d /nix/store/*/ | grep -v fake_nixpkgs)'';
+      cachesys = ''attic push main /run/current-system'';
     };
 
     oh-my-zsh = {
