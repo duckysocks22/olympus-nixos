@@ -22,4 +22,4 @@ jobs:
           pr-labels: |                  # Labels to be set on the PR
             dependencies
             automated
-          repository: https://dawn.wine/foxtrottt/olympus-nixos.git
+          repository: https://codeberg.org/foxtrottt/olympus-nixos.git
