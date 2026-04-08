@@ -14,6 +14,7 @@
   services.atticd = {
     enable = true;
     environmentFile = "${config.sops.secrets."attic/server-token".path}";
+    package = pkgs-unstable.attic-server;
 
     settings = {
       listen = "[::]:7989";
