@@ -18,6 +18,15 @@
 
     settings = {
       listen = "[::]:7989";
+      
+      storage = {
+        type = "local";
+        path = "/media/hdd1/cache/";
+      };
+
+      garbage-collection = {
+        inverval = "0";
+      };
 
       jwt = { };
 
