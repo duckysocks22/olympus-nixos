@@ -15,8 +15,9 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v6
-      - uses: https://github.com/DeterminateSystems/determinate-nix-action
-      - uses: https://github.com/DeterminateSystems/update-flake-lock
+        # Mirrored Following from https://github.com/DeterminateSystems/
+      - uses: foxtrottt/determinate-nix-action@main
+      - uses: foxtrottt/DeterminateSystems/update-flake-lock@main
         with:
           pr-title: "Update Nix flake inputs" # Title of PR to be created
           pr-labels: |                  # Labels to be set on the PR
