@@ -9,6 +9,9 @@
     autoPrune.enable = true;
   };
   virtualisation.oci-containers.backend = "docker";
+  virtualisation.docker.daemon.settings = {
+    dns = [ "1.1.1.1" "8.8.8.8" ];
+  };
 
   # Containers
   virtualisation.oci-containers.containers."prometheus-runner" = {
@@ -17,7 +20,7 @@
       "${config.sops.secrets."forgejo-runner/environment".path}"
     ];
     volumes = [
-      "/home/server/olympus-nixos/modules/nyx/services/forgejo-runner/config.yaml:/config.yaml:rw"
+      "/home/server/olympus-nixos/modules/nyx/services/forgejo-runner/config:/config:rw"
       "/home/server/olympus-nixos/modules/nyx/services/forgejo-runner/data:/data:rw"
       "/var/run/docker.sock:/var/run/docker.sock:rw"
     ];
@@ -25,6 +28,8 @@
     extraOptions = [
       "--network-alias=runner"
       "--network=prometheus_default"
+      "--dns=1.1.1.1"
+      "--dns=8.8.8.8"
     ];
   };
   systemd.services."docker-prometheus-runner" = {

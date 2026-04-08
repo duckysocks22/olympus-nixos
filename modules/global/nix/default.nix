@@ -16,4 +16,8 @@
     nixPath = lib.mapAttrsToList (n: v: "${n}=flake:${n}") inputs;
     registry = lib.mapAttrs (n: v: { flake = v; }) inputs;
   };
+
+  environment.variables = {
+    NIX_CURL_FLAGS="--http1.1";
+  };
 }

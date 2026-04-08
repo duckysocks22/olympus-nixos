@@ -11,6 +11,7 @@
     ./services/navidrome.nix
     ./services/networking/default.nix
     ./services/attic.nix
+    ./services/printing.nix
     ./services/forgejo-runner/forgejo-runner.nix
     #../xfce/default.nix
     #./services/x2go.nix

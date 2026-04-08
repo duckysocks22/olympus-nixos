@@ -1,3 +1,4 @@
+{ pkgs, ...}:
 {
 
   imports = [
@@ -9,6 +10,7 @@
   ];
   services.samba = {
     enable = true;
+    package = pkgs.sambaFull;
     openFirewall = true;
     settings = {
       global = {
@@ -43,7 +45,6 @@
       };
     };
   };
-
   services.samba-wsdd = {
     enable = true;
     openFirewall = true;
