@@ -7,7 +7,7 @@
     #./services/samba.nix
     ./nvidia.nix
     ./packages.nix
-    ./services/frigate.nix
+    #./services/frigate.nix
     ./services/navidrome.nix
     ./services/networking/default.nix
     ./services/attic.nix

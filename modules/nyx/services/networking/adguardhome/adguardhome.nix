@@ -9,17 +9,15 @@
       dns = {
         upstream_dns = [
           "9.9.9.9"
-          "1.1.1.1"
-          "1.0.0.1"
+          "8.8.8.8"
+          "8.8.4.4"
         ];
         bootstrap_dns = [
           "9.9.9.9"
-          "1.1.1.1"
-          "1.0.0.1"
         ];
       };
       tls = {
-        enabled = true;
+        enabled = false;
         server_name = "dns.puppygirls.net";
         force_https = false;
         port_dns_over_tls = 853;

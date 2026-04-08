@@ -124,6 +124,12 @@
             ./modules/global/stylix/stylix.nix
             ./home/default.nix
             ./modules/global/lix.nix
+
+            {
+              nixpkgs.overlays = [
+                (import ./modules/overlays/caddy.nix)
+              ];
+            }
           ];
           specialArgs = {
             inherit inputs;
