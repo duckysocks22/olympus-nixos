@@ -1,0 +1,17 @@
+name: Update Flake Inputs
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'  # Weekly on Sunday
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Update flake inputs
+      uses: Mic92/update-flake-inputs-gitea@main
+      with:
+        gitea-token: ${{ secrets.GITEA_TOKEN }}
