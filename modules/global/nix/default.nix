@@ -8,12 +8,12 @@ in
       auto-optimise-store = true;
       keep-derivations = true;
       keep-outputs = true;
-      
+
       substituters = [
-        "${homeIP}"
+        "https://cache.puppygirls.net/main"
       ];
       trusted-public-keys = [
-        "main:eX21fIMCHYo3MNbT6xDD7Xy45FcNAP/P97Vs2vdH0Ek="
+        "main:t80OgdIBHuIkHqncmTFtABUsciAdJC/HsstSck6t4p0="
       ];
     };
     nixPath = lib.mapAttrsToList (n: v: "${n}=flake:${n}") inputs;
