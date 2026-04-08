@@ -16,11 +16,10 @@ jobs:
     steps:
       - uses: actions/checkout@v6
         # Mirrored Following from https://github.com/DeterminateSystems/
-      - uses: foxtrottt/determinate-nix-action@main
-      - uses: foxtrottt/DeterminateSystems/update-flake-lock@main
         with:
           pr-title: "Update Nix flake inputs" # Title of PR to be created
           pr-labels: |                  # Labels to be set on the PR
             dependencies
             automated
           repository: https://codeberg.org/foxtrottt/olympus-nixos.git
+      - run: nix flake update
