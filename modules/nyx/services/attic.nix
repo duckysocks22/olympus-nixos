@@ -1,4 +1,4 @@
-{ inputs, pkgs, pkgs-unstable, config, ...}:
+{ inputs, pkgs, pkgs-unstable, config, lib, ...}:
 {
 
   imports = [
@@ -25,7 +25,7 @@
       };
 
       garbage-collection = {
-        inverval = "0";
+        interval = "0hr";
       };
 
       jwt = { };
@@ -37,5 +37,11 @@
         max-size = 256 * 1024; # 256 KiB
       };
     };
+  };
+
+  systemd.services.atticd.serviceConfig = {
+  ReadWritePaths = [ "/media/hdd1/cache" ];
+  ProtectHome = lib.mkForce false;
+  ProtectSystem = lib.mkForce "full"; 
   };
 }

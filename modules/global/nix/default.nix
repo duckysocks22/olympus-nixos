@@ -10,7 +10,7 @@
         "https://cache.puppygirls.net/main"
       ];
       trusted-public-keys = [
-        "main:t80OgdIBHuIkHqncmTFtABUsciAdJC/HsstSck6t4p0="
+        "main:OiT7TySueZMWxt1dpP7/SVwyhOwWu4L11tm1QhT2Qd8="
       ];
     };
     nixPath = lib.mapAttrsToList (n: v: "${n}=flake:${n}") inputs;
