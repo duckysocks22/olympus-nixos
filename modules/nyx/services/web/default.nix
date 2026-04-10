@@ -1,5 +1,5 @@
 {
   imports = [
-    #./nginx.nix
+    ../networking/caddy.nix
   ];
 }
