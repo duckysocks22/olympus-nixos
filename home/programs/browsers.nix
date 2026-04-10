@@ -60,19 +60,19 @@
         "uBlock0@raymondhill.net" = {
           install_url = moz "ublock-origin";
           installation_mode = "force_installed";
-          updates_disabled = true;
+          updates_disabled = false;
         };
 
         "deArrow@ajay.app" = {
           install_url = moz "dearrow";
           installation_mode = "force_installed";
-          updates_disabled = true;
+          updates_disabled = false;
         };
 
         "sponsorBlocker@ajay.app" = {
           install_url = moz "sponsorblock";
           installation_mode = "force_installed";
-          updates_disabled = true;
+          updates_disabled = false;
         };
 
         "vpn@proton.ch" = {
