@@ -35,6 +35,11 @@ in
         dns bunny {$BUNNY_API}
       }
     '';
+    virtualHosts."http://dns.puppygirls.net, https://dns.puppygirls.net".extraConfig = ''
+      reverse_proxy :854 {
+        
+      }
+    '';
   };
   networking.firewall.allowedTCPPorts = [ 80 443 ];
 }

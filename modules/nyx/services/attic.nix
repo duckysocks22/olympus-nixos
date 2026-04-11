@@ -25,7 +25,7 @@
       };
 
       garbage-collection = {
-        interval = "0hr";
+        interval = "48h";
       };
 
       jwt = { };

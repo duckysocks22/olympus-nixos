@@ -18,8 +18,9 @@
       };
       tls = {
         enabled = false;
-        server_name = "dns.puppygirls.net";
+        server_name = "nyx-nixos.local";
         force_https = false;
+        port_https = 854;
         port_dns_over_tls = 853;
         certificate_path = "/var/lib/acme/puppygirls.net/cert.pem";
         private_key_path = "/var/lib/acme/puppygirls.net/key.pem";
@@ -44,6 +45,8 @@
           enabled = false;
         };
       };
+
+      trusted_proxies = [ 127.0.0.1 ];
 
       filters = map(url: { enabled = true; url = url; }) [
         "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.txt"
