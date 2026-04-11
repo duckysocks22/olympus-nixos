@@ -14,6 +14,8 @@
     path = "/etc/nixos/smb-secrets";
   };
 
+  sops.secrets."samba/local".neededForUsers = true;
+
   sops.secrets."netbird/client-key" = { 
     owner = "foxtrot";
   };
