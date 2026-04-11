@@ -1,9 +1,7 @@
 @layer base, util, components;
 
-@import '@webtui/css';
+@import 'xp.css/dist/XP.css';
 
-/* Import AFTER webtui components */
-@import '@webtui/theme-catppuccin';
 
 @layer base {
   :root {

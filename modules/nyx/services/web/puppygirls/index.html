@@ -3,28 +3,30 @@
   <head>
     <meta charset="UTF-8">
     <title>PuppyGirls Inc.</title>
+    <link rel="stylesheet" href="https://unpkg.com/xp.css" />
+    <style>
+      body {
+        background-image: url('./src/xp-background.jpg');
+        background-repeat: no-repeat;
+        background-attachment: fixed;
+        background-size: cover;
+      }
+    </style>
   </head>
   <body>
 
-    <div box-="square" shear-="both">
-      <div class="header">
-          <span is-="badge" variant-="background0">top-left</span>
-          <span is-="badge" variant-="background0">top-right</span>
+    <div class="window" style="width: 600px; height: auto; position: fixed; transform: translate(+110%, +100%);">
+      <div class="title-bar">
+        <div class="title-bar-text">PuppyGirlsOS</div>
+        <div class="title-bar-controls">
+          <button aria-label="Close"></button>
+        </div>
       </div>
-      <div id="content">
-        <p>Lorem ipsum dolor sit amet sit dolor ipsum lorem idk i dont speak french</span></p>
-          <div id="buttons">
-              <button box-="round">Ok</button>
-              <button box-="round">Cancel</button>
-          </div>
-          <img src="./src/puppygirl.jpg" alt="puppygirl :3" width="100" height="100">
-      </div>
-      <div class="header">
-          <span is-="badge" variant-="background0">bottom-left</span>
-          <span is-="badge" variant-="background0">bottom-right</span>
+      <div class="window-body">
+        <p>aaa</p>
       </div>
     </div>
-    <script type="module" src="/src/main.js"></script>
+
+
   </body>
-  <html data-webtui-theme="catppuccin-frappe"></html>
 </html> 
