@@ -1,11 +1,7 @@
-{ config, pkgs, ... }:
+{ config, pkgs, pkgs-unstable, ... }:
 {
   services.netbird = { 
-    package = pkgs.netbird.overrideAttrs {
-      version = "0.67.4";
-      tag = "v0.67.4";
-      hash = "ab1307e6189e4f51e5c05c518bb9699255aff2710e9872324f0e6814a2c5d043";
-      };
+    package = pkgs-unstable.netbird;
     clients.${config.networking.hostName} = {
 
       # Automatically login to your Netbird network with a setup key

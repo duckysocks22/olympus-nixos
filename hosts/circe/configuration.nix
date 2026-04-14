@@ -20,6 +20,8 @@
       ../../modules/global/sops.nix
       ../../modules/global/virtualisation.nix
       ../../modules/global/local-printing.nix
+      ../../modules/athena/samba-local.nix
+      ../../modules/global/fonts.nix
     ];
 
   home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
