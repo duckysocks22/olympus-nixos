@@ -28,6 +28,10 @@
       url = "git+https://dawn.wine/foxtrottt/elysia-on-nix.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    agl = {
+      url = "github:an-anime-team/anime-games-launcher";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     px7-radio-git = {
       url = "git+https://dawn.wine/foxtrottt/px7-radio-nix.git";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -47,10 +51,6 @@
     };
     luxxy-pkgs = {
       url = "github:reedrw/nix-config";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-    nix-minecraft = {
-      url = "github:Infinidoge/nix-minecraft";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     copyparty = {
