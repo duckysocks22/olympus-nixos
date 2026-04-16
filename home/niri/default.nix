@@ -6,6 +6,7 @@
     ./xwayland.nix
     ./noctalia.nix
     ./cursors.nix
+    ./swayidle.nix
     ];
   home.packages = [ pkgs.niri pkgs.dconf pkgs.slurp ];
 
