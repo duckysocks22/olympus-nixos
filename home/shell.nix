@@ -29,7 +29,7 @@ in
 
     shellAliases = {
       vi = "nvim";
-      rebuild = "sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/olympus-nixos";
+      rebuild = "sudo nixos-rebuild switch -L --flake ${config.home.homeDirectory}/olympus-nixos";
       par = ''
       cd ${config.home.homeDirectory}/olympus-nixos
       git pull
@@ -39,7 +39,7 @@ in
       hb = "HandBrakeCLI";
       buildiso = ''
       cd ~/olympus-nixos
-      nix build .#nixosConfigurations.olympus-iso.config.system.build.isoImage -L
+      nix build -L .#nixosConfigurations.olympus-iso.config.system.build.isoImage
       '';
       weather = ''curl "wttr.in/?u"'';
       cachestore = ''attic push --ignore-upstream-cache-filter main $(ls -d /nix/store/*/ | grep -v fake_nixpkgs)'';

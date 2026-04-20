@@ -24,5 +24,6 @@
     ../global/power/disable-shutdown.nix
     #./services/web/default.nix
     ./services/samba/samba.nix
+    ./services/actual-finance/actual-server.nix
   ];
 }

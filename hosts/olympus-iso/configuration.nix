@@ -10,13 +10,14 @@ in
   imports = [
     "${inputs.nixpkgs}/nixos/modules/installer/cd-dvd/channel.nix"
     "${inputs.nixpkgs}/nixos/modules/installer/cd-dvd/installation-cd-graphical-base.nix"
-    ../../modules/foxtrot.nix
-    ../../modules/system.nix
-    ../../modules/portals.nix
-    ../../modules/greeter/cosmic-greeter.nix
-    ../../modules/common.nix
-    ../../modules/network.nix
-    ../../modules/nix/default.nix
+    ../../modules/global/users/foxtrot.nix
+    ../../modules/global/system.nix
+    ../../modules/global/portals.nix
+    ../../modules/global/greeter/cosmic-greeter.nix
+    ../../modules/global/common.nix
+    ../../modules/global/network/default-network.nix
+    ../../modules/global/nix/default.nix
+    ../../modules/global/sops.nix
   ];
 
   programs.partition-manager.enable = true;
@@ -27,6 +28,18 @@ in
     calamares-nixos-extensions
     glibcLocales
   ];
+
+  nixpkgs.config.pulseaudio = true;
+
+  services.xserver = {
+    enable = true;
+    desktopManager = {
+      xterm.enable = false;
+      xfce.enable = true;
+    };
+  };
+  services.displayManager.defaultSession = "xfce";
+  services.xserver.displayManager.startx.enable = true;
 
   i18n.supportedLocales = [ "all" ];
 
@@ -41,7 +54,7 @@ in
   networking.hostName = "olympus-iso";
 
   users.users.foxtrot = {
-    initialPassword = "admin";
+    initialPassword = "cum";
   };
 
   time.timeZone = "America/New_York";

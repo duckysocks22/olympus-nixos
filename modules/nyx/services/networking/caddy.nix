@@ -40,6 +40,18 @@ in
         
       }
     '';
+    virtualHosts."http://budget.puppygirls.net, https://budget.puppygirls.net".extraConfig = ''
+      encode gzip zstd
+      reverse_proxy :5006 {
+        transport http {
+          tls_server_name budget.puppygirls.net
+        }
+      }
+
+      tls {
+        dns bunny {$BUNNY_API}
+      }
+    '';
   };
   networking.firewall.allowedTCPPorts = [ 80 443 ];
 }
