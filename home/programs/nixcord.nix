@@ -5,10 +5,12 @@
   programs.nixcord = {
     enable = true;
 
-    #discord.vencord.enable = true;
-    vesktop.enable = true;
+    discord.vencord.enable = true;
+    #vesktop.enable = true;
 
     config = {
+      autoUpdate = true;
+      autoUpdateNotification = true;
       useQuickCss = true;
       frameless = true;
       plugins = {
