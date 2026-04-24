@@ -25,4 +25,16 @@
     ''}";
     user = "server";
   };
+
+  systemd.services.minecraft-gtnh = util.functions.mkSimpleService {
+    description = "GregTech New Horizons";
+    ExecStart = "${pkgs.writeShellScript "start.sh check" ''
+      set -x
+      PATH="${lib.makeBinPath [ pkgs.jre ]}:PATH"
+      if [ -d /home/server/game-servers/minecraft/gtnh/ ]; then
+        cd /home/server/game-servers/minecraft/gtnh
+        java -Xms6G -Xmx6G -Dfml.readTimeout=180 @java9args.txt -jar lwjgl3ify-forgePatches.jar nogui
+      fi
+    ''}";
+  };
 }

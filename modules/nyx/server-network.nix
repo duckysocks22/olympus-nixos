@@ -64,6 +64,8 @@
       config.services.home-assistant.config.http.server_port
       25565
       25575
+      25665
+      25666
       445
     ];
     allowedUDPPorts = [
