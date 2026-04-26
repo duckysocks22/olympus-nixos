@@ -9,6 +9,7 @@
     ./packages.nix
     #./services/frigate.nix
     ./services/navidrome.nix
+    ./services/audiobookshelf.nix
     ./services/networking/default.nix
     ./services/attic.nix
     ./services/printing.nix

@@ -6,7 +6,7 @@
     settings = {
       Address = "0.0.0.0";
       Port = 4533;
-      MusicFolder = "/media/hdd1/music";
+      MusicFolder = "/media/hdd1/audio/music";
       AutoImportPlaylists = false;
       EnableSharing = true;
       openFirewall = true;
