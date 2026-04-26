@@ -22,6 +22,7 @@
   sops.secrets."caddy/environment" = {};
   sops.secrets."attic/server-token" = {};
   sops.secrets."forgejo-runner/environment" = {};
+  sops.secrets."navidrome/environment" = {};
 
   sops.secrets."users/server".neededForUsers = true;
 
