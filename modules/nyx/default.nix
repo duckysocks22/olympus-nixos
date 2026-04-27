@@ -10,6 +10,7 @@
     #./services/frigate.nix
     ./services/navidrome.nix
     ./services/audiobookshelf.nix
+    ./services/yt-dlp/default.nix
     ./services/networking/default.nix
     ./services/attic.nix
     ./services/printing.nix

@@ -23,8 +23,7 @@ in
     openFirewall = true;
   };
 
-  # Fonts
   environment.systemPackages = with pkgs; [
-    nerd-fonts.dejavu-sans-mono
+    python312.Packages.yt-dlp
   ];
 }
