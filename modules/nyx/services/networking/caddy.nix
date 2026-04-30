@@ -52,6 +52,13 @@ in
         dns bunny {$BUNNY_API}
       }
     '';
+    virtualHosts."http://stream.puppygirls.net, https://stream.puppygirls.net".extraConfig = ''
+      reverse_proxy :8096
+
+      tls {
+        dns bunny {$BUNNY_API}
+      }
+    '';
   };
   networking.firewall.allowedTCPPorts = [ 80 443 ];
 }

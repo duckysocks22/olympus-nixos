@@ -9,6 +9,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/global/system.nix
+      ../../modules/nyx/hardenedKernel.nix
       ../../modules/nyx/server.nix
       ../../modules/global/nix/default.nix
       ../../modules/nyx/sops.nix

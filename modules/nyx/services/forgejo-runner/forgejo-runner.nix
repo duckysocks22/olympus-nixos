@@ -30,6 +30,8 @@
       "--network=prometheus_default"
       "--dns=1.1.1.1"
       "--dns=8.8.8.8"
+      "--memory=6144m"
+      "--cpuset-cpus=0,1,2,3,4"
     ];
   };
   systemd.services."docker-prometheus-runner" = {
