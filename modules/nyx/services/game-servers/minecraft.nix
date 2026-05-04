@@ -1,4 +1,4 @@
-{ util, pkgs, lib, ...}:
+{ util, pkgs, pkgs-unstable, lib, ...}:
 {
   /* systemd.services.minecraft-statech-industry = util.functions.mkSimpleService {
       description = "Statech Industry Minecraft Server";
@@ -20,7 +20,7 @@
       PATH="${lib.makeBinPath [ pkgs.jre ]}:PATH"
       if [ -d /home/server/game-servers/minecraft/atm10/ ]; then
         cd /home/server/game-servers/minecraft/atm10
-        java -server -Xms10G -Xmx12G -jar server.jar
+        java -server -Xms6G -Xmx10G -jar server.jar
       fi
     ''}";
     user = "server";
@@ -36,5 +36,19 @@
         java -Xms6G -Xmx6G -Dfml.readTimeout=180 @java9args.txt -jar lwjgl3ify-forgePatches.jar nogui
       fi
     ''}";
+  };
+
+  systemd.services.minecraft-forever = util.functions.mkSimpleService {
+    description = "PuppyGirls Forever,,,,";
+    ExecStart = "${pkgs.writeShellScript "start.sh check" ''
+      set -x
+      PATH="${lib.makeBinPath [ pkgs.openjdk25 ]}:PATH"
+      if [ -d /home/server/game-servers/minecraft/forever_vanilla/ ]; then
+        cd /home/server/game-servers/minecraft/forever_vanilla
+        export LD_LIBRARY_PATH=${pkgs.lib.makeLibraryPath [ pkgs.systemd ]}
+        java -server -Xms4G -Xmx6G --enable-native-access=ALL-UNNAMED -jar server.jar
+      fi
+    ''}";
+    user = "server";
   };
 }

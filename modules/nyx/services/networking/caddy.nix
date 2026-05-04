@@ -59,6 +59,20 @@ in
         dns bunny {$BUNNY_API}
       }
     '';
+    virtualHosts."http://music.puppygirls.net, https://music.puppygirls.net".extraConfig = ''
+      reverse_proxy :4533
+
+      tls {
+        dns bunny {$BUNNY_API}
+      }
+    '';
+    virtualHosts."http://audio.puppygirls.net, https://audio.puppygirls.net".extraConfig = ''
+      reverse_proxy :8000
+
+      tls {
+        dns bunny {$BUNNY_API}
+      }
+    '';
   };
   networking.firewall.allowedTCPPorts = [ 80 443 ];
 }

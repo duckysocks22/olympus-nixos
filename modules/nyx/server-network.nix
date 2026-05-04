@@ -6,7 +6,7 @@
   ];
 
   services.tailscale = {
-    enable = true;
+    enable = false;
   };
 
   systemd.network.enable = true;
@@ -34,42 +34,37 @@
     dnsovertls = "true";
   };
 
-  networking.firewall.trustedInterfaces = [ "tailscale0" "enp34s0" ];
+  networking.firewall.trustedInterfaces = [ "enp34s0" ];
   networking.firewall.checkReversePath = "loose";
 
   networking.firewall = {
     allowedTCPPorts = [
       80
       443
-      5353
       631
       8080
       7989
       8096
-      8971
       3003
-      53
       853
-      1984
-      3389
       22
       25
       1883
       53
-      5353
       67
       68
       3210
       3211
       config.services.home-assistant.config.http.server_port
-      25565
-      25575
       25665
       25666
+      25765
+      25766
+      25865
+      25866
       445
     ];
     allowedUDPPorts = [
-      config.services.tailscale.port
       53
       853
       5353
