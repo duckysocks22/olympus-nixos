@@ -44,7 +44,7 @@
             scan = 30;
             e2d = true;
             d2t = true;
-            nohash = "\.iso$";
+            nohash = ".iso$";
           };
         };
 
@@ -60,7 +60,7 @@
             scan = 30;
             e2d = true;
             d2t = true;
-            nohash = "\.iso$";
+            nohash = ".iso$";
             dots = true;
             dotsrch = true;
           };
@@ -79,7 +79,7 @@
             scan = 30;
             e2d = true;
             d2t = true;
-            nohash = "\.iso$";
+            nohash = ".iso$";
             dots = true;
             dotssrch = true;
           };

@@ -46,7 +46,7 @@
         };
       };
 
-      trusted_proxies = [ 127.0.0.1 ];
+      trusted_proxies = [ "127.0.0.1" ];
 
       filters = map(url: { enabled = true; url = url; }) [
         "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.txt"
