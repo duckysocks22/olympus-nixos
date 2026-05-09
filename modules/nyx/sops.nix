@@ -23,6 +23,7 @@
   sops.secrets."attic/server-token" = {};
   sops.secrets."forgejo-runner/environment" = {};
   sops.secrets."navidrome/environment" = {};
+  sops.secrets."immich/secrets" = {};
 
   sops.secrets."factorio_user" = {
     sopsFile = ../../secrets/otherSecrets.json;

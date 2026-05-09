@@ -18,8 +18,8 @@
     enable = true;
     package = pkgs-unstable.jellyfin;
     openFirewall = true;
-    dataDir = "/media/hdd1/jellyfin/media";
-    configDir = "/media/hdd1/jellyfin/config";
+    dataDir = "/media/hdd1/media/jellyfin/media";
+    configDir = "/media/hdd1/media/jellyfin/config";
     user = "server";
     forceEncodingConfig = true;
     transcoding = {
