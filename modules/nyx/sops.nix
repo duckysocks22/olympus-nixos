@@ -24,6 +24,37 @@
   sops.secrets."forgejo-runner/environment" = {};
   sops.secrets."navidrome/environment" = {};
 
+  sops.secrets."factorio_user" = {
+    sopsFile = ../../secrets/otherSecrets.json;
+
+    format = "json";
+  };
+
+  sops.secrets."factorio_token" = {
+    sopsFile = ../../secrets/otherSecrets.json;
+
+    format = "json";
+  };
+
+  sops.secrets."factorio_game_password" = {
+    sopsFile = ../../secrets/otherSecrets.json;
+
+    format = "json";
+  };
+
+  sops.templates."factorio-credentials.json" = {
+    content = ''
+      {
+        "username": "${config.sops.placeholder.factorio_user}",
+        "token": "${config.sops.placeholder.factorio_token}",
+        "game_password": "${config.sops.placeholder.factorio_game_password}"
+      }
+    '';
+
+    owner = "server";
+    restartUnits = [ "factorio.service" ];
+  };
+
   sops.secrets."users/server".neededForUsers = true;
 
   sops.secrets."samba-nyx/socks".mode = "0440";
