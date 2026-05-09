@@ -1,6 +1,7 @@
 { ... }:
 {
   imports = [
+    ./power.nix
     ./services/jellyfin.nix
     ./services/qbittorrent.nix
     ../global/functions.nix

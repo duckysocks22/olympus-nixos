@@ -8,5 +8,5 @@
       colmena;
   }) ];
 
-  nix.package = pkgs.lixPackageSets.git.lix;
+  nix.package = pkgs.lixPackageSets.stable.lix;
 }

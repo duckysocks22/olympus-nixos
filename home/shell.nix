@@ -46,6 +46,33 @@ in
       cachesys = ''attic push main /run/current-system'';
     };
 
+    initContent = ''
+      function encode() {
+        if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+          echo "Usage: encode [INPUT] [OUTPUT]"
+          echo "Used to encode media via HandBrake with set parameters."
+          return 0
+        fi
+
+        HandBrakeCLI --input "$1" --output "$2" --encoder x265 -x pools=6 --all-audio --all-subtitles --aencoder opus
+      };
+
+      function bulkencode() {
+        if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+          echo "Usage: bulkencode [INPUT_DIR] [OUTPUT_DIR]"
+          echo "Used to bulk encode a directory of media via HandBrake with set parameters."
+          return 0
+        fi
+        cd $1 
+        for f in *.mkv; do
+          HandBrakeCLI --input "$f" --output "$2/$f" --encoder x265 -x pools=6 --all-audio --all-subtitles --aencoder opus
+        done
+      };
+
+      export FZF_DEFAULT_OPS="${config.home.sessionVariables.FZF_DEFAULT_OPTS}"
+      zstyle ':fzf-tab:*' use-fzf-default-opts yes
+    '';
+
     oh-my-zsh = {
       enable = true;
       theme = "candy";
@@ -63,11 +90,6 @@ in
       file = "zsh-autosuggestions.plugin.zsh";
     }
     ];
-
-    initContent = ''
-    export FZF_DEFAULT_OPTS="${config.home.sessionVariables.FZF_DEFAULT_OPTS}"
-zstyle ':fzf-tab:*' use-fzf-default-opts yes
-    '';
   };
 
    xdg.configFile = {
