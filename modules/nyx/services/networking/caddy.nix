@@ -52,17 +52,14 @@ in
         
       }
     '';
-    virtualHosts."http://budget.puppygirls.net, https://budget.puppygirls.net".extraConfig = ''
+    virtualHosts."https://budget.puppygirls.net".extraConfig = ''
       encode gzip zstd
       reverse_proxy :5006 {
         transport http {
           tls_server_name budget.puppygirls.net
         }
       }
-
-      tls {
-        dns bunny {$BUNNY_API}
-      }
+      import mtls
     '';
     virtualHosts."http://stream.puppygirls.net, https://stream.puppygirls.net".extraConfig = ''
       reverse_proxy :8096
