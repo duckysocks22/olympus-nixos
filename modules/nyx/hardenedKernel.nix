@@ -88,4 +88,6 @@ linux_hardened_pkg = { fetchFromGitHub, buildLinux, lib, ... } @ args:
 in
 {
   boot.kernelPackages = lib.mkForce kernelHarden;
+
+  boot.kernel.sysctl."kernel.unprivileged_userns_clone" = 1;
 }

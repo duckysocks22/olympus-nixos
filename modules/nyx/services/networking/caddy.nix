@@ -86,6 +86,10 @@ in
       import mtls
       reverse_proxy :2283
     '';
+    virtualHosts."https://ofsm.puppygirls.net".extraConfig = ''
+      import mtls
+      reverse_proxy :42702
+    '';
   };
   networking.firewall.allowedTCPPorts = [ 80 443 ];
 }
