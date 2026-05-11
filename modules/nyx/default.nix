@@ -30,5 +30,6 @@
     ./services/samba/samba.nix
     ./services/actual-finance/actual-server.nix
     ./services/immich.nix
+    ./services/ollama.nix
   ];
 }
