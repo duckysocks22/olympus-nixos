@@ -20,11 +20,21 @@
       "samsungtv"
       "govee_light_local"
       "mqtt"
+      "wake_on_lan"
     ];
     config = {
-      # Includes dependencies for a basic setup
-      # https://www.home-assistant.io/integrations/default_config/
-      
+
+      "wake_on_lan" = [
+        {
+          alias = "Wake 'athena-windows'";
+          switch = {
+            platform = "wake_on_lan";
+            mac = "D8-43-AE-54-2A-7E";
+            name = "athena-windows";
+          };
+        }
+      ];
+
       "automation sunset_lights" = [
         {
           alias = "Turn on lights at sunset";
@@ -70,6 +80,19 @@
           ];
         }
       ];
+
+      homeassistant = {
+        internal_url = "http://172.17.100.1:8123";
+        external_url = "https://home.puppygirls.net";
+      };
+
+      http = {
+        use_x_forwarded_for = true;
+        trusted_proxies = [
+          "127.0.0.1"
+          "::1"
+        ];
+      };
 
       default_config = {};
     };

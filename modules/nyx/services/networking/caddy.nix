@@ -94,6 +94,10 @@ in
       import mtls
       reverse_proxy :11435
     '';
+    virtualHosts."https://home.puppygirls.net".extraConfig = ''
+      import mtls
+      reverse_proxy :8123
+    '';
   };
   networking.firewall.allowedTCPPorts = [ 80 443 ];
 }
