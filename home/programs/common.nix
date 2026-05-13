@@ -15,6 +15,7 @@
     wine
     winetricks
     protontricks
+    remmina
   ];
 
   programs.kitty = {

@@ -29,6 +29,13 @@
     pkgs.glibc
     pkgs.fontconfig
     pkgs.dbus
+    pkgs.gsettings-desktop-schemas
+    pkgs.gtk3
+  ];
+
+  environment.sessionVariables.XDG_DATA_DIRS = [
+    "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}"
+    "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}"
   ];
 
   security.polkit.enable = true;
