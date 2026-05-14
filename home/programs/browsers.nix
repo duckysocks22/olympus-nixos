@@ -217,13 +217,8 @@
           bookmarks = [
             {
               name = "E-Mail";
-              url = "https://mail.proton.me";
+              url = "https://mail.tutanota.com";
               keyword = "mail";
-            }
-            {
-              name = "Calender";
-              url = "https://calendar.proton.me";
-              keyword = "cal";
             }
             {
               name = "Archive of Our Own";
