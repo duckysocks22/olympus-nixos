@@ -75,16 +75,16 @@
           updates_disabled = false;
         };
 
-        "vpn@proton.ch" = {
-          install_url = moz "proton-vpn-firefox-extension";
+        "firefox-extension@steamdb.info" = {
+          install_url = moz "steam-database";
           installation_mode = "force_installed";
-          updates_disabled = true;
+          updates_disabled = false;
         };
 
-        "78272b6fa58f4a1abaac99321d503a20@proton.me" = {
-          install_url = moz "proton-pass";
+        "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
+          install_url = moz "bitwarden-password-manager";
           installation_mode = "force_installed";
-          updates_disabled = true;
+          updates_disableds = false;
         };
 
         "{e6e36c9a-8323-446c-b720-a176017e38ff}" = {
@@ -234,6 +234,22 @@
               name = "How Long To Beat";
               url = "https://howlongtobeat.com/";
               keyword = "hltb";
+            }
+            {
+              name = "Shopping";
+              toolbar = false;
+              bookmarks = [
+                {
+                  name = "SteamDB";
+                  url = "https://steamdb.info/";
+                  keyword = "stb";
+                }
+                {
+                  name = "Deku Deals";
+                  url = "https://www.dekudeals.com";
+                  keyword = "deku";
+                }
+              ];
             }
             {
               name = "Torrents";

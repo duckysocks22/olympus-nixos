@@ -15,6 +15,7 @@
     wine
     winetricks
     protontricks
+    tutanota-desktop
     remmina
   ];
 
