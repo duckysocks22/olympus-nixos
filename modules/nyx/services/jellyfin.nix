@@ -20,6 +20,8 @@
     openFirewall = true;
     dataDir = "/media/hdd1/media/jellyfin/media";
     configDir = "/media/hdd1/media/jellyfin/config";
+    cacheDir = "/media/hdd1/media/jellyfin/cache";
+    logDir = "/media/hdd1/media/jellyfin/logs";
     user = "server";
     forceEncodingConfig = true;
     transcoding = {
