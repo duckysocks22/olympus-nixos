@@ -51,13 +51,11 @@
 
 	      	mountpoint = "/partition-root";
 	      	swap = {
-	          swapfile = {
-		    swapfile = {
-		      size = "8192M";
-		    };
-		    swapfile2 = {
-		      size = "8192M";
-		    };
+		  swapfile = {
+		    size = "8192M";
+		  };
+		  swapfile2 = {
+		    size = "8192M";
 		  };
 	        };
 	      };
