@@ -1,3 +1,4 @@
+{ lib, ...}:
 {
   disko.devices = {
     disk = {
@@ -23,7 +24,9 @@
                 name = "crypted";
                 settings = {
                   allowDiscards = true;
+                  fallbackToPassword = true;
                 };
+                extraFormatArgs = [ "tpm2-device=auto" ];
                 content = {
                   type = "btrfs";
                   extraArgs = [ "-f" ];
@@ -126,4 +129,6 @@
       };
     };
   };
+
+  boot.initrd.systemd.enable = lib.mkForce true;
 }
