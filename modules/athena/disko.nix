@@ -89,7 +89,7 @@
 	};
       };
       extra = {
-	device = "/dev/sda1";
+	device = "/dev/sda";
 	type = "disk";
 	content = {
 	  type = "gpt";
@@ -107,7 +107,7 @@
 	};
       };
       plus = {
-	device = "/dev/sdb1";
+	device = "/dev/sdb";
 	type = "disk";
 	content = {
 	  type = "gpt";

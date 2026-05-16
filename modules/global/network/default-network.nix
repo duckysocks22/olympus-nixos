@@ -27,11 +27,10 @@
     dnssec = "true";
     domains = [ "~." ];
     fallbackDns = [
-      "73.79.165.223"
       "9.9.9.9"
       "1.1.1.1"
       "1.0.0.1"
     ];
-    dnsovertls = "true";
+    dnsovertls = "false";
   };
 }
