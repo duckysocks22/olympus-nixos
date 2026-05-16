@@ -24,7 +24,6 @@
                 name = "crypted";
                 settings = {
                   allowDiscards = true;
-                  fallbackToPassword = true;
                 };
                 extraFormatArgs = [ "tpm2-device=auto" ];
                 content = {
