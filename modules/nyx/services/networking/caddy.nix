@@ -7,7 +7,7 @@ in
     enable = true;
     package = pkgs.caddy.withPlugins {
       plugins = [ "github.com/caddy-dns/bunny@v1.2.0" ];
-      hash = "sha256-s6Iin6ZaY6ius1+6OmwmLw26x1xszBPsEUjRzPAib4A=";
+      hash = "sha256-7zkLy71J5D/J0LH/lyqVpWtrY7XSSrgYbWzaa3Ns2dc=";
     };
     environmentFile = "${config.sops.secrets."caddy/environment".path}";
     extraConfig = ''
