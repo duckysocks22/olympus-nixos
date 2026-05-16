@@ -44,6 +44,9 @@
 		      swapfile2.path = "rel-path";
 		    };
 		  };
+		  "/media" = { 
+		    mountpoint = "/media";
+		  };
 	        };
 	      };
 
@@ -57,6 +60,60 @@
 		    size = "8192M";
 		  };
 		};
+	      };
+	    };
+	  };
+	};
+      };
+      ssd2 = {
+        device = "/dev/nvme0n1";
+	type = "disk";
+	content = {
+	  type = "gpt";
+	  partitions = {
+	    ssd2linux = {
+	      size = "75%";
+	      content = {
+		type = "filesystem";
+		format = "xfs";
+		mountpoint = "/media/ssd2linux";
+		mountOptions = [ "noatime" ];
+	      };
+	    };
+	  };
+	};
+      };
+      extra = {
+	device = "/dev/sda1";
+	type = "disk";
+	content = {
+	  type = "gpt";
+	  partitions = {
+	    extraLinux = {
+	      size = "75%";
+	      content = {
+		type = "filesystem";
+		format = "xfs";
+		mountpoint = "/media/extraLinux";
+		mountOptions = [ "noatime" ];
+	      };
+	    };
+	  };
+	};
+      };
+      plus = {
+	device = "/dev/sdb1";
+	type = "disk";
+	content = {
+	  type = "gpt";
+	  partitions = {
+	    plus = {
+	      size = "100%";
+	      content = {
+		type = "filesystem";
+		format = "xfs";
+		mountpoint = "/media/plus";
+		mountOptions = [ "noatime" ];
 	      };
 	    };
 	  };
