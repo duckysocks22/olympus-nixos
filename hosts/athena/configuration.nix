@@ -8,6 +8,7 @@
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
+      ../../modules/athena/disko.nix
       #../../modules/greeter/ly.nix
       ../../modules/global/greeter/cosmic-greeter.nix
       ../../modules/global/portals.nix
