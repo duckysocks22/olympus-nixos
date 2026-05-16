@@ -42,7 +42,6 @@
         messageLinkEmbeds.enable = true;
         translate.enable = true;
         unindent.enable = true;
-        iLoveSpam.enable = true;
         volumeBooster.enable = true;
         fakeNitro.enable = true;
         USRBG.enable = true;

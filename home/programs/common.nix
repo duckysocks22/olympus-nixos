@@ -15,7 +15,7 @@
     wine
     winetricks
     protontricks
-    tutanota-desktop
+    thunderbird
     remmina
   ];
 

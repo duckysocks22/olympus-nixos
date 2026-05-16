@@ -16,50 +16,57 @@
 	        mountpoint = "/boot";
 	      };
 	    };
-	    root = {
+	    luks = {
 	      size = "100%";
-	      content = {
-	        type = "btrfs";
-	        extraArgs = [ "-f" ];
-	        subvolumes = {
-	          "/rootfs" = {
-		    mountpoint = "/";
-		  };
-		  "/home" = {
-		    mountOptions = [ "compress=zstd" ];
-		    mountpoint = "/home";
-		  };
-		  "/nix" = {
-		    mountOptions = [
-		      "compress=zstd"
-		      "noatime"
-		    ];
-		    mountpoint = "/nix";
-		  };
-		  "/swap" = {
-		    mountpoint = "/.swapvol";
-		    swap = {
-		      swapfile.size = "8192M";
-		      swapfile2.size = "8192M";
-		      swapfile2.path = "rel-path";
-		    };
-		  };
-		  "/media" = { 
-		    mountpoint = "/media";
-		  };
-	        };
+                content = {
+                type = "luks";
+                name = "crypted";
+                settings = {
+                  allowDiscards = true;
+                };
+                content = {
+                  type = "btrfs";
+                  extraArgs = [ "-f" ];
+                  subvolumes = {
+                    "/rootfs" = {
+                      mountpoint = "/";
+                    };
+                    "/home" = {
+                      mountOptions = [ "compress=zstd" ];
+                      mountpoint = "/home";
+                    };
+                    "/nix" = {
+                      mountOptions = [
+                        "compress=zstd"
+                        "noatime"
+                      ];
+                      mountpoint = "/nix";
+                    };
+                    "/swap" = {
+                      mountpoint = "/.swapvol";
+                      swap = {
+                        swapfile.size = "8192M";
+                        swapfile2.size = "8192M";
+                        swapfile2.path = "rel-path";
+                      };
+                    };
+                    "/media" = { 
+                      mountpoint = "/media";
+                    };
+                  };
 
-	      	mountpoint = "/partition-root";
-	      	swap = {
-		  swapfile = {
-		    size = "8192M";
-		  };
-		  swapfile2 = {
-		    size = "8192M";
-		  };
-	        };
-	      };
-	    };
+                  mountpoint = "/partition-root";
+                  swap = {
+                    swapfile = {
+                      size = "8192M";
+                    };
+                    swapfile2 = {
+                      size = "8192M";
+                    };
+                  };
+                };
+              };
+            };
 	  };
         };
       };
