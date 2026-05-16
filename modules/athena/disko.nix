@@ -48,22 +48,22 @@
 		    mountpoint = "/media";
 		  };
 	        };
-	      };
 
-	      mountpoint = "/partition-root";
-	      swap = {
-	        swapfile = {
-		  swapfile = {
-		    size = "8192M";
+	      	mountpoint = "/partition-root";
+	      	swap = {
+	          swapfile = {
+		    swapfile = {
+		      size = "8192M";
+		    };
+		    swapfile2 = {
+		      size = "8192M";
+		    };
 		  };
-		  swapfile2 = {
-		    size = "8192M";
-		  };
-		};
+	        };
 	      };
 	    };
 	  };
-	};
+        };
       };
       ssd2 = {
         device = "/dev/nvme0n1";
