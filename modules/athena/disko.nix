@@ -70,7 +70,7 @@
 	  type = "gpt";
 	  partitions = {
 	    ssd2linux = {
-	      size = "75%";
+	      size = "1500G";
 	      content = {
 		type = "filesystem";
 		format = "xfs";
@@ -88,7 +88,7 @@
 	  type = "gpt";
 	  partitions = {
 	    extraLinux = {
-	      size = "75%";
+	      size = "1500G";
 	      content = {
 		type = "filesystem";
 		format = "xfs";
