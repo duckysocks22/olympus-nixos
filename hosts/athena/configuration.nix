@@ -29,7 +29,7 @@
   #home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
 
   # Bootloader.
-  boot.loader.systemd-boot.enable = true;
+  boot.loader.limine.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
 
   services.logind.settings.Login = {
