@@ -1,6 +1,17 @@
 { lib, ...}:
 {
   disko.devices = {
+
+    nodev = {
+      "/" = {
+        fsType = "tmpfs";
+        mountOptions = [
+          "size=25%"
+          "mode=755"
+        ];
+      };
+    };
+
     disk = {
       main = {
         device = "/dev/nvme1n1";
@@ -8,6 +19,11 @@
 	content = {
 	  type = "gpt";
 	  partitions = {
+            boot = {
+              name = "boot";
+              size = "1M";
+              type = "EF02";
+            };
 	    ESP = {
 	      end = "500M";
 	      type = "EF00";
@@ -18,7 +34,7 @@
 	      };
 	    };
 	    luks = {
-	      size = "100%";
+	      size = "358400M";
                 content = {
                 type = "luks";
                 name = "crypted";
@@ -30,43 +46,31 @@
                   type = "btrfs";
                   extraArgs = [ "-f" ];
                   subvolumes = {
-                    "/rootfs" = {
-                      mountpoint = "/";
-                    };
-                    "/home" = {
-                      mountOptions = [ "compress=zstd" ];
-                      mountpoint = "/home";
+                    "/persistent" = {
+                      mountOptions = [
+                        "subvol=persistent"
+                        "noatime"
+                      ];
+                      mountpoint = "/persistent";
                     };
                     "/nix" = {
                       mountOptions = [
                         "compress=zstd"
+                        "subvol=nix"
                         "noatime"
                       ];
                       mountpoint = "/nix";
                     };
-                    "/swap" = {
-                      mountpoint = "/.swapvol";
-                      swap = {
-                        swapfile.size = "8192M";
-                        swapfile2.size = "8192M";
-                        swapfile2.path = "rel-path";
-                      };
-                    };
-                    "/media" = { 
-                      mountpoint = "/media";
-                    };
-                  };
-
-                  mountpoint = "/partition-root";
-                  swap = {
-                    swapfile = {
-                      size = "8192M";
-                    };
-                    swapfile2 = {
-                      size = "8192M";
-                    };
                   };
                 };
+              };
+            };
+            swap = {
+              size = "8G";
+
+              content = {
+                type = "swap";
+                resumeDevice = true;
               };
             };
 	  };

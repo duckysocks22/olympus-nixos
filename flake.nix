@@ -36,9 +36,6 @@
       url = "git+https://dawn.wine/foxtrottt/px7-radio-nix.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    impermanence = {
-      url = "github:nix-community/impermanence";
-    };
     jovian = {
       url = "github:Jovian-Experiments/Jovian-NixOS";
     };
@@ -81,9 +78,13 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    preservation = {
+      url = "github:nix-community/preservation";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, sops-nix, disko, ... }: 
+  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, sops-nix, disko, preservation, ... }: 
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -97,6 +98,7 @@
 	    ./modules/global/stylix/stylix.nix
 	    ./modules/global/lix.nix
 	    disko.nixosModules.disko
+            preservation.nixosModules.default
           ];
 	  specialArgs = { 
 	    inherit inputs; 
