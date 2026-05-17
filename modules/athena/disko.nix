@@ -14,16 +14,10 @@
 
     disk = {
       main = {
-        device = "/dev/disk/by-id/nvme-CT500P1SSD8_2012E296277B_1";
+        device = "/dev/disk/by-id/nvme-CT500P1SSD8_2012E296277B";
 	type = "disk";
 	content = {
 	  type = "gpt";
-	  partitions = {
-            boot = {
-              name = "boot";
-              size = "1M";
-              type = "EF02";
-            };
 	    ESP = {
               name = "ESP";
               size = "1G";
@@ -74,19 +68,11 @@
                 };
               };
             };
-            swap = {
-              size = "8G";
-
-              content = {
-                type = "swap";
-                resumeDevice = true;
-              };
-            };
 	  };
         };
       };
       ssd2 = {
-        device = "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_2TB_S76ENL0XB13704D_1";
+        device = "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_2TB_S76ENL0XB13704D";
 	type = "disk";
 	content = {
 	  type = "gpt";
