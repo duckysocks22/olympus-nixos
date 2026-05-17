@@ -10,8 +10,6 @@
         "/var/log"
         "/var/lib/bluetooth"
         "/etc/NetworkManager/system-connections"
-        "/run/secrets"
-        "/run/secrets-for-users"
       ];
 
       files = [
@@ -42,4 +40,6 @@
       };
     };
   };
+
+  systemd.suppressedSystemUnits = [ "systemd-machine-id-commit.service" ];
 }
