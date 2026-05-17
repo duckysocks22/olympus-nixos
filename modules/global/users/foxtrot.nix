@@ -3,6 +3,7 @@
   users.users.foxtrot = {
     isNormalUser = true;
     home = "/home/foxtrot";
+    initialPassword = "12345";
     extraGroups = [
       "audio"
       "input"

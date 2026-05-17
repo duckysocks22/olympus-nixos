@@ -1,14 +1,18 @@
 {
+  boot.tmp.cleanOnBoot = true;
+
   preservation = {
     enable = true;
     preserveAt."/persistent" = {
       directories = [
-        "/etc/nixos"
+        "/var/lib/systemd/timers"
+        "/var/lib/nixos"
+        "/var/log"
         "/var/lib/bluetooth"
-        {
-          directory = "/var/lib/nixos";
-          inInitrd = true;
-        }
+        "/etc/NetworkManager/system-connections"
+        "/tmp"
+        "/run/secrets"
+        "/run/secrets-for-users"
       ];
 
       files = [
