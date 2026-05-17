@@ -14,7 +14,7 @@
 
     disk = {
       main = {
-        device = "/dev/nvme1n1";
+        device = "320c3fee-0b6e-41f3-a82c-9116cc5edc9c";
 	type = "disk";
 	content = {
 	  type = "gpt";
@@ -77,7 +77,7 @@
         };
       };
       ssd2 = {
-        device = "/dev/nvme0n1";
+        device = "b50f0f20-8153-49ec-b2e3-b2e75cc68900";
 	type = "disk";
 	content = {
 	  type = "gpt";
@@ -95,7 +95,7 @@
 	};
       };
       extra = {
-	device = "/dev/sda";
+	device = "3faa4ce5-f47a-490d-83a0-972fd54ef571";
 	type = "disk";
 	content = {
 	  type = "gpt";
@@ -113,7 +113,7 @@
 	};
       };
       plus = {
-	device = "/dev/sdb";
+	device = "680b8967-2d52-4e8b-90fc-2e17c91c5624";
 	type = "disk";
 	content = {
 	  type = "gpt";
