@@ -70,7 +70,6 @@
             };
 	  };
         };
-      };
       ssd2 = {
         device = "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_2TB_S76ENL0XB13704D";
 	type = "disk";
@@ -126,6 +125,7 @@
 	};
       };
     };
+  };
   boot.initrd.systemd.enable = lib.mkForce true;
   fileSystems."/nix".neededForBoot = true;
 }
