@@ -18,6 +18,7 @@
 	type = "disk";
 	content = {
 	  type = "gpt";
+          partitions = {
 	    ESP = {
               name = "ESP";
               size = "1G";
@@ -70,6 +71,7 @@
             };
 	  };
         };
+      };
       ssd2 = {
         device = "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_2TB_S76ENL0XB13704D";
 	type = "disk";
