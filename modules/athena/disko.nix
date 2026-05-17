@@ -25,14 +25,23 @@
               type = "EF02";
             };
 	    ESP = {
-	      end = "500M";
-	      type = "EF00";
-	      content = {
-	        type = "filesystem";
-	        format = "vfat";
-	        mountpoint = "/boot";
-	      };
+              name = "ESP";
+              size = "1G";
+              type = "EF00";
+
+              content = {
+                type = "filesystem";
+                format = "vfat";
+                mountpoint = "/boot";
+              };
 	    };
+            swap = {
+              size = "16G";
+              content = {
+                type = "swap";
+                resumeDevice = true;
+              };
+            };
 	    luks = {
 	      size = "358400M";
                 content = {
