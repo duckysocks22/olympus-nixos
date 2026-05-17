@@ -25,6 +25,7 @@
           ".steam"
           ".factorio"
           ".local/share"
+          ".config/sops"
           "olympus-nixos"
           "Documents"
           "Downloads"

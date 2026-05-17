@@ -14,7 +14,7 @@
 
     disk = {
       main = {
-        device = "/dev/disk/by-uuid/320c3fee-0b6e-41f3-a82c-9116cc5edc9c";
+        device = "/dev/disk/by-id/nvme-CT500P1SSD8_2012E296277B_1";
 	type = "disk";
 	content = {
 	  type = "gpt";
@@ -77,7 +77,7 @@
         };
       };
       ssd2 = {
-        device = "/dev/disk/by-uuid/b50f0f20-8153-49ec-b2e3-b2e75cc68900";
+        device = "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_2TB_S76ENL0XB13704D_1";
 	type = "disk";
 	content = {
 	  type = "gpt";
@@ -95,7 +95,7 @@
 	};
       };
       extra = {
-	device = "/dev/disk/by-uuid/3faa4ce5-f47a-490d-83a0-972fd54ef571";
+	device = "/dev/disk/by-id/ata-ST2000DM008-2FR102_ZFL287RG";
 	type = "disk";
 	content = {
 	  type = "gpt";
@@ -113,7 +113,7 @@
 	};
       };
       plus = {
-	device = "/dev/disk/by-uuid/680b8967-2d52-4e8b-90fc-2e17c91c5624";
+	device = "/dev/disk/by-id/ata-WDC_WD10EZEX-60WN4A0_WD-WCC6Y2UVT50Y";
 	type = "disk";
 	content = {
 	  type = "gpt";
