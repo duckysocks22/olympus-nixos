@@ -31,6 +31,7 @@
     pkgs.dbus
     pkgs.gsettings-desktop-schemas
     pkgs.gtk3
+    pkgs.tpm2-tss
   ];
 
   environment.sessionVariables.XDG_DATA_DIRS = [
