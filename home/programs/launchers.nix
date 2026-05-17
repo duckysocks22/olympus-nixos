@@ -10,5 +10,6 @@
     pkgs.gamescope
     pkgs.ludusavi
     pkgs.r2modman
+    pkgs.heroic
   ];
 }

@@ -1,6 +1,7 @@
 { pkgs, inputs, ...}:
 let
   dwproton = pkgs.callPackage ../packages/dwproton.nix { };
+  proton-em = pkgs.callPackage ../packages/proton-em.nix { };
 in
 {
 
@@ -13,6 +14,7 @@ in
     extraCompatPackages = with pkgs; [
       proton-ge-bin
       dwproton
+      proton-em
     ];
   };
 
