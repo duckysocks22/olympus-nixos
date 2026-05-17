@@ -1,5 +1,5 @@
 {
-  boot.tmp.cleanOnBoot = true;
+  boot.tmp.useTmpfs = true;
 
   preservation = {
     enable = true;
@@ -10,7 +10,6 @@
         "/var/log"
         "/var/lib/bluetooth"
         "/etc/NetworkManager/system-connections"
-        "/tmp"
         "/run/secrets"
         "/run/secrets-for-users"
       ];
@@ -29,7 +28,7 @@
           ".steam"
           ".factorio"
           ".local/share"
-          ".config/sops"
+          ".config"
           "olympus-nixos"
           "Documents"
           "Downloads"
