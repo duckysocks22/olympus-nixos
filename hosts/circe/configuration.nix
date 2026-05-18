@@ -26,7 +26,7 @@
       ../../modules/global/fonts.nix
     ];
 
-  home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
+  #home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
 
   # Bootloader.
   boot.loader.limine = {
@@ -35,7 +35,6 @@
     efiInstallAsRemovable = true;
   };
   boot.loader.efi.canTouchEfiVariables = false;
-  boot.loader.efi.efiSysMountPoint = "/boot";
 
   systemd.sleep.extraConfig = ''
     HibernationDelaySec=15m
@@ -46,19 +45,12 @@
     HandleLidSwitch=suspend
   '';
 
-  # Use latest kernel.
-  #boot.kernelPackages = pkgs.linuxPackages_latest;
-
   networking.hostName = "circe-nixos"; # Define your hostname.
-  # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.
-
-  # Configure network proxy if necessary
-  # networking.proxy.default = "http://user:password@proxy:port/";
-  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Enable networking
+  programs.nm-applet.enable = true;
+
   networking.wireless.iwd.enable = true;
-  networking.networkmanager.enable = true;
 
   # Set your time zone.
   time.timeZone = "America/New_York";
@@ -88,16 +80,6 @@
   # Enable touchpad support (enabled default in most desktopManager).
    services.xserver.libinput.enable = true;
 
-  # Define a user account. Don't forget to set a password with ‘passwd’.
-  users.users.foxtrot = {
-    isNormalUser = true;
-    description = "Socks";
-    extraGroups = [ "networkmanager" "wheel" ];
-    packages = with pkgs; [
-
-    ];
-  };
-
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
@@ -109,12 +91,6 @@
     #neovim
     wget
   ];
-
-  environment.variables.EDITOR = "nvim";
-
-  services.openssh.enable = true;
-
- 
 
   system.stateVersion = "25.11";
 
