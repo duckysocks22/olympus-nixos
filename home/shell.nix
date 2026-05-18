@@ -17,6 +17,7 @@ in
     dust # Tree-formatted disk analyzer
     rclone
     attic-client
+    gh
   ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.system}; [
     unscene
     mountiso

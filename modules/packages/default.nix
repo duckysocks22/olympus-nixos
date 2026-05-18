@@ -1,4 +1,9 @@
+{ pkgs, ... }:
+let
+  greenlight = pkgs.callPackage ./greenlight.nix { };
+in
 {
-  imports = [
+  environment.systemPackages = [
+    greenlight
   ];
 }
