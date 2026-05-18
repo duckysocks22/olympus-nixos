@@ -1,7 +1,7 @@
 keys:
   - &desktop_athena age10y06t29uk3lp5yseqddanekz4dq6nckwq6e2ceu7dy6lhq2paasswjkv4k
   - &server_nyx age1upa07ee3tlz5saqlfl5qhzjjrxeq28yprpuw2qjs4v6xrc890gtq56xkr5
-  - &laptop_circe age1w3vt7tegfryuspmlytunqcyleujh6repwlaskmsza3ltgn08kdwszayu5c
+  - &laptop_circe age1345yqt3u0cgpn4s96uky424fzcurhhg33lhsdxsg5jmdgvsp4dts5q22wg
 creation_rules:
   - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
