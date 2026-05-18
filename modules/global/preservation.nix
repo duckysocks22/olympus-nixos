@@ -35,6 +35,8 @@
           "Downloads"
           "Pictures"
           "Videos"
+          "Desktop"
+          "HomeRips"
         ];
 
         files = [
