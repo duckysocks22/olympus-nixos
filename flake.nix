@@ -110,6 +110,8 @@
 	    ./home/default.nix
 	    ./modules/global/stylix/stylix.nix
 	    ./modules/global/lix.nix
+            disko.nixosModules.disko
+            preservation.nixosModules.default
           ];
 	  specialArgs = { 
 	    inherit inputs; 
