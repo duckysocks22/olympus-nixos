@@ -1,5 +1,5 @@
 keys:
-  - &desktop_athena age1xtyntu4vz2eq8mv20f7pc778tlu36sqgsz9qsmalca5tq59vu30q3mhar3
+  - &desktop_athena age10y06t29uk3lp5yseqddanekz4dq6nckwq6e2ceu7dy6lhq2paasswjkv4k
   - &server_nyx age1upa07ee3tlz5saqlfl5qhzjjrxeq28yprpuw2qjs4v6xrc890gtq56xkr5
   - &laptop_circe age1f5t2yzgevvne6gw6uc9xrdyw7cycj4cgrq85kcu427wcwyvr43lsprux4t
 creation_rules:
