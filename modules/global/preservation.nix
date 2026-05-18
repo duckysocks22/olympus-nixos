@@ -27,8 +27,11 @@
           ".factorio"
           ".local/share"
           ".config"
+          ".config/ly"
+          ".config/sops"
           ".config/noctalia"
           ".local/state/neovim"
+          ".local/state/wireplumber"
           "olympus-nixos"
           "git"
           "Documents"
@@ -40,11 +43,19 @@
         ];
 
         files = [
-
+          ".zsh_history"
+          ".config/sops/age/keys.txt"
         ];
       };
     };
   };
 
   systemd.suppressedSystemUnits = [ "systemd-machine-id-commit.service" ];
+
+  systemd.tmpfiles.settings.preservation = {
+    "/home/foxtrot/.config".d = { user = "foxtrot"; group = "users"; mode = "0755"; };
+    "/home/foxtrot/.local".d = { user = "foxtrot"; group = "users"; mode = "0755"; };
+    "/home/foxtrot/.local/share".d = { user = "foxtrot"; group = "users"; mode = "0755"; };
+    "/home/foxtrot/.local/state".d = { user = "foxtrot"; group = "users"; mode = "0755"; };
+  };
 }
