@@ -29,8 +29,13 @@
   home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
 
   # Bootloader.
-  boot.loader.limine.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
+  boot.loader.limine = {
+    enable = true;
+    secureBoot.enable = false;
+    efiInstallAsRemovable = true;
+  };
+  boot.loader.efi.canTouchEfiVariables = false;
+  boot.loader.efi.efiSysMountPoint = "/boot";
 
   systemd.sleep.extraConfig = ''
     HibernationDelaySec=15m
