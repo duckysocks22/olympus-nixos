@@ -36,13 +36,14 @@
           ];
           directories = [
             { directory = ".ssh"; mode = "0700"; }
-            ".config/noctalia"
             ".config/sops"
             ".local/state/nvim"
 	    ".local/state/neovim"
             ".local/state/wireplumber"
             ".local/share/direnv"
+	    ".local/state/home-manager"
             ".local/state/nix"
+	    ".local/share"
             ".mozilla"
           ];
           files = [
