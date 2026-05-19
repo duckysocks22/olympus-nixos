@@ -38,7 +38,11 @@
           ];
           directories = [
             { directory = ".ssh"; mode = "0700"; }
+            ".cache/noctalia"
+            ".cache/nvim"
+            ".cache/neovim"
             ".config/sops"
+            ".config/discord"
             ".local/state/nvim"
 	    ".local/state/neovim"
             ".local/state/wireplumber"
@@ -55,7 +59,6 @@
 	    "Music"
 	    "Pictures"
 	    "Videos"
-
           ];
           files = [
             ".histfile"
