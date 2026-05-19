@@ -12,6 +12,12 @@
     QS_ICON_THEME="breeze-dark";
   };
 
+  home.file.".cache/noctalia/wallpapers.json" = {
+    text = builtins.toJSON {
+      defaultWallpaper = ../wallpapers/bafkreibdtm3lbteuoivsylnggi7ciyxtzzw2dwrwvcdafikrqo55ydk7vy.jpg;
+    };
+  };
+
   programs.noctalia-shell = {
     enable = true;
     plugins = {
