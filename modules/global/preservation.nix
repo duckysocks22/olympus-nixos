@@ -43,6 +43,7 @@
             ".cache/neovim"
             ".config/sops"
             ".config/discord"
+            ".config/attic"
             ".local/state/nvim"
 	    ".local/state/neovim"
             ".local/state/wireplumber"
