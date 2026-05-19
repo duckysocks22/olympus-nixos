@@ -45,6 +45,14 @@
             ".local/state/nix"
 	    ".local/share"
             ".mozilla"
+	    ".factorio"
+	    "Desktop"
+	    "Documents"
+	    "Downloads"
+	    "Music"
+	    "Pictures"
+	    "Videos"
+
           ];
           files = [
             ".histfile"
