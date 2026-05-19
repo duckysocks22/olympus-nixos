@@ -338,11 +338,11 @@
       };
       network = {
         wifiEnabled = true;
-	bluetoothRssiPollingEnabled = false;
+	bluetoothRssiPollingEnabled = true;
 	bluetoothRssiPollIntervalMs = 10000;
 	wifiDetailsViewMode = "grid";
 	bluetoothDetailsViewMode = "grid";
-	bluetoothHideUnnamedDevices = false;
+	bluetoothHideUnnamedDevices = true;
       };
       sessionMenu = {
         enableCountdown = true;
