@@ -52,6 +52,7 @@
 	    ".local/share"
             ".mozilla"
 	    ".factorio"
+            ".steam"
             "olympus-nixos"
 	    "Desktop"
 	    "Documents"
