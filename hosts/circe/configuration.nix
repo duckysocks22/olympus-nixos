@@ -10,8 +10,8 @@
       ./hardware-configuration.nix
       ../../modules/circe/disko.nix
       ../../modules/global/preservation.nix
-      ../../modules/global/greeter/ly.nix
-      #../../modules/global/greeter/cosmic-greeter.nix
+      #../../modules/global/greeter/ly.nix
+      ../../modules/global/greeter/cosmic-greeter.nix
       ../../modules/global/portals.nix
       ../../modules/global/system.nix
       ../../modules/global/users/foxtrot.nix
