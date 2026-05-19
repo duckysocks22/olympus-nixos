@@ -18,6 +18,7 @@ in
     rclone
     attic-client
     gh
+    btop
   ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.system}; [
     unscene
     mountiso
