@@ -2,42 +2,46 @@
   lib,
   appimageTools,
   fetchurl,
-  pname ? "greenlight",
-  version ? "2.4.1",
-  src-appimage ? fetchurl {
+  nix-update-script,
+}:
+(appimageTools.wrapType2 rec {
+  pname = "greenlight";
+  version = "2.4.1";
+
+  src = fetchurl {
     url = "https://github.com/unknownskl/greenlight/releases/download/v${version}/Greenlight-${version}.AppImage";
     hash = "sha256-CYf0BCkQB4ms9bj9fPgEgdjHA/JvKaCxgC6wb7/bc1c=";
-  },
-}:
-let
-  src = src-appimage;
-  appimageContents = appimageTools.extractType1 { inherit pname src version; };
-in
-(appimageTools.wrapType2 rec {
-  inherit pname version src;
+  };
 
   strictDeps = true;
   __structuredAttrs = true;
 
-  extraInstallCommands = ''
-    mkdir -p $out/share/applications
-    mkdir -p $out/share/icons/hicolor/512x512/apps
-    cp ${appimageContents}/greenlight-desktop.desktop $out/share/applications/${pname}.desktop
-    cp ${appimageContents}/usr/share/icons/hicolor/512x512/apps/greenlight-desktop.png $out/share/icons/hicolor/512x512/apps/${pname}.png
-    substituteInPlace $out/share/applications/${pname}.desktop \
-      --replace-fail 'Exec=AppRun' 'Exec=${meta.mainProgram}' \
-      --replace-fail 'Icon=greenlight-desktop' 'Icon=${pname}'
-  '';
+  extraInstallCommands =
+    let
+      appimageContents = appimageTools.extractType1 { inherit pname src version; };
+    in
+    ''
+      install -D ${appimageContents}/greenlight-desktop.desktop $out/share/applications/greenlight.desktop
+      install -D ${appimageContents}/usr/share/icons/hicolor/512x512/apps/greenlight-desktop.png $out/share/icons/hicolor/512x512/apps/greenlight.png
+      substituteInPlace $out/share/applications/greenlight.desktop \
+        --replace-fail 'Exec=AppRun' 'Exec=greenlight' \
+        --replace-fail 'Icon=greenlight-desktop' 'Icon=greenlight'
+    '';
+
+  passthru.updateScript = nix-update-script { };
+
   meta = {
-    description = "Greenlight is an open-source client for xCloud and Xbox home streaming made in Typescript.";
+    description = "An open-source client for xCloud and Xbox home streaming made in Typescript.";
     homepage = "https://github.com/unknownskl/greenlight";
     downloadPage = "https://github.com/unknownskl/greenlight/releases";
     license = lib.licenses.mit;
+    maintainers = with lib.maintainers; [ duckysocks22 ];
     sourceProvenance = with lib.sourceTypes; [ binaryNativeCode ];
     platforms = [ "x86_64-linux" ];
-    mainProgram = pname;
+    mainProgram = "greenlight";
   };
-  }) // {
-    strictDeps = true;
-    __structuredAttrs = true;
-  }
+})
+// {
+  strictDeps = true;
+  __structuredAttrs = true;
+}
