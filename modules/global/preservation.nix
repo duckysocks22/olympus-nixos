@@ -18,7 +18,7 @@
         "/var/lib/systemd/rfkill"
         "/var/lib/systemd/timers"
         "/var/lib/bluetooth"
-        "/etc/NetworkManager/system-connections"
+        { directory = "/etc/NetworkManager/system-connections"; inInitrd = true; configureParent = true; }
         "/var/log"
         { directory = "/var/lib/nixos"; inInitrd = true; }
       ];
@@ -48,6 +48,7 @@
 	    ".local/share"
             ".mozilla"
 	    ".factorio"
+            "olympus-nixos"
 	    "Desktop"
 	    "Documents"
 	    "Downloads"
@@ -58,7 +59,7 @@
           ];
           files = [
             ".histfile"
-	    "zsh_history"
+	    ".zsh_history"
           ];
         };
         root = {

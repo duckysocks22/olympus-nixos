@@ -10,7 +10,6 @@
   boot.kernelPackages = pkgs.linuxPackages_zen;
   boot.kernelModules = [ "sg" ];
 
-
   environment.systemPackages = [
     pkgs.gptfdisk
     pkgs.gparted
@@ -44,6 +43,10 @@
   programs.dconf.enable = true;
 
   security.pam.services.niri.enableGnomeKeyring = true;
+
+  security.sudo.extraConfig = ''
+    Defaults lecture = never
+  '';
 
   services.thelounge.enable = true;
 
