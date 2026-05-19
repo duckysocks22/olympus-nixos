@@ -17,6 +17,8 @@
         "/var/lib/systemd/coredump"
         "/var/lib/systemd/rfkill"
         "/var/lib/systemd/timers"
+        "/var/lib/bluetooth"
+        "/etc/NetworkManager/system-connections"
         "/var/log"
         { directory = "/var/lib/nixos"; inInitrd = true; }
       ];
