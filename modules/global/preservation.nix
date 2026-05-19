@@ -1,57 +1,65 @@
 {
-  boot.tmp.useTmpfs = true;
-
+  config,
+  lib,
+  pkgs,
+  ...
+}:
+{
   preservation = {
     enable = true;
+
     preserveAt."/persistent" = {
+
+      # preserve system directories
       directories = [
-        "/var/lib/systemd/timers"
-        "/var/lib/nixos"
-        "/var/log"
         "/var/lib/bluetooth"
-        "/etc/NetworkManager/system-connections"
+        "/var/lib/libvirt"
+        "/var/lib/systemd/coredump"
+        "/var/lib/systemd/rfkill"
+        "/var/lib/systemd/timers"
+        "/var/log"
+        { directory = "/var/lib/nixos"; inInitrd = true; }
       ];
 
+      # preserve system files
       files = [
-        {
-          file = "/etc/machine-id";
-          inInitrd = true;
-        }
+        { file = "/etc/machine-id"; inInitrd = true; }
+        { file = "/etc/ssh/ssh_host_rsa_key"; how = "symlink"; configureParent = true; }
+        { file = "/etc/ssh/ssh_host_ed25519_key"; how = "symlink"; configureParent = true; }
       ];
 
-      users.foxtrot = {
-        directories = [
-          ".ssh"
-          ".mozilla"
-          ".steam"
-          ".factorio"
-          ".local/share"
-          ".config"
-          ".config/ly"
-          ".config/sops"
-          ".config/noctalia"
-          ".local/state/neovim"
-          ".local/state/wireplumber"
-          "olympus-nixos"
-          "git"
-          "Documents"
-          "Downloads"
-          "Pictures"
-          "Videos"
-          "Desktop"
-          "HomeRips"
-        ];
-
-        files = [
-          ".zsh_history"
-          ".config/sops/age/keys.txt"
-        ];
+      # preserve user-specific files, implies ownership
+      users = {
+        foxtrot = {
+          commonMountOptions = [
+            "x-gvfs-hide"
+          ];
+          directories = [
+            { directory = ".ssh"; mode = "0700"; }
+            ".config/noctalia"
+            ".config/sops"
+            ".local/state/nvim"
+	    ".local/state/neovim"
+            ".local/state/wireplumber"
+            ".local/share/direnv"
+            ".local/state/nix"
+            ".mozilla"
+          ];
+          files = [
+            ".histfile"
+	    "zsh_history"
+          ];
+        };
+        root = {
+          # specify user home when it is not `/home/${user}`
+          home = "/root";
+          directories = [
+            { directory = ".ssh"; mode = "0700"; }
+          ];
+        };
       };
     };
   };
-
-  systemd.suppressedSystemUnits = [ "systemd-machine-id-commit.service" ];
-
   systemd.tmpfiles.settings.preservation = {
     "/home/foxtrot/.config".d = { user = "foxtrot"; group = "users"; mode = "0755"; };
     "/home/foxtrot/.local".d = { user = "foxtrot"; group = "users"; mode = "0755"; };
