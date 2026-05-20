@@ -18,7 +18,7 @@
         "/var/lib/systemd/rfkill"
         "/var/lib/systemd/timers"
         "/var/lib/bluetooth"
-        { directory = "/etc/NetworkManager/system-connections"; inInitrd = true; configureParent = true; }
+        { directory = "/etc/NetworkManager/system-connections"; mode = "700"; }
         "/var/log"
         { directory = "/var/lib/nixos"; inInitrd = true; }
       ];
