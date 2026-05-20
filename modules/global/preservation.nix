@@ -18,8 +18,10 @@
         "/var/lib/systemd/rfkill"
         "/var/lib/systemd/timers"
         "/var/lib/bluetooth"
+        "/var/lib/libvirt"
         { directory = "/etc/NetworkManager/system-connections"; mode = "700"; }
         { directory = "/etc/netbird-circe-nixos"; mode = "700"; }
+        { directory = "/etc/libvirt"; mode = "755"; }
         "/var/log"
         { directory = "/var/lib/nixos"; inInitrd = true; }
         { directory = "/sys/class/backlight"; inInitrd = true; }
