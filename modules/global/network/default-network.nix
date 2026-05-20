@@ -3,6 +3,7 @@
 
   imports = [
     ./netbird.nix
+    ./dnscrypt-proxy.nix
   ];
 
   services.tailscale = {
@@ -19,11 +20,8 @@
     nssmdns6 = true;
   };
 
-  networking.nameservers = [
-  ];
-
   services.resolved = {
-    enable = true;
+    enable = false;
     dnssec = "true";
     domains = [ "~." ];
     fallbackDns = [
@@ -31,7 +29,7 @@
       "1.1.1.1"
       "1.0.0.1"
     ];
-    dnsovertls = "false";
+    dnsovertls = "true";
   };
 
   networking.firewall = {
