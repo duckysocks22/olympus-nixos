@@ -1,3 +1,4 @@
+{ lib, config, ... }:
 {
   services.adguardhome = {
     enable = true;
@@ -17,13 +18,14 @@
         ];
       };
       tls = {
-        enabled = false;
-        server_name = "nyx-nixos.local";
+        enabled = true;
+        server_name = "dns.puppygirls.net";
+        serve_plain_dns = false;
         force_https = false;
         port_https = 854;
         port_dns_over_tls = 853;
-        certificate_path = "/var/lib/acme/puppygirls.net/cert.pem";
-        private_key_path = "/var/lib/acme/puppygirls.net/key.pem";
+        certificate_path = "${config.sops.secrets."adguardhome/domain_cert".path}";
+        private_key_path = "${config.sops.secrets."adguardhome/domain_key".path}";
       };
       dhcp = {
         enabled = false;
@@ -46,7 +48,7 @@
         };
       };
 
-      trusted_proxies = [ "127.0.0.1" ];
+      trusted_proxies = [ "127.0.0.1" "172.17.100.1" ];
 
       filters = map(url: { enabled = true; url = url; }) [
         "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.txt"
@@ -60,6 +62,13 @@
       ];
 
       protection_enabled = false;
+    };
+  };
+
+  systemd.services.adguardhome = {
+    serviceConfig = {
+      DynamicUser = lib.mkForce false;
+      User = "server";
     };
   };
 }

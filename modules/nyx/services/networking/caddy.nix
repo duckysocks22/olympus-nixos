@@ -48,8 +48,15 @@ in
       }
     '';
     virtualHosts."http://dns.puppygirls.net, https://dns.puppygirls.net".extraConfig = ''
-      reverse_proxy :854 {
-        
+      reverse_proxy /dns-query* 127.0.0.1:854 {
+        header_up X-Real-IP {remote_host}
+        transport http {
+          tls_insecure_skip_verify
+        }
+      }
+
+      tls {
+        dns bunny {$BUNNY_API}
       }
     '';
     virtualHosts."https://budget.puppygirls.net".extraConfig = ''

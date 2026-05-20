@@ -25,6 +25,15 @@
   sops.secrets."navidrome/environment" = {};
   sops.secrets."immich/secrets" = {};
 
+  sops.secrets."adguardhome/domain_cert" = {
+    owner = "server";
+    path = "/media/hdd1/certs/dns.puppygirls.net/dns.puppygirls.net.crt";
+  };
+  sops.secrets."adguardhome/domain_key" = {
+    owner = "server";
+    path = "/media/hdd1/certs/dns.puppygirls.net/dns.puppygirls.net.key";
+  };
+
   sops.secrets."factorio_user" = {
     sopsFile = ../../secrets/otherSecrets.json;
 
