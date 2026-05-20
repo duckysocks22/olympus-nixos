@@ -19,8 +19,10 @@
         "/var/lib/systemd/timers"
         "/var/lib/bluetooth"
         { directory = "/etc/NetworkManager/system-connections"; mode = "700"; }
+        { directory = "/etc/netbird-circe-nixos"; mode = "700"; }
         "/var/log"
         { directory = "/var/lib/nixos"; inInitrd = true; }
+        { directory = "/sys/class/backlight"; inInitrd = true; }
       ];
 
       # preserve system files
@@ -44,6 +46,7 @@
             ".config/sops"
             ".config/discord"
             ".config/attic"
+            ".config/netbird"
             ".local/state/nvim"
 	    ".local/state/neovim"
             ".local/state/wireplumber"
