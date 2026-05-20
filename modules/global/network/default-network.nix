@@ -33,4 +33,14 @@
     ];
     dnsovertls = "false";
   };
+
+  networking.firewall = {
+    allowedTCPPorts = [
+      4646
+    ];
+
+    allowedUDPPorts = [
+      4646
+    ];
+  };
 }
