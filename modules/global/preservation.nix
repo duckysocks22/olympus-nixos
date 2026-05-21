@@ -59,6 +59,7 @@
             ".mozilla"
 	    ".factorio"
             ".steam"
+            ".xlcore"
             "olympus-nixos"
 	    "Desktop"
 	    "Documents"
