@@ -1,5 +1,6 @@
 keys:
   - &desktop_athena age10y06t29uk3lp5yseqddanekz4dq6nckwq6e2ceu7dy6lhq2paasswjkv4k
+  - &desktop_athena_host age1fmxm8550lcm2jthe65kj307rfjdchncg5hm4qv2ayazn4v5x9gcs0w9klg
   - &server_nyx age1upa07ee3tlz5saqlfl5qhzjjrxeq28yprpuw2qjs4v6xrc890gtq56xkr5
   - &laptop_circe age147r3y7lukp6set6f8kpsf50x28gusx8qtutl7jezvnwwk2hwqgrqa723lv
 creation_rules:
@@ -7,5 +8,6 @@ creation_rules:
     key_groups:
     - age:
       - *desktop_athena
+      - *desktop_athena_host
       - *server_nyx
       - *laptop_circe

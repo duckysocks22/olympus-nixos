@@ -7,8 +7,21 @@
   services.upower.enable = true;
   programs.zsh.enable = true;
 
-  boot.kernelPackages = pkgs.linuxPackages_zen;
-  boot.kernelModules = [ "sg" ];
+  boot = {
+    kernelPackages = pkgs.linuxPackages_zen;
+    kernelModules = [ "sg" ];
+    kernelParams = [ "amd_iommu=on" ];
+    loader = {
+      limine = {
+        enable = true;
+        secureBoot.enable = false;
+        efiInstallAsRemovable = true;
+      };
+      efi = {
+        canTouchEfiVariables = false;
+      };
+    };
+  };
 
   environment.systemPackages = [
     pkgs.gptfdisk

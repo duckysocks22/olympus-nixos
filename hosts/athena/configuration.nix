@@ -28,10 +28,6 @@
 
   #home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
 
-  # Bootloader.
-  boot.loader.limine.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-
   services.logind.settings.Login = {
     HandlePowerKey = "ignore";
     HandleRebootKey = "ignore";
