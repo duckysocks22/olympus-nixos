@@ -6,6 +6,15 @@
     ./dnscrypt-proxy.nix
   ];
 
+  networking.networkmanager = {
+    enable = true;
+    wifi = {
+      backend = "iwd";
+      powersave = false;
+      scanRandMacAddress = false;
+    };
+  };
+
   services.tailscale = {
     enable = false;
   };

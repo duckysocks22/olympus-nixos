@@ -20,7 +20,7 @@
         "/var/lib/bluetooth"
         "/var/lib/libvirt"
         { directory = "/etc/NetworkManager/system-connections"; mode = "700"; }
-        { directory = "/etc/netbird-circe-nixos"; mode = "700"; }
+        { directory = "/etc/netbird-circe-nixos"; mode = "755"; }
         { directory = "/etc/libvirt"; mode = "755"; }
         "/var/log"
         { directory = "/var/lib/nixos"; inInitrd = true; }

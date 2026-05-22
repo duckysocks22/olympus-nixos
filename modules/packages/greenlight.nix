@@ -31,7 +31,7 @@
   passthru.updateScript = nix-update-script { };
 
   meta = {
-    description = "An open-source client for xCloud and Xbox home streaming made in Typescript.";
+    description = "Open-source client for xCloud and Xbox home streaming made in Typescript";
     homepage = "https://github.com/unknownskl/greenlight";
     downloadPage = "https://github.com/unknownskl/greenlight/releases";
     license = lib.licenses.mit;
