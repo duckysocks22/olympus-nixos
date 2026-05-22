@@ -382,6 +382,11 @@
                   toolbar = false;
                   bookmarks = [
                     {
+                      name = "Nixpkgs Manual";
+                      url = "https://www.nixos.org/manual/nixpkgs/stable";
+                      keyword = "npman";
+                    }
+                    {
                       name = "Command Line Gems";
                       url = "https://www.commandlinefu.com/commands/browse";
                       keyword = "cmd";
