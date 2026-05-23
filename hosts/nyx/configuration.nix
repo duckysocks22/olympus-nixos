@@ -18,11 +18,6 @@
 
   home-manager.users.server = import ../../home/users/server/core.nix;
 
-  # Bootloader.
-  boot.loader.systemd-boot.enable = true;
-  boot.loader.efi.canTouchEfiVariables = true;
-  boot.loader.timeout = 5;
-
   users.mutableUsers = false;
   users.users.root.hashedPasswordFile = config.sops.secrets."users/server".path;
 
