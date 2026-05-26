@@ -19,6 +19,7 @@
         "/var/lib/systemd/timers"
         "/var/lib/bluetooth"
         "/var/lib/libvirt"
+        { directory = "/var/lib/iwd/"; mode = "700"; }
         { directory = "/etc/NetworkManager/system-connections"; mode = "700"; }
         { directory = "/etc/netbird-circe-nixos"; mode = "755"; }
         { directory = "/etc/libvirt"; mode = "755"; }
