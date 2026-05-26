@@ -217,7 +217,7 @@
           bookmarks = [
             {
               name = "E-Mail";
-              url = "https://mail.tutanota.com";
+              url = "https://mail.proton.me";
               keyword = "mail";
             }
             {
