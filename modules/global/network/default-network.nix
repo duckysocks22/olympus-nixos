@@ -15,6 +15,8 @@
     };
   };
 
+  networking.wireless.iwd.enable = true;
+
   services.tailscale = {
     enable = false;
   };

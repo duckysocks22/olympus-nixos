@@ -22,5 +22,43 @@
   sops.secrets."netbird/client-key" = { 
     owner = "foxtrot";
   };
-  
+
+  sops.secrets."work/network" = { };
+  sops.secrets."work/user" = { };
+  sops.secrets."work/pass" = { };
+
+  systemd.services.iwd-hidden-profile = {
+    description = "Dynamically generate IWD profile for Work Network";
+    wantedBy = [ "multi-user.target" ];
+    before = [ "iwd.service" "NetworkManager.service" ];
+
+    serviceConfig = {
+      Type = "oneshot";
+      RemainAfterExit = true;
+    };
+
+    script = ''
+      SSID=$(cat ${config.sops.secrets."work/network".path})
+      USER=$(cat ${config.sops.secrets."work/user".path})
+      PASS=$(cat ${config.sops.secrets."work/pass".path})
+
+      TARGET_FILE="/var/lib/iwd/$SSID.8021x"
+
+      cat <<EOF > "$TARGET_FILE"
+[Security]
+EAP-Method=PEAP
+EAP-Identity=$USER
+EAP-PEAP-Phase2-Method=MSCHAPV2
+EAP-PEAP-Phase2-Identity=$USER
+EAP-PEAP-Phase2-Password=$PASS
+
+[Settings]
+AutoConnect=true
+ScanForHiddenNetwork=true
+EOF
+
+      chown root:root "$TARGET_FILE"
+      chmod 0600 "$TARGET_FILE"
+    '';
+  };
 }

@@ -1,32 +1,114 @@
 {
   lib,
-  appimageTools,
+  stdenv,
   fetchurl,
+  fetchFromGitHub,
+  fetchYarnDeps,
+  yarnConfigHook,
+  yarnBuildHook,
+  yarnInstallHook,
+  nodejs,
+  nspr,
+  nss,
+  mesa,
+  alsa-lib,
+  yq,
+  unzip,
+  electron,
+  makeWrapper,
+  makeDesktopItem,
+  autoPatchelfHook,
   nix-update-script,
 }:
-(appimageTools.wrapType2 rec {
+stdenv.mkDerivation (finalAttrs: {
   pname = "greenlight";
   version = "2.4.1";
 
-  src = fetchurl {
-    url = "https://github.com/unknownskl/greenlight/releases/download/v${version}/Greenlight-${version}.AppImage";
-    hash = "sha256-CYf0BCkQB4ms9bj9fPgEgdjHA/JvKaCxgC6wb7/bc1c=";
+  src = fetchFromGitHub {
+    owner = "unknownskl";
+    repo = "greenlight";
+    tag = "v${finalAttrs.version}";
+    hash = "sha256-JlhVqw2LsnUZMffngFrI9jr7vzMBaa4vzq+2/+Clzco=";
   };
+
+  yarnOfflineCache = fetchYarnDeps {
+    yarnLock = "${finalAttrs.src}/yarn.lock";
+    hash = "sha256-OvVhxOn3hqWuqaK62fFdbSe3MZhQe4PXllihaLqNOyc=`";
+  };
+
+  electronZip = fetchurl {
+    url = "https://github.com/electron/electron/releases/download/v38.2.0/electron-v38.2.0-linux-x64.zip";
+    hash = "sha256-8AKJdSgqbylGeXF1rEBqlQlvKcXc2pgEgUhmjfo27/g=";
+  };
+
+  ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
 
   strictDeps = true;
   __structuredAttrs = true;
 
-  extraInstallCommands =
-    let
-      appimageContents = appimageTools.extractType1 { inherit pname src version; };
-    in
-    ''
-      install -D ${appimageContents}/greenlight-desktop.desktop $out/share/applications/greenlight.desktop
-      install -D ${appimageContents}/usr/share/icons/hicolor/512x512/apps/greenlight-desktop.png $out/share/icons/hicolor/512x512/apps/greenlight.png
-      substituteInPlace $out/share/applications/greenlight.desktop \
-        --replace-fail 'Exec=AppRun' 'Exec=greenlight' \
-        --replace-fail 'Icon=greenlight-desktop' 'Icon=greenlight'
-    '';
+  nativeBuildInputs = [ yarnConfigHook yarnBuildHook yarnInstallHook nodejs yq unzip makeWrapper autoPatchelfHook ];
+
+  buildInputs = [
+    nspr
+    nss
+    mesa
+    alsa-lib
+    stdenv.cc.cc.lib
+  ] ++ electron.buildInputs;
+
+  postPatch = ''
+    mkdir -p build/electron-unpacked
+
+    unzip ${finalAttrs.electronZip} -d build/electron-unpacked
+
+    yq -i -y ".electronDist = \"$PWD/build/electron-unpacked\" | 
+         del(.linux.target) | 
+         .linux.target = [\"dir\"]" $PWD/packages/desktop/electron-builder.yml
+
+  '';
+
+  buildPhase = ''
+    runHook preBuild
+
+    yarn --offline desktop build
+
+    runHook postBuild
+  '';
+
+  installPhase = ''
+    runHook preInstall
+
+    mkdir -p $out/lib/greenlight
+    mkdir -p $out/bin
+
+    cp -r packages/desktop/dist/linux-unpacked/* $out/lib/greenlight/
+
+    makeWrapper $out/lib/greenlight/greenlight-desktop $out/bin/greenlight \
+      --add-flags "--ozone-platform-hint=auto" \
+      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath finalAttrs.buildInputs }"
+
+    runHook postInstall
+  '';
+
+  postInstall = ''
+    mkdir -p $out/share/applications
+    cp -r ${finalAttrs.desktopItem}/share/applications/* $out/share/applications/
+
+    mkdir -p $out/share/icons/hicolor/512x512/apps
+    cp packages/desktop/flatpak/io.github.unknownskl.greenlight.png \
+      $out/share/icons/hicolor/512x512/apps/greenlight.png
+  '';
+
+  desktopItem = makeDesktopItem {
+    name = "greenlight";
+    exec = "greenlight %U";
+    icon = "${finalAttrs.src}/packages/desktop/flatpak/io.github.unknownskl.greenlight.png";
+    desktopName = "Greenlight";
+    genericName = "Desktop client for Greenlight-Desktop";
+    comment = "${finalAttrs.meta.description}";
+    categories = [ "Game" "Utility" ];
+    startupWMClass = "Greenlight";
+  };
 
   passthru.updateScript = nix-update-script { };
 
@@ -36,12 +118,7 @@
     downloadPage = "https://github.com/unknownskl/greenlight/releases";
     license = lib.licenses.mit;
     maintainers = with lib.maintainers; [ duckysocks22 ];
-    sourceProvenance = with lib.sourceTypes; [ binaryNativeCode ];
-    platforms = [ "x86_64-linux" ];
+    inherit (electron.meta) platforms;
     mainProgram = "greenlight";
   };
 })
-// {
-  strictDeps = true;
-  __structuredAttrs = true;
-}
