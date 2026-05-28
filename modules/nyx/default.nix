@@ -1,9 +1,13 @@
-{ ... }:
+{ pkgs, ... }:
+let
+  crafty-controller = pkgs.callPackage ../packages/crafty-controller.nix;
+in
 {
   imports = [
     ./power.nix
     ./services/jellyfin.nix
     ./services/qbittorrent.nix
+    ./services/ssh-tunnel.nix
     ../global/functions.nix
     #./services/samba.nix
     ./nvidia.nix
@@ -31,5 +35,9 @@
     ./services/actual-finance/actual-server.nix
     ./services/immich.nix
     #./services/ollama.nix
+  ];
+
+  environment.systemPackages = [
+    crafty-controller
   ];
 }
