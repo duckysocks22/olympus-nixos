@@ -50,6 +50,7 @@
             ".config/discord"
             ".config/attic"
             ".config/netbird"
+            ".config/git"
             ".local/state/nvim"
 	    ".local/state/neovim"
             ".local/state/wireplumber"
