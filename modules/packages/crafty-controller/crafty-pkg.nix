@@ -96,7 +96,7 @@ buildPythonApplication (finalAttrs: {
   postFixup = ''
     cat > $out/bin/crafty-controller << EOF
 #!/bin/sh
-CRAFTY_HOME="\$HOME/.local/share/crafty-controller"
+CRAFTY_HOME="\''${CRAFTY_HOME:-\$HOME/.local/share/crafty-controller}"
 VERSION_MARKER="\$CRAFTY_HOME/.nix-store-path"
 
 if [ ! -d "\$CRAFTY_HOME" ]; then

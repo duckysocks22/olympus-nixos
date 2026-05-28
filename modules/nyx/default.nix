@@ -1,7 +1,4 @@
-{ pkgs, ... }:
-let
-  crafty-controller = pkgs.callPackage ../packages/crafty-controller.nix {};
-in
+{ ... }:
 {
   imports = [
     ./power.nix
@@ -23,6 +20,7 @@ in
     #../xfce/default.nix
     #./services/x2go.nix
     #./services/dawarich.nix
+    ./services/game-servers/crafty-controller.nix
     ./services/game-servers/minecraft.nix
     ./services/game-servers/factorio.nix
     ./services/homeassistant/default.nix
@@ -35,9 +33,5 @@ in
     ./services/actual-finance/actual-server.nix
     ./services/immich.nix
     #./services/ollama.nix
-  ];
-
-  environment.systemPackages = [
-    crafty-controller
   ];
 }
