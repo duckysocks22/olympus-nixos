@@ -356,6 +356,11 @@
               toolbar = false;
               bookmarks = [
                 {
+                  name = "Nixpkgs Manual";
+                  url = "https://nixos.org/manual/nixpkgs/stable/";
+                  keyword = "manpkg";
+                }
+                {
                   name = "XP.css";
                   url = "https://botoxparty.github.io/XP.css/";
                   keyword = "xpcss";

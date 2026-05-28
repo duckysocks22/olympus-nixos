@@ -1,6 +1,10 @@
 { ... }:
+let
+  crafty-controller = pkgs.callPacakge ../packages/crafty-controller.nix
+in
 {
   imports = [
+    crafty-controller
     ./power.nix
     ./services/jellyfin.nix
     ./services/qbittorrent.nix

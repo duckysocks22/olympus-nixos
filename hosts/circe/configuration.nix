@@ -11,6 +11,7 @@
       ../../modules/circe/disko.nix
       ../../modules/packages/default.nix
       ../../modules/global/preservation.nix
+      ../../modules/global/network/ssh-tunnel.nix
       #../../modules/global/greeter/ly.nix
       ../../modules/global/greeter/cosmic-greeter.nix
       ../../modules/global/portals.nix

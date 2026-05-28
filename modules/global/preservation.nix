@@ -43,6 +43,7 @@
           ];
           directories = [
             { directory = ".ssh"; mode = "0700"; }
+            ".claude"
             ".cache/noctalia"
             ".cache/nvim"
             ".cache/neovim"
