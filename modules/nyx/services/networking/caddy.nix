@@ -105,6 +105,20 @@ in
       import mtls
       reverse_proxy :8123
     '';
+    virtualHosts."https://crafty.puppygirls.net".extraConfig = ''
+      import mtls
+      reverse_proxy :8443 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+        flush_interval -1
+        transport http {
+          tls_insecure_skip_verify
+          versions 1.1
+        }
+      }
+    '';
   };
   networking.firewall.allowedTCPPorts = [ 80 443 ];
 }

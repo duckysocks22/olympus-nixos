@@ -115,7 +115,7 @@ fi
 
 mkdir -p "\$CRAFTY_HOME/logs" "\$CRAFTY_HOME/local" "\$CRAFTY_HOME/servers" "\$CRAFTY_HOME/config"
 cd "\$CRAFTY_HOME"
-PYTHONPATH="${makePythonPath finalAttrs.propagatedBuildInputs}:\$CRAFTY_HOME" exec ${python}/bin/python "\$CRAFTY_HOME/main.py" "\$@"
+PYTHONPATH="${makePythonPath finalAttrs.propagatedBuildInputs}:\$CRAFTY_HOME" PATH="${pkgs.jdk25}/bin:\$PATH" LD_LIBRARY_PATH="${pkgs.libudev-zero}/lib:\$LD_LIBRARY_PATH" exec ${python}/bin/python "\$CRAFTY_HOME/main.py" "\$@"
 EOF
     chmod +x $out/bin/crafty-controller
   '';
