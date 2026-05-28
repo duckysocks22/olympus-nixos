@@ -19,6 +19,7 @@
         "/var/lib/systemd/timers"
         "/var/lib/bluetooth"
         "/var/lib/libvirt"
+        { directory = "/var/lib/iwd/"; mode = "700"; }
         { directory = "/etc/NetworkManager/system-connections"; mode = "700"; }
         { directory = "/etc/netbird-circe-nixos"; mode = "755"; }
         { directory = "/etc/libvirt"; mode = "755"; }
@@ -42,6 +43,7 @@
           ];
           directories = [
             { directory = ".ssh"; mode = "0700"; }
+            ".claude"
             ".cache/noctalia"
             ".cache/nvim"
             ".cache/neovim"
@@ -49,6 +51,7 @@
             ".config/discord"
             ".config/attic"
             ".config/netbird"
+            ".config/git"
             ".local/state/nvim"
 	    ".local/state/neovim"
             ".local/state/wireplumber"
