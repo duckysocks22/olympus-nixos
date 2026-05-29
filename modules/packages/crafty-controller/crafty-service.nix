@@ -2,6 +2,7 @@
 let
   cfg = config.services.crafty-controller;
   crafty-pkg = pkgs.callPackage ./crafty-pkg.nix {};
+  format = pkgs.formats.json {};
 in
 {
   options.services.crafty-controller = {
@@ -33,9 +34,40 @@ in
       default = false;
       description = "Open TCP port 8443 in the firewall for the Crafty web interface.";
     };
+
+    mutableConfig = lib.mkOption {
+      type = lib.types.bool;
+      default = false;
+      description = "Enabling this allows any imperative changes made through Crafty's WebUI to stick after service restart.";
+    };
+
+    settings = lib.mkOption {
+      type = format.type;
+      default = {};
+      example = lib.literalExpression ''
+        {
+          https_port = 8443;
+          base_url = "mc.example.com:8443";
+          language = "en_EN";
+          cookie_expire = 30;
+          max_login_attempts = 5;
+          superMFA = true;
+          crafty_logs_delete_after_days = 14;
+        }
+      '';
+      description = ''
+        Configuration for the Crafty Controller service to be written to
+        '$dataDir/app/config/config.json' on service startup.
+
+        Any non-set values will be set to Crafty's upstream defaults. These 
+        values will be merged with Craft's built-in `MASTER_CONFIG` on service startup.
+      '';
+    };
   };
 
-  config = lib.mkIf cfg.enable {
+  config = lib.mkIf cfg.enable (let
+    generatedConfig = format.generate "config.json" cfg.settings;
+  in {
     users.users.${cfg.user} = {
       isSystemUser = true;
       group = cfg.group;
@@ -60,6 +92,16 @@ in
       serviceConfig = {
         User = cfg.user;
         Group = cfg.group;
+        ExecStartPre = let
+          script = pkgs.writeShellScript "crafty-prestart" ''
+            mkdir -p ${cfg.dataDir}/app/config
+            ${if cfg.mutableConfig then ''
+              cp --no-clobber ${generatedConfig} "${cfg.dataDir}/app/config/config.json"
+            '' else ''
+              cp -f ${generatedConfig} "${cfg.dataDir}/app/config/config.json"
+            ''}
+          '';
+        in "${script}";
         ExecStart = lib.getExe crafty-pkg;
         Restart = "on-failure";
         RestartSec = "10s";
@@ -69,5 +111,5 @@ in
     };
 
     networking.firewall.allowedTCPPorts = lib.mkIf cfg.openFirewall [ 8443 ];
-  };
+  });
 }

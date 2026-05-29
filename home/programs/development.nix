@@ -45,6 +45,8 @@ in
     };
   };
 
+  home.packages = [ ];
+
   programs.vscode = {
     enable = true;
     profiles."foxtrot" = {
