@@ -107,7 +107,11 @@ if [ ! -d "\$CRAFTY_HOME" ]; then
   echo "$out" > "\$VERSION_MARKER"
 elif [ ! -f "\$VERSION_MARKER" ] || [ "\$(cat "\$VERSION_MARKER")" != "$out" ]; then
   echo "Updating crafty-controller in \$CRAFTY_HOME..."
-  cp -r $out/share/crafty-controller/app "\$CRAFTY_HOME/app"
+  # -T treats the destination as the target directory itself rather than a
+  # parent; without it, cp -r nests into \$CRAFTY_HOME/app/app/ whenever
+  # \$CRAFTY_HOME/app already exists (which it does, since ExecStartPre
+  # in the NixOS service creates app/config before the launcher runs).
+  cp -rT $out/share/crafty-controller/app "\$CRAFTY_HOME/app"
   cp $out/share/crafty-controller/main.py "\$CRAFTY_HOME/main.py"
   chmod -R u+w "\$CRAFTY_HOME/app" "\$CRAFTY_HOME/main.py"
   echo "$out" > "\$VERSION_MARKER"

@@ -6,7 +6,7 @@
     enable = true;
     dataDir = "/media/hdd1/game-servers/crafty";
     settings = {
-      
+      delete_default_json = "true";
     };
   };
 }

@@ -94,14 +94,30 @@ in
         Group = cfg.group;
         ExecStartPre = let
           script = pkgs.writeShellScript "crafty-prestart" ''
-            mkdir -p ${cfg.dataDir}/app/config
+            set -eu
+            # NOTE: this script runs as root (see the leading '+' on the
+            # ExecStartPre line below). That is what lets us bootstrap
+            # cfg.dataDir even when it lives outside /var on a mount whose
+            # parent is not writable by cfg.user — the systemd.tmpfiles rule
+            # is best-effort at boot and is not reliable across switch-time
+            # and mount-ordering edge cases.
+            mkdir -p "${cfg.dataDir}/app/config"
+            chown ${cfg.user}:${cfg.group} \
+              "${cfg.dataDir}" \
+              "${cfg.dataDir}/app" \
+              "${cfg.dataDir}/app/config"
+            chmod 0750 "${cfg.dataDir}" "${cfg.dataDir}/app" "${cfg.dataDir}/app/config"
             ${if cfg.mutableConfig then ''
-              cp --no-clobber ${generatedConfig} "${cfg.dataDir}/app/config/config.json"
+              if [ ! -e "${cfg.dataDir}/app/config/config.json" ]; then
+                install -o ${cfg.user} -g ${cfg.group} -m 0640 \
+                  ${generatedConfig} "${cfg.dataDir}/app/config/config.json"
+              fi
             '' else ''
-              cp -f ${generatedConfig} "${cfg.dataDir}/app/config/config.json"
+              install -o ${cfg.user} -g ${cfg.group} -m 0640 \
+                ${generatedConfig} "${cfg.dataDir}/app/config/config.json"
             ''}
           '';
-        in "${script}";
+        in "+${script}";
         ExecStart = lib.getExe crafty-pkg;
         Restart = "on-failure";
         RestartSec = "10s";
