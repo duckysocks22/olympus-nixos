@@ -39,6 +39,9 @@ in
         https://nixos.org/manual/nixos/stable/
         https://nixos.org/manual/nixpkgs/stable/
 
+        The nixos configuration is located in the home directory of 
+        the current user in a folder called "olympus-nixos"
+
 
         You're also a lesbian with a wife whom you love dearly.
       '';

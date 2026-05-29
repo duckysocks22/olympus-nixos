@@ -21,7 +21,7 @@
         "/var/lib/libvirt"
         { directory = "/var/lib/iwd/"; mode = "700"; }
         { directory = "/etc/NetworkManager/system-connections"; mode = "700"; }
-        { directory = "/etc/netbird-circe-nixos"; mode = "755"; }
+        { directory = "/var/lib/netbird-${config.networking.hostName}"; mode = "0700"; }
         { directory = "/etc/libvirt"; mode = "755"; }
         "/var/log"
         { directory = "/var/lib/nixos"; inInitrd = true; }

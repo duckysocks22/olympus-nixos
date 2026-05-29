@@ -34,7 +34,7 @@ in
 
     shellAliases = {
       vi = "nvim";
-      rebuild = "sudo nixos-rebuild switch -L --flake ${config.home.homeDirectory}/olympus-nixos";
+      rebuild = "sudo nixos-rebuild switch -L --flake ${config.home.homeDirectory}/olympus-nixos | tee /tmp/rebuild.txt";
       par = ''
       cd ${config.home.homeDirectory}/olympus-nixos
       git pull
