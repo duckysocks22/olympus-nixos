@@ -30,15 +30,6 @@
 
   #home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
 
-  systemd.sleep.extraConfig = ''
-    HibernationDelaySec=15m
-    AllowSuspend=yes
-    AllowHibernation=yes
-    AllowHybridSleep=yes
-    AllowSuspendThenHibernate=yes
-    HandleLidSwitch=suspend
-  '';
-
   networking.hostName = "circe-nixos"; # Define your hostname.
 
   # Enable networking
@@ -84,6 +75,6 @@
     wget
   ];
 
-  system.stateVersion = "25.11";
+  system.stateVersion = "26.05";
 
 }

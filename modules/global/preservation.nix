@@ -89,7 +89,6 @@
   systemd.tmpfiles.settings.preservation = {
     "/home/foxtrot/.config".d = { user = "foxtrot"; group = "users"; mode = "0755"; };
     "/home/foxtrot/.local".d = { user = "foxtrot"; group = "users"; mode = "0755"; };
-    "/home/foxtrot/.local/share".d = { user = "foxtrot"; group = "users"; mode = "0755"; };
     "/home/foxtrot/.local/state".d = { user = "foxtrot"; group = "users"; mode = "0755"; };
   };
 }

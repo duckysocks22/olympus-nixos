@@ -2,11 +2,11 @@
   description = "Flake for 'Olympus' home network";
 
   inputs = {
-    nixpkgs.url = "github:NixOs/nixpkgs/nixos-25.11";
+    nixpkgs.url = "github:NixOs/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOs/nixpkgs/nixos-unstable";
     
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager-unstable = {
@@ -17,16 +17,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     stylix = {
-      url = "github:nix-community/stylix/release-25.11";
+      url = "github:nix-community/stylix/";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     nixvim = {
-      url = "github:nix-community/nixvim/nixos-25.11";
+      url = "github:nix-community/nixvim/nixos-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     elysia = {
       url = "git+https://dawn.wine/foxtrottt/elysia-on-nix.git";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
     agl = {
       url = "github:an-anime-team/anime-games-launcher";
@@ -71,7 +70,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     aagl = {
-      url = "github:ezKEa/aagl-gtk-on-nix/release-25.11";
+      url = "github:ezKEa/aagl-gtk-on-nix/";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     disko = {

@@ -8,7 +8,7 @@ in
   home.packages = (with pkgs; [
     ripgrep
     tmux
-    nodePackages.npm
+    elmPackages.nodejs
     inputs.px7-radio-git.packages.${pkgs.system}.default
     pkg2zip
     carddump
@@ -34,7 +34,7 @@ in
 
     shellAliases = {
       vi = "nvim";
-      rebuild = "sudo nixos-rebuild switch -L --flake ${config.home.homeDirectory}/olympus-nixos | tee /tmp/rebuild.txt";
+      rebuild = "sudo nixos-rebuild switch -L --flake ${config.home.homeDirectory}/olympus-nixos |& tee /tmp/rebuild.txt";
       par = ''
       cd ${config.home.homeDirectory}/olympus-nixos
       git pull
