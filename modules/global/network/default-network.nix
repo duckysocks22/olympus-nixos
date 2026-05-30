@@ -33,14 +33,12 @@
 
   services.resolved = {
     enable = false;
-    dnssec = "true";
-    domains = [ "~." ];
-    fallbackDns = [
-      "9.9.9.9"
-      "1.1.1.1"
-      "1.0.0.1"
-    ];
-    dnsovertls = "true";
+    settings.Resolve = {
+      DNSSEC = "true";
+      Domains = "~.";
+      FallbackDNS = "9.9.9.9 1.1.1.1 1.0.0.1";
+      DNSOverTLS = "true";
+    };
   };
 
   networking.firewall = {

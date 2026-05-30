@@ -1,4 +1,4 @@
-{ pkgs, inputs, ...}:
+{ pkgs, inputs, config, ...}:
 {
   imports = [ inputs.noctalia.homeModules.default ];
 
@@ -20,6 +20,27 @@
 
   programs.noctalia-shell = {
     enable = true;
+    # Replicate the pre-26.05 stylix noctalia-shell color mapping:
+    # mPrimary/mSecondary used base05 (foreground, neutral), mTertiary/mHover
+    # used base04 (mid-grey), mOutline used base02.
+    colors = with config.lib.stylix.colors.withHashtag; {
+      mPrimary          = base05;
+      mOnPrimary        = base00;
+      mSecondary        = base05;
+      mOnSecondary      = base00;
+      mTertiary         = base04;
+      mOnTertiary       = base00;
+      mError            = base08;
+      mOnError          = base00;
+      mSurface          = base00;
+      mOnSurface        = base05;
+      mHover            = base04;
+      mOnHover          = base00;
+      mSurfaceVariant   = base01;
+      mOnSurfaceVariant = base04;
+      mOutline          = base02;
+      mShadow           = base00;
+    };
     plugins = {
     autoUpdate = true;
       sources = [

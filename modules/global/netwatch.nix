@@ -1,7 +1,7 @@
 { inputs, pkgs, ...}:
 {
   environment.systemPackages = [
-    inputs.netwatch.packages.${pkgs.system}.default
+    inputs.netwatch.packages.${pkgs.stdenv.hostPlatform.system}.default
   ];
 
   security.wrappers = {
@@ -9,7 +9,7 @@
         owner = "root";
         group = "root";
         capabilities = "cap_net_raw+ep";
-        source = "${inputs.netwatch.packages.${pkgs.system}.default}/bin/netwatch";
+        source = "${inputs.netwatch.packages.${pkgs.stdenv.hostPlatform.system}.default}/bin/netwatch";
       };
   };
 }

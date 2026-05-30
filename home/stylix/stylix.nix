@@ -23,6 +23,10 @@
 
   stylix.targets.noctalia-shell = {
     enable = true;
+    # Stylix changed mPrimary/mSecondary from base05 (neutral grey) to base0D/0E
+    # (accent colors) between 25.11 and 26.05. Disable the colors sub-target so
+    # we can keep the old neutral look in noctalia.nix without fighting mkMerge.
+    colors.enable = false;
   };
   stylix.targets.qt = {
     enable = true;

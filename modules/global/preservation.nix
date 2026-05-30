@@ -17,8 +17,6 @@
         "/var/lib/systemd/coredump"
         "/var/lib/systemd/rfkill"
         "/var/lib/systemd/timers"
-        "/var/lib/bluetooth"
-        "/var/lib/libvirt"
         { directory = "/var/lib/iwd/"; mode = "700"; }
         { directory = "/etc/NetworkManager/system-connections"; mode = "700"; }
         { directory = "/var/lib/netbird-${config.networking.hostName}"; mode = "0700"; }
@@ -86,6 +84,10 @@
       };
     };
   };
+  # machine-id is preserved to /persistent (real fs), so the service that
+  # commits a transient tmpfs machine-id to disk will always fail. Disable it.
+  systemd.services."systemd-machine-id-commit".enable = false;
+
   systemd.tmpfiles.settings.preservation = {
     "/home/foxtrot/.config".d = { user = "foxtrot"; group = "users"; mode = "0755"; };
     "/home/foxtrot/.local".d = { user = "foxtrot"; group = "users"; mode = "0755"; };

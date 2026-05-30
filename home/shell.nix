@@ -9,7 +9,7 @@ in
     ripgrep
     tmux
     elmPackages.nodejs
-    inputs.px7-radio-git.packages.${pkgs.system}.default
+    inputs.px7-radio-git.packages.${pkgs.stdenv.hostPlatform.system}.default
     pkg2zip
     carddump
     jp2a # Image to ASCII Converter
@@ -19,7 +19,7 @@ in
     attic-client
     gh
     btop
-  ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.system}; [
+  ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.stdenv.hostPlatform.system}; [
     unscene
     mountiso
   ]);

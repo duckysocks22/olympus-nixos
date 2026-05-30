@@ -5,7 +5,7 @@ let
 in
 {
   # See https://wiki.nixos.org/wiki/Encrypted_DNS
-  services.dnscrypt-proxy2 = {
+  services.dnscrypt-proxy = {
     enable = true;
     upstreamDefaults = false;
     settings = {
