@@ -7,7 +7,6 @@
     
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
-      inputs.nixpkgs.follows = "nixpkgs";
     };
     home-manager-unstable = {
       url = "github:nix-community/home-manager";
@@ -22,6 +21,7 @@
     };
     nixvim = {
       url = "github:nix-community/nixvim/nixos-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     elysia = {
       url = "git+https://dawn.wine/foxtrottt/elysia-on-nix.git";

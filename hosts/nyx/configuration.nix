@@ -12,6 +12,7 @@
       ../../modules/nyx/hardenedKernel.nix
       ../../modules/nyx/server.nix
       ../../modules/global/nix/default.nix
+      ../../modules/nyx/rebuild-throttle.nix
       ../../modules/nyx/sops.nix
       ../../modules/global/netwatch.nix
     ];
