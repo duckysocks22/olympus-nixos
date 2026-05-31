@@ -62,7 +62,7 @@
     '';
 
     owner = "server";
-    restartUnits = [ "factorio.service" ];
+    restartUnits = [ "ofsm.service" ];
   };
 
   sops.secrets."users/server".neededForUsers = true;

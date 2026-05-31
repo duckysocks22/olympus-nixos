@@ -16,6 +16,7 @@
         bootstrap_dns = [
           "9.9.9.9"
         ];
+        aaaa_disabled = true;
       };
       tls = {
         enabled = true;

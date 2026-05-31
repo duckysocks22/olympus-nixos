@@ -3,7 +3,6 @@
   systemd.services.nix-daemon.serviceConfig = {
     CPUWeight = 20;
     IOWeight = 10;
-    IOSchedulingClass = "idle";
     Nice = 19;
     MemoryHigh = "4G";
   };
@@ -17,5 +16,13 @@
   systemd.services.adguardhome.serviceConfig = {
     CPUWeight = 1000;
     IOWeight = 1000;
+  };
+  systemd.services.ofsm.serviceConfig = {
+    CPUWeight = 500;
+    IOWeight = 500;
+  };
+  systemd.services.crafty-controller.serviceConfig = {
+    CPUWeight = 500;
+    IOWeight = 500;
   };
 }

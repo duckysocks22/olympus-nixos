@@ -5,6 +5,7 @@
   programs.nixvim = {
     enable = true;
     enableMan = true;
+    nixpkgs.source = inputs.nixpkgs;
     plugins = {
       lazy = {
         enable = true;
