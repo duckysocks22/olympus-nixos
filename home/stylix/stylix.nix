@@ -18,7 +18,11 @@
     profileNames = [ "default" ];
     inputs.enable = true;
     fonts.enable = true;
-    colors.enable = true;
+    # Disabled: this injects a userContent.css that paints every page in the
+    # base16 palette with !important, which masks prefers-color-scheme and
+    # produces broken mixed-mode rendering on sites with their own dark CSS.
+    # Manual prefs in home/programs/browsers.nix drive dark-mode now.
+    colors.enable = false;
   };
 
   # Stylix's noctalia-shell target is disabled; colors are set manually in

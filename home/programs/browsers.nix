@@ -14,9 +14,17 @@
         .tab-text { font-size: 14px !important; }
       '';
       settings = {
-        "browser.startup.homepage" = "https://duckduckgo.com";
-        "privacy.resistFingerprinting" = true;
-        "browser.in-context.dark-mode" = true;
+        # DDG ignores prefers-color-scheme by default; ?kae=d forces dark theme
+        # via URL param (doesn't require cookies, survives FPP).
+        "browser.startup.homepage" = "https://duckduckgo.com/?kae=d";
+        # Force Firefox's UI + content rendering to dark explicitly rather than
+        # relying on its (broken on Niri/Wayland) auto-detection. 0 = Dark.
+        "browser.theme.toolbar-theme" = 0;
+        "browser.theme.content-theme" = 0;
+        # Tell Firefox directly that the system is dark (skips portal/gsettings).
+        "ui.systemUsesDarkTheme" = 1;
+        # Force dark color scheme for web content (sites that respect the query).
+        "layout.css.prefers-color-scheme.content-override" = 0;
       };
     };
 
@@ -149,10 +157,26 @@
     };
     profiles.default.search = {
       force = true;
-      default = "ddg";
-      privateDefault = "ddg";
+      default = "DuckDuckGo";
+      privateDefault = "DuckDuckGo";
 
       engines = {
+        # Custom DDG engine that pins kae=d on every results page so search
+        # results inherit dark theme (the built-in "ddg" engine has no way to
+        # add the param, and DDG doesn't honor prefers-color-scheme).
+        "DuckDuckGo" = {
+          urls = [
+            {
+              template = "https://duckduckgo.com/";
+              params = [
+                { name = "q";   value = "{searchTerms}"; }
+                { name = "kae"; value = "d"; }
+              ];
+            }
+          ];
+          definedAliases = [ "@ddg" ];
+        };
+
         "Nix Packages" = {
           urls = [
             {

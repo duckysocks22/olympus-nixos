@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ lib, pkgs, config, ... }:
 let
   claudeRules = pkgs.fetchurl {
     url = "https://raw.githubusercontent.com/sisyphusse1-ops/claude-code-pro-pack/refs/heads/main/CLAUDE.md";
@@ -12,12 +12,42 @@ let
     url = "https://nixos.org/manual/nixpkgs/stable/";
     hash = "sha256-iBjIOKteyLKt2xyDqzlMIjNHSLvAIJhbE9IV+HjuBHk=";
   };
+  cfg = config.programs.claude-code;
+  statuslineScript = pkgs.writeShellScript "claude-statusline"
+    (builtins.readFile ./claude-statusline.sh);
+
+    writeConfig = pkgs.writeShellScript "write-claude-config.sh" ''
+      PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH"
+      settings="${cfg.configDir}/settings.json"
+      mkdir -p "${cfg.configDir}"
+      if [ -f "$settings" ]; then
+        tmp="$(jq -r '${lib.concatStringsSep "|" (lib.mapAttrsToList (n1: v1:
+          ".${n1}=${builtins.toJSON v1}"
+        ) cfg.settings)}' \
+          "$settings"
+        )" && cat <<< "$tmp" > "$settings"
+      else
+        [ -L "$settings" ] \
+          && rm "$settings" \
+        echo '${builtins.toJSON cfg.settings}' > "$settings"
+      fi
+      chmod 644 "$settings"
+    '';
 in
 {
   programs.claude-code = {
     enable = true;
     settings = {
       agent = "code-reviewer";
+      permissions = {
+        allow = [
+          "Bash:*"
+        ];
+      };
+      statusLine = {
+        type = "command";
+        command = "${statuslineScript}/bin/claude-statusline";
+      };
     };
     agents = {
       code-reviewer = ''
