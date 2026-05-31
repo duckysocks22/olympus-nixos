@@ -14,18 +14,18 @@
         .tab-text { font-size: 14px !important; }
       '';
       settings = {
-        "brower.startup.homepage" = "https://duckduckgo.com";
+        "browser.startup.homepage" = "https://duckduckgo.com";
         "privacy.resistFingerprinting" = true;
         "browser.in-context.dark-mode" = true;
       };
     };
 
     policies = {
-      DisableTelemtry = true;
+      DisableTelemetry = true;
       DisableFirefoxStudies = true;
       DisableFirefoxAccounts = true;
       DisableFirefoxScreenshots = true;
-      DisableForgetButtom = true;
+      DisableForgetButton = true;
       DisableMasterPasswordCreation = true;
       DisableProfileImport = true;
       DisableProfileRefresh = true;
@@ -84,7 +84,7 @@
         "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
           install_url = moz "bitwarden-password-manager";
           installation_mode = "force_installed";
-          updates_disableds = false;
+          updates_disabled = false;
         };
 
         "{e6e36c9a-8323-446c-b720-a176017e38ff}" = {
