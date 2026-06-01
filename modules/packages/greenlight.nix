@@ -11,10 +11,11 @@
   nspr,
   nss,
   mesa,
+  libglvnd,
   alsa-lib,
   yq,
   unzip,
-  electron,
+  electron_42-bin,
   makeWrapper,
   makeDesktopItem,
   autoPatchelfHook,
@@ -36,33 +37,39 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-OvVhxOn3hqWuqaK62fFdbSe3MZhQe4PXllihaLqNOyc=`";
   };
 
-  electronZip = fetchurl {
-    url = "https://github.com/electron/electron/releases/download/v38.2.0/electron-v38.2.0-linux-x64.zip";
-    hash = "sha256-8AKJdSgqbylGeXF1rEBqlQlvKcXc2pgEgUhmjfo27/g=";
-  };
-
   ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
 
   strictDeps = true;
   __structuredAttrs = true;
 
-  nativeBuildInputs = [ yarnConfigHook yarnBuildHook yarnInstallHook nodejs yq unzip makeWrapper autoPatchelfHook ];
+  nativeBuildInputs = [
+    yarnConfigHook
+    yarnBuildHook
+    yarnInstallHook
+    nodejs
+    yq
+    unzip
+    makeWrapper
+    autoPatchelfHook
+  ];
 
   buildInputs = [
     nspr
     nss
     mesa
+    libglvnd
     alsa-lib
     stdenv.cc.cc.lib
-  ] ++ electron.buildInputs;
+  ]
+  ++ electron_42-bin.buildInputs;
 
   postPatch = ''
     mkdir -p build/electron-unpacked
 
-    unzip ${finalAttrs.electronZip} -d build/electron-unpacked
+    unzip ${electron_42-bin.src} -d build/electron-unpacked
 
-    yq -i -y ".electronDist = \"$PWD/build/electron-unpacked\" | 
-         del(.linux.target) | 
+    yq -i -y ".electronDist = \"$PWD/build/electron-unpacked\" |
+         del(.linux.target) |
          .linux.target = [\"dir\"]" $PWD/packages/desktop/electron-builder.yml
 
   '';
@@ -85,7 +92,7 @@ stdenv.mkDerivation (finalAttrs: {
 
     makeWrapper $out/lib/greenlight/greenlight-desktop $out/bin/greenlight \
       --add-flags "--ozone-platform-hint=auto" \
-      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath finalAttrs.buildInputs }"
+      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath finalAttrs.buildInputs}"
 
     runHook postInstall
   '';
@@ -106,7 +113,10 @@ stdenv.mkDerivation (finalAttrs: {
     desktopName = "Greenlight";
     genericName = "Desktop client for Greenlight-Desktop";
     comment = "${finalAttrs.meta.description}";
-    categories = [ "Game" "Utility" ];
+    categories = [
+      "Game"
+      "Utility"
+    ];
     startupWMClass = "Greenlight";
   };
 
@@ -118,7 +128,7 @@ stdenv.mkDerivation (finalAttrs: {
     downloadPage = "https://github.com/unknownskl/greenlight/releases";
     license = lib.licenses.mit;
     maintainers = with lib.maintainers; [ duckysocks22 ];
-    inherit (electron.meta) platforms;
+    inherit (electron_42-bin.meta) platforms;
     mainProgram = "greenlight";
   };
 })
