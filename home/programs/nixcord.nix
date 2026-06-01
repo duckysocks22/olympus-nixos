@@ -48,6 +48,9 @@
         CustomRPC.enable = true;
         newGuildSettings.enable = true;
         noF1.enable = true;
+        # nixcord warns this should be renamed to "PetPet", but as of the
+        # pinned nixcord input the new name isn't actually defined yet.
+        # Revisit after a nixcord flake update.
         petpet.enable = true;
         expressionCloner.enable = true;
       };

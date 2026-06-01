@@ -157,14 +157,16 @@
     };
     profiles.default.search = {
       force = true;
-      default = "DuckDuckGo";
-      privateDefault = "DuckDuckGo";
+      default = "ddg";
+      privateDefault = "ddg";
 
       engines = {
         # Custom DDG engine that pins kae=d on every results page so search
         # results inherit dark theme (the built-in "ddg" engine has no way to
         # add the param, and DDG doesn't honor prefers-color-scheme).
-        "DuckDuckGo" = {
+        # NOTE: keyed by the engine ID "ddg" — this replaces the built-in.
+        ddg = {
+          name = "DuckDuckGo";
           urls = [
             {
               template = "https://duckduckgo.com/";

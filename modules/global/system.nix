@@ -61,6 +61,18 @@
     Defaults lecture = never
   '';
 
+  security.sudo.extraRules = [
+    {
+      users = [ "foxtrot" ];
+      commands = [
+        {
+          command = "/run/current-system/sw/bin/nixos-rebuild";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
+
   services.thelounge.enable = true;
 
   hardware.graphics = {

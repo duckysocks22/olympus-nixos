@@ -34,15 +34,16 @@
         "rust-overlay": "rust-overlay"
       },
       "locked": {
-        "lastModified": 1779903856,
-        "narHash": "sha256-uRShMtD6xW3ZKZbCQ6sDzKWEnbBXUg3IGfOARYogKhg=",
+        "lastModified": 1780254031,
+        "narHash": "sha256-QufhtAwIMFkg2wJOs4/fPL+8qPox51dqvulAlVN/M60=",
         "owner": "ezKEa",
         "repo": "aagl-gtk-on-nix",
-        "rev": "50671fc7f29d686f63ef34b603320d44ad7f2d29",
+        "rev": "e72075e4f4231618f34221b3782348ae54a56f6a",
         "type": "github"
       },
       "original": {
         "owner": "ezKEa",
+        "ref": "release-26.05",
         "repo": "aagl-gtk-on-nix",
         "type": "github"
       }
@@ -336,11 +337,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1780108930,
-        "narHash": "sha256-k0y8hchUHVLQKpMVW/+YozhddVpFF4UwvseNeDpATs4=",
+        "lastModified": 1780245063,
+        "narHash": "sha256-DrUuH1YMJH/hJ/ELqG4wfUaoP3wn194rK9qomcUMHTk=",
         "ref": "refs/heads/master",
-        "rev": "456be67cab9eda5af7a61bd6576c2b317d15ee9c",
-        "revCount": 112,
+        "rev": "55d566873e2b54976c55f9e49268a1cb7c2c29a8",
+        "revCount": 114,
         "type": "git",
         "url": "https://dawn.wine/foxtrottt/elysia-on-nix.git"
       },
@@ -1638,11 +1639,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777605393,
-        "narHash": "sha256-Hjp0VOOHgHcTrX23iVvnfAudPcuCmfkfpQNFwv2v/ks=",
+        "lastModified": 1780197589,
+        "narHash": "sha256-FVCr2Ij/jKf59a4LW481eeOF6rJRreOBrVgW/aUBTrw=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "ff88db34cfa486fc4964a6991cab1678d82eee8c",
+        "rev": "21632e942d89bf1cce4e5a63d7e58a215a0cbfcc",
         "type": "github"
       },
       "original": {
