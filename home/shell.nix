@@ -74,6 +74,15 @@ in
         done
       };
 
+      function firefoxid() {
+        if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+          echo "Usage: firefoxid [EXTENSION_NAME] or [EXTENSION_URL]"
+          echo "Used to find the UUID of a Firefox Extension"
+        fi
+
+        nix run github:tupakkatapa/mozid -- "$1"
+      };
+
       export FZF_DEFAULT_OPS="${config.home.sessionVariables.FZF_DEFAULT_OPTS}"
       zstyle ':fzf-tab:*' use-fzf-default-opts yes
     '';

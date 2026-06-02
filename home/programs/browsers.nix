@@ -71,6 +71,12 @@
           updates_disabled = false;
         };
 
+        "search@kagi.com" = {
+          install_url = moz "kagi-search-for-firefox";
+          installation_mode = "force_installed";
+          updates_disabled = false;
+        };
+
         "deArrow@ajay.app" = {
           install_url = moz "dearrow";
           installation_mode = "force_installed";
@@ -157,26 +163,21 @@
     };
     profiles.default.search = {
       force = true;
-      default = "ddg";
-      privateDefault = "ddg";
+      default = "kagi";
+      privateDefault = "kagi";
 
       engines = {
-        # Custom DDG engine that pins kae=d on every results page so search
-        # results inherit dark theme (the built-in "ddg" engine has no way to
-        # add the param, and DDG doesn't honor prefers-color-scheme).
-        # NOTE: keyed by the engine ID "ddg" — this replaces the built-in.
-        ddg = {
-          name = "DuckDuckGo";
+        kagi = {
+          name = "Kagi";
           urls = [
             {
-              template = "https://duckduckgo.com/";
+              template = "https://kagi.com/search";
               params = [
-                { name = "q";   value = "{searchTerms}"; }
-                { name = "kae"; value = "d"; }
+                { name = "q"; value = "{searchTerms}"; }
               ];
             }
           ];
-          definedAliases = [ "@ddg" ];
+          definedAliases = [ "@kagi" ];
         };
 
         "Nix Packages" = {
