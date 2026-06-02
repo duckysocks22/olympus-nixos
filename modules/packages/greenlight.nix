@@ -13,9 +13,12 @@
   mesa,
   libglvnd,
   alsa-lib,
+  libpulseaudio,
+  flac,
+  libxslt,
   yq,
   unzip,
-  electron_42-bin,
+  electron_42,
   makeWrapper,
   makeDesktopItem,
   autoPatchelfHook,
@@ -59,19 +62,20 @@ stdenv.mkDerivation (finalAttrs: {
     mesa
     libglvnd
     alsa-lib
+    libpulseaudio
+    flac
+    libxslt
     stdenv.cc.cc.lib
   ]
-  ++ electron_42-bin.buildInputs;
+  ++ electron_42.buildInputs;
 
   postPatch = ''
-    mkdir -p build/electron-unpacked
-
-    unzip ${electron_42-bin.src} -d build/electron-unpacked
-
-    yq -i -y ".electronDist = \"$PWD/build/electron-unpacked\" |
+    [ ... ]
+    cp -r ${electron_42.dist} electron-dist
+    chmod -R u+w electron-dist
+    yq -i -y ".electronDist = \"$PWD/electron-dist\" |
          del(.linux.target) |
          .linux.target = [\"dir\"]" $PWD/packages/desktop/electron-builder.yml
-
   '';
 
   buildPhase = ''
@@ -91,8 +95,9 @@ stdenv.mkDerivation (finalAttrs: {
     cp -r packages/desktop/dist/linux-unpacked/* $out/lib/greenlight/
 
     makeWrapper $out/lib/greenlight/greenlight-desktop $out/bin/greenlight \
-      --add-flags "--ozone-platform-hint=auto" \
-      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath finalAttrs.buildInputs}"
+      --add-flags "--no-sandbox \''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --enable-wayland-ime=true}}" \
+      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath finalAttrs.buildInputs}" \
+      --inherit-argv0
 
     runHook postInstall
   '';
@@ -128,7 +133,7 @@ stdenv.mkDerivation (finalAttrs: {
     downloadPage = "https://github.com/unknownskl/greenlight/releases";
     license = lib.licenses.mit;
     maintainers = with lib.maintainers; [ duckysocks22 ];
-    inherit (electron_42-bin.meta) platforms;
+    inherit (electron_42.meta) platforms;
     mainProgram = "greenlight";
   };
 })
