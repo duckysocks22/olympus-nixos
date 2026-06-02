@@ -261,9 +261,24 @@
                   keyword = "stb";
                 }
                 {
+                  name = "IsThereAnyDeal?";
+                  url = "https://www.isthereanydeal.com";
+                  keyword = "itad";
+                }
+                {
+                  name = "Unofficial Deals";
+                  url = "https://gg.deals";
+                  keyword = "keydeal";
+                }
+                {
                   name = "Deku Deals";
                   url = "https://www.dekudeals.com";
                   keyword = "deku";
+                }
+                {
+                  name = "Humble Bundle";
+                  url = "https://www.humblebundle.com";
+                  keyword = "humble";
                 }
               ];
             }

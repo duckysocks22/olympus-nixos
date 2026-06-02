@@ -151,7 +151,7 @@ overview {
 // See the binds section below for more spawn examples.
 // This line starts waybar, a commonly used bar for Wayland compositors.
 spawn-at-startup "bash" "-c" "wl-paste --watch cliphist store &"
-spawn-at-startup "noctalia-shell"
+spawn-at-startup "dms" "run"
 spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 spawn-at-startup "/home/foxtrot/.scripts/gpu_replay_startup.sh"
 environment {
@@ -289,10 +289,10 @@ binds {
     // === Application Launchers ===
     Mod+Q hotkey-overlay-title="Open Terminal" { spawn "kitty"; }
     Mod+R hotkey-overlay-title="Application Launcher" { 
-        spawn "noctalia-shell" "ipc" "call" "launcher" "toggle"; 
+        spawn "dms" "ipc" "call" "launcher" "toggle"; 
     }
     Mod+V hotkey-overlay-title="Clipboard Manager" { 
-        spawn "noctalia-shell" "ipc" "call" "launcher" "clipboard"; 
+        spawn "dms" "ipc" "call" "spotlight" "toggle";
     }
     Mod+M hotkey-overlay-title="Task Manager" { 
         spawn "dms" "ipc" "call" "processlist" "toggle"; 
@@ -310,7 +310,7 @@ binds {
     
     // === Security ===
     Mod+L hotkey-overlay-title="Lock Screen" { 
-        spawn "noctalia-shell" "ipc" "call" "lockScreen" "lock";
+        spawn "dms" "ipc" "call" "lock" "lock";
     }
     Mod+Shift+E { quit; }
     Ctrl+Alt+Delete hotkey-overlay-title="Task Manager" { 
@@ -489,4 +489,5 @@ binds {
 debug {
     honor-xdg-activation-with-invalid-serial
 }    
-// include "./noctalia.kdl"
+include "dms/cursor.kdl"
+//include "dms/binds.kdl"

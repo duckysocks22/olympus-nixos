@@ -4,14 +4,16 @@
 
   imports = [
     ./xwayland.nix
-    ./noctalia.nix
+    ./dmshell.nix
     ./cursors.nix
     ./swayidle.nix
     ];
   home.packages = [ pkgs.niri pkgs.dconf pkgs.slurp ];
 
   xdg.configFile = {
-    "niri/config.kdl".source = ./niri.kdl;
+    "niri/config.kdl" = { source = ./niri.kdl; force = true; };
+    "niri/dms/cursor.kdl" = { source = ./dms/cursor.kdl; force = true; };
+    "niri/dms/binds.kdl" = { source = ./dms/binds.kdl; force = true; };
     #"noctalia/settings.json".force = true;
   };
 
