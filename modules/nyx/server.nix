@@ -20,8 +20,21 @@
     shell = pkgs.zsh;
     openssh.authorizedKeys.keys = [
       "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJcAXHlW7WhNVvoU5H6q7BZDu09Tnd60P8QDJVhpbSiJ foxtrot@circe-nixos"
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE7U7SKuJWuuLSCVKW91818IUo+CdnWw7CH1pSnO0rAE foxtrot@DESKTOP-35ED3BS"
     ];
   };
 
   home-manager.users.server = import ../../home/users/server/core.nix;
+
+  security.sudo.extraRules = [
+    {
+      users = [ "server" ];
+      commands = [
+        {
+          command = "/run/current-system/sw/bin/nixos-rebuild";
+          options = [ "NOPASSWD" ];
+        }
+      ];
+    }
+  ];
 }

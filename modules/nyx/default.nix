@@ -21,7 +21,7 @@
     #./services/x2go.nix
     #./services/dawarich.nix
     ./services/game-servers/crafty-controller.nix
-    ./services/game-servers/minecraft.nix
+    #./services/game-servers/minecraft.nix
     ./services/game-servers/factorio.nix
     ./services/homeassistant/default.nix
     ./services/copyparty.nix
