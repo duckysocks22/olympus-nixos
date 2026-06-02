@@ -16,6 +16,7 @@
     winetricks
     protontricks
     thunderbird
+    protonmail-bridge-gui
     remmina
   ];
 
