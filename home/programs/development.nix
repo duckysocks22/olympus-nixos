@@ -93,7 +93,7 @@ in
       };
       spinnerVerbs = {
         mode = "replace";
-        verbs = [ "Pawbapping" "Tailwagging" "Snuggling" "Barking" "Biting" "Napping" "Whining" ];
+        verbs = [ "Pawbapping 🐾" "Tailwagging 🐾" "Snuggling 🐾" "Barking 🐾" "Biting 🐾" "Napping 🐾" "Whining 🐾" ];
       };
       statusLine = {
         type = "command";
@@ -158,6 +158,20 @@ in
   };
 
   home.packages = [ ];
+
+  home.file.".claude/memory/workflow.md".text = ''
+    # Session Workflow
+
+    ## Always pull before starting work
+
+    At the start of every session, before reading or modifying any files,
+    check that the current repository is up to date:
+
+        git pull
+
+    Do this for any repo being worked in, not just olympus-nixos.
+    This avoids working on stale code and prevents conflicts on push.
+  '';
 
   home.file.".claude/memory/nix-gotchas.md".text = ''
     # Nix / Flake Gotchas (olympus-nixos)

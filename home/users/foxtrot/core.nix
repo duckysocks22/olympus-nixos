@@ -32,7 +32,11 @@
   systemd.user.startServices = "sd-switch";
 
   home.activation.xdgPortalRestart = config.lib.dag.entryAfter ["writeBoundary"] ''
-    run ${pkgs.systemd}/bin/systemctl --user restart xdg-desktop-portal.service
+    # Guard against running during system activation when the user session
+    # isn't up yet — systemctl --user will fail if there is no D-Bus session.
+    if ${pkgs.systemd}/bin/systemctl --user is-active --quiet xdg-desktop-portal.service 2>/dev/null; then
+      run ${pkgs.systemd}/bin/systemctl --user restart xdg-desktop-portal.service
+    fi
   '';
 
   # Home-Manager Version
