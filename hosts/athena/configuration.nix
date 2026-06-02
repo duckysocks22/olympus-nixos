@@ -43,8 +43,6 @@
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
   # Enable network manager applet
-  programs.nm-applet.enable = true;
-
   networking.wireless.iwd.enable = true;
 
 

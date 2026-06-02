@@ -32,9 +32,6 @@
 
   networking.hostName = "circe-nixos"; # Define your hostname.
 
-  # Enable networking
-  programs.nm-applet.enable = true;
-
   # Set your time zone.
   time.timeZone = "America/New_York";
 
