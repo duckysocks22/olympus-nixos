@@ -11,10 +11,14 @@
   nspr,
   nss,
   mesa,
+  libglvnd,
   alsa-lib,
+  libpulseaudio,
+  flac,
+  libxslt,
   yq,
   unzip,
-  electron,
+  electron_42,
   makeWrapper,
   makeDesktopItem,
   autoPatchelfHook,
@@ -36,35 +40,42 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-OvVhxOn3hqWuqaK62fFdbSe3MZhQe4PXllihaLqNOyc=`";
   };
 
-  electronZip = fetchurl {
-    url = "https://github.com/electron/electron/releases/download/v38.2.0/electron-v38.2.0-linux-x64.zip";
-    hash = "sha256-8AKJdSgqbylGeXF1rEBqlQlvKcXc2pgEgUhmjfo27/g=";
-  };
-
   ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
 
   strictDeps = true;
   __structuredAttrs = true;
 
-  nativeBuildInputs = [ yarnConfigHook yarnBuildHook yarnInstallHook nodejs yq unzip makeWrapper autoPatchelfHook ];
+  nativeBuildInputs = [
+    yarnConfigHook
+    yarnBuildHook
+    yarnInstallHook
+    nodejs
+    yq
+    unzip
+    makeWrapper
+    autoPatchelfHook
+  ];
 
   buildInputs = [
     nspr
     nss
     mesa
+    libglvnd
     alsa-lib
+    libpulseaudio
+    flac
+    libxslt
     stdenv.cc.cc.lib
-  ] ++ electron.buildInputs;
+  ]
+  ++ electron_42.buildInputs;
 
   postPatch = ''
-    mkdir -p build/electron-unpacked
-
-    unzip ${finalAttrs.electronZip} -d build/electron-unpacked
-
-    yq -i -y ".electronDist = \"$PWD/build/electron-unpacked\" | 
-         del(.linux.target) | 
+    [ ... ]
+    cp -r ${electron_42.dist} electron-dist
+    chmod -R u+w electron-dist
+    yq -i -y ".electronDist = \"$PWD/electron-dist\" |
+         del(.linux.target) |
          .linux.target = [\"dir\"]" $PWD/packages/desktop/electron-builder.yml
-
   '';
 
   buildPhase = ''
@@ -84,8 +95,9 @@ stdenv.mkDerivation (finalAttrs: {
     cp -r packages/desktop/dist/linux-unpacked/* $out/lib/greenlight/
 
     makeWrapper $out/lib/greenlight/greenlight-desktop $out/bin/greenlight \
-      --add-flags "--ozone-platform-hint=auto" \
-      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath finalAttrs.buildInputs }"
+      --add-flags "--no-sandbox \''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --enable-wayland-ime=true}}" \
+      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath finalAttrs.buildInputs}" \
+      --inherit-argv0
 
     runHook postInstall
   '';
@@ -106,7 +118,10 @@ stdenv.mkDerivation (finalAttrs: {
     desktopName = "Greenlight";
     genericName = "Desktop client for Greenlight-Desktop";
     comment = "${finalAttrs.meta.description}";
-    categories = [ "Game" "Utility" ];
+    categories = [
+      "Game"
+      "Utility"
+    ];
     startupWMClass = "Greenlight";
   };
 
@@ -118,7 +133,7 @@ stdenv.mkDerivation (finalAttrs: {
     downloadPage = "https://github.com/unknownskl/greenlight/releases";
     license = lib.licenses.mit;
     maintainers = with lib.maintainers; [ duckysocks22 ];
-    inherit (electron.meta) platforms;
+    inherit (electron_42.meta) platforms;
     mainProgram = "greenlight";
   };
 })
