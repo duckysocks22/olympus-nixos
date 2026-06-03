@@ -18,6 +18,7 @@
   sops.secrets."samba-nyx/serena" = {};
   sops.secrets."samba-nyx/zia" = {};
   sops.secrets."users/server" = {};
+  sops.secrets."users/foxtrot" = {};
   sops.secrets."netbird/routing-key" = {};
   sops.secrets."caddy/environment" = {};
   sops.secrets."attic/server-token" = {};
@@ -66,6 +67,11 @@
   };
 
   sops.secrets."users/server".neededForUsers = true;
+
+  sops.secrets."copyparty/foxtrot" = {
+    mode = "0440";
+    owner = "copyparty";
+  };
 
   sops.secrets."samba-nyx/socks".mode = "0440";
   sops.secrets."samba-nyx/socks".owner = config.users.users.server.name;

@@ -119,6 +119,12 @@ in
         }
       }
     '';
+
+    #olympus.moe
+    virtualHosts."https://copy.olympus.moe".extraConfig = ''
+      import mtls
+      reverse_proxy :3210
+    '';
   };
   networking.firewall.allowedTCPPorts = [ 80 443 ];
 }

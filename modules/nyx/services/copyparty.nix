@@ -1,9 +1,9 @@
-{ inputs, ...}:
+{ inputs, config, ...}:
 {
     imports = [ inputs.copyparty.nixosModules.default ];
     services.copyparty = {
       enable = true;
-      user = "server";
+      user = "copyparty";
       group = "users";
       settings = {
         i = "0.0.0.0";
@@ -14,13 +14,7 @@
 
       accounts = {
         socks = {
-          passwordFile = "/home/server/keys/copyparty/socks_password";
-        };
-        serena = {
-          passwordFile = "/home/server/keys/copyparty/serena_password";
-        };
-        zia = {
-          passwordFile = "/home/server/keys/copyparty/zia_password";
+          passwordFile = "${config.sops.secrets."copyparty/foxtrot".path}";
         };
       };
 
