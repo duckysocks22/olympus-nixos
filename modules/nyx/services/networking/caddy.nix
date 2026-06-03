@@ -59,15 +59,6 @@ in
         dns bunny {$BUNNY_API}
       }
     '';
-    virtualHosts."https://budget.puppygirls.net".extraConfig = ''
-      encode gzip zstd
-      reverse_proxy :5006 {
-        transport http {
-          tls_server_name budget.puppygirls.net
-        }
-      }
-      import mtls
-    '';
     virtualHosts."http://stream.puppygirls.net, https://stream.puppygirls.net".extraConfig = ''
       reverse_proxy :8096
 
@@ -89,21 +80,9 @@ in
         dns bunny {$BUNNY_API}
       }
     '';
-    virtualHosts."https://immich.puppygirls.net".extraConfig = ''
-      import mtls
-      reverse_proxy :2283
-    '';
     virtualHosts."https://ofsm.puppygirls.net".extraConfig = ''
       import mtls
       reverse_proxy :42702
-    '';
-    virtualHosts."https://ai.puppygirls.net".extraConfig = ''
-      import mtls
-      reverse_proxy :11435
-    '';
-    virtualHosts."https://home.puppygirls.net".extraConfig = ''
-      import mtls
-      reverse_proxy :8123
     '';
     virtualHosts."https://crafty.puppygirls.net".extraConfig = ''
       import mtls
@@ -123,7 +102,26 @@ in
     #olympus.moe
     virtualHosts."https://copy.olympus.moe".extraConfig = ''
       import mtls
-      reverse_proxy :3210
+      reverse_proxy :3210 {
+        header_up X-Forwarded-For {remote_host}
+      }
+    '';
+    virtualHosts."https://immich.olympus.moe".extraConfig = ''
+      import mtls
+      reverse_proxy :2283
+    '';
+    virtualHosts."https://home.olympus.moe".extraConfig = ''
+      import mtls
+      reverse_proxy :8123
+    '';
+    virtualHosts."https://budget.olympus.moe".extraConfig = ''
+      encode gzip zstd
+      reverse_proxy :5006 {
+        transport http {
+          tls_server_name budget.olympus.moe
+        }
+      }
+      import mtls
     '';
   };
   networking.firewall.allowedTCPPorts = [ 80 443 ];

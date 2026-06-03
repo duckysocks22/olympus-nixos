@@ -8,6 +8,9 @@
       settings = {
         i = "0.0.0.0";
         p = [ 3210 3211 ];
+        xff-hdr = "X-Forwarded-For";
+        xff-src = "127.0.0.1";
+        rproxy = 1;
         no-reload = true;
         ignored-flag = false;
       };

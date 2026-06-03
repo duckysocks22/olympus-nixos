@@ -1,4 +1,4 @@
-{ pkgs, ...}:
+{ config, pkgs, ...}:
 {
   hardware.graphics = {
     enable = true;
@@ -12,6 +12,7 @@
   services.xserver.videoDrivers = [ "nvidia" ];
   hardware.nvidia = {
     open = true;
+    package = config.boot.kernelPackages.nvidiaPackages.bleeding_edge;
     modesetting.enable = true;
   };
 }
