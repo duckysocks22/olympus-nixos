@@ -38,7 +38,7 @@
               };
             };
 	    luks = {
-	      size = "358400M";
+	      size = "350G";
                 content = {
                 type = "luks";
                 name = "crypted";
