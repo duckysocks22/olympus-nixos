@@ -83,6 +83,12 @@
           updates_disabled = false;
         };
 
+        "PipedRedirect@janigma.com" = {
+          install_url = moz "pipedredirectjanigma";
+          installation_mode = "force_installed";
+          updates_disabled = true;
+        };
+
         "firefox-extension@steamdb.info" = {
           install_url = moz "steam-database";
           installation_mode = "force_installed";
