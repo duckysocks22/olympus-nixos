@@ -26,7 +26,6 @@ in
 
   imports = [ 
     inputs.nix-index-database.homeModules.default
-    ./programs/development.nix
   ];
   programs.zsh = {
     enable = true;

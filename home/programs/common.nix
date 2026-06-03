@@ -16,6 +16,7 @@
     winetricks
     protontricks
     thunderbird
+    birdtray
     protonmail-bridge-gui
     remmina
   ];
