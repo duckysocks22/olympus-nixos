@@ -1,4 +1,7 @@
-{ inputs, pkgs, ...}:
+{ inputs, pkgs, lib, ...}:
+let
+  pfp = ../pfp/suletta_pfp.jpg;
+in
 {
 
   imports = [ inputs.dms.homeModules.dank-material-shell inputs.dms-plugin-registry.modules.default ];
@@ -637,5 +640,12 @@
       niriOverviewLastMode = "apps";
       configVersion = 3;
     };
+  };
+
+  systemd.user.services."dms-pfp".service = {
+    Description = "set-pfp";
+    ExecStart = pkgs.writeShellScript "pfp.sh" ''
+      dms ipc call profile setImage ${pfp}
+    '';
   };
 }
