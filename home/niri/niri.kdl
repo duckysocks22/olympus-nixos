@@ -152,6 +152,8 @@ overview {
 // This line starts waybar, a commonly used bar for Wayland compositors.
 spawn-at-startup "bash" "-c" "wl-paste --watch cliphist store &"
 spawn-at-startup "dms" "run"
+spawn-sh-at-startup "dms ipc call profile setPicture ~/olympus-nixos/home/pfp/suletta_pfp.jpg"
+spawn-at-startup "protonmail-bridge-gui" "--noninteractive"
 spawn-at-startup "/usr/lib/mate-polkit/polkit-mate-authentication-agent-1"
 spawn-at-startup "/home/foxtrot/.scripts/gpu_replay_startup.sh"
 environment {

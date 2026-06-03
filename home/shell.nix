@@ -83,6 +83,15 @@ in
         nix run github:tupakkatapa/mozid -- "$1"
       };
 
+      function securewipe() {
+        if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+          echo "Usage: securewipe [DISK]"
+          echo "Used to zero out and randomize data on drive to securely wipe all data."
+        fi
+
+        sudo dd if=/dev/zero of="$1" bs=512 status="progress"
+      }
+
       export FZF_DEFAULT_OPS="${config.home.sessionVariables.FZF_DEFAULT_OPTS}"
       zstyle ':fzf-tab:*' use-fzf-default-opts yes
     '';

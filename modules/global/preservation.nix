@@ -42,6 +42,8 @@
           directories = [
             { directory = ".ssh"; mode = "0700"; }
             ".claude"
+            ".mozilla"
+            ".thunderbird"
             ".cache/noctalia"
             ".config/DankMaterialShell"
             ".cache/DankMaterialShell"

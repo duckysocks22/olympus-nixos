@@ -641,11 +641,4 @@ in
       configVersion = 3;
     };
   };
-
-  systemd.user.services."dms-pfp".service = {
-    Description = "set-pfp";
-    ExecStart = pkgs.writeShellScript "pfp.sh" ''
-      dms ipc call profile setImage ${pfp}
-    '';
-  };
 }
