@@ -1,10 +1,11 @@
 { pkgs, ... }:
 let
   greenlight = pkgs.callPackage ./greenlight.nix { };
-  crafty-controller = pkgs.callPackage ./crafty-controller/crafty-pkg.nix { };
+  piped-backend = pkgs.callPackage ./piped-backend/default.nix { };
 in
 {
   environment.systemPackages = [
     greenlight
+    piped-backend
   ];
 }
