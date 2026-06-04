@@ -39,6 +39,12 @@ in
       description = "Open TCP port for Piped-Backend instance.";
     };
 
+    database.enable = lib.mkOption {
+      type = lib.types.bool;
+      default = true;
+      description = "Enabled the included PostgreSQL Database";
+    };
+
     settings = lib.mkOption {
       type = format.type;
       default = {};
@@ -100,5 +106,48 @@ in
         Type = "simple";
       };
     };
-  });
+  }) ++ lib.mkIf cfg.database.enable {
+    systemd.services.piped-postgresql = {
+      description = "Piped-Backend SQL Database";
+      wantedBy = [ "piped-backend.service" ];
+      after = [ "network.target" ];
+      serviceConfig = {
+        User = cfg.user;
+        Group = cfg.group;
+        WorkingDirectory = cfg.dataDir;
+        ExecStart = lib.getExe pkgs.postgresql;
+        Restart = "on-falure";
+
+        # Hardening from NixOS postgresql module
+        CapabilityBoundingSet = [ "" ];
+        DevicePolicy = "closed";
+        PrivateTmp = true;
+        ProtectHome = true;
+        ProtectSystem = "strict";
+        NoNewPrivileges = true;
+        LockPersonality = true;
+        PrivateDevices = true;
+        PrivateMounts = true;
+        ProcSubset = "pid";
+        ProtectClock = true;
+        ProtectControlGroups = true;
+        ProtectHostname = true;
+        ProtectKernelLogs = true;
+        ProtectKernelModules = true;
+        ProtectKernelTunables = true;
+        ProtectProc = "invisible";
+        RemoveIPC = true;
+        RestrictAddressFamilies = [
+          "AF_INET"
+          "AF_INET6"
+          "AF_NETLINK" # used for network interface enumeration
+          "AF_UNIX"
+        ];
+        RestrictNamespaces = true;
+        RestrictRealtime = true;
+        RestrictSUIDSGID = true;
+        SystemCallArchitectures = "native";
+      };
+    };
+  };
 }
