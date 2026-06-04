@@ -39,6 +39,7 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     mkdir -p $out/{bin,share/piped-backend}
     cp build/libs/piped-1.0-all.jar $out/share/piped-backend/
+    cp config.properties $out/share/piped-backend/
 
     makeWrapper ${lib.getExe jre} $out/bin/piped-backend \
       --add-flags "-jar $out/share/piped-backend/piped-1.0-all.jar"
