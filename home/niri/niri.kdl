@@ -47,7 +47,7 @@ cursor {
 // Find more information on the wiki:
 // https://github.com/YaLTeR/niri/wiki/Configuration:-Outputs
 // Remember to uncomment the node by removing "/-"!
-output "DP-1" {
+output "PNP(AOC) CU34G2XP 1Q1R9UA004091" {
     //AOC Monitor
     mode "3440x1440@200.000"
     position x=0 y=0
@@ -62,10 +62,10 @@ output "DP-1" {
     }
 }
 
-output "DP-2" {
+output "Acer Technologies Acer XFA240 0x91001AB2" {
     // ACER Monitor
-    mode "1920x1080@144.001"
-    position x=-1920 y=200
+    mode "1920x1080@119.928"
+    position x=1920 y=200
     variable-refresh-rate on-demand=true
     
     layout {
