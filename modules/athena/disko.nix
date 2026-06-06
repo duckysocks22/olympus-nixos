@@ -38,7 +38,7 @@
               };
             };
 	    luks = {
-	      size = "350G";
+	      size = "100%";
                 content = {
                 type = "luks";
                 name = "crypted";
@@ -79,47 +79,11 @@
 	  type = "gpt";
 	  partitions = {
 	    ssd2linux = {
-	      size = "1500G";
-	      content = {
-		type = "filesystem";
-		format = "xfs";
-		mountpoint = "/media/ssd2linux";
-		mountOptions = [ "noatime" ];
-	      };
-	    };
-	  };
-	};
-      };
-      extra = {
-	device = "/dev/disk/by-id/ata-ST2000DM008-2FR102_ZFL287RG";
-	type = "disk";
-	content = {
-	  type = "gpt";
-	  partitions = {
-	    extraLinux = {
-	      size = "1500G";
-	      content = {
-		type = "filesystem";
-		format = "xfs";
-		mountpoint = "/media/extraLinux";
-		mountOptions = [ "noatime" ];
-	      };
-	    };
-	  };
-	};
-      };
-      plus = {
-	device = "/dev/disk/by-id/ata-WDC_WD10EZEX-60WN4A0_WD-WCC6Y2UVT50Y";
-	type = "disk";
-	content = {
-	  type = "gpt";
-	  partitions = {
-	    plus = {
 	      size = "100%";
 	      content = {
 		type = "filesystem";
 		format = "xfs";
-		mountpoint = "/media/plus";
+		mountpoint = "/media/ssd2linux";
 		mountOptions = [ "noatime" ];
 	      };
 	    };
