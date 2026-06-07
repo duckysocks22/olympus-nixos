@@ -10,6 +10,7 @@
       ./hardware-configuration.nix
       ../../modules/athena/disko.nix
       ../../modules/global/preservation.nix
+      ../../modules/global/harden.nix
       #../../modules/greeter/ly.nix
       ../../modules/global/greeter/cosmic-greeter.nix
       ../../modules/global/portals.nix

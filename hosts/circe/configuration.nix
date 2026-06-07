@@ -12,6 +12,7 @@
       ../../modules/packages/default.nix
       ../../modules/global/preservation.nix
       ../../modules/global/network/ssh-tunnel.nix
+      ../../modules/global/harden.nix
       #../../modules/global/greeter/ly.nix
       ../../modules/global/greeter/cosmic-greeter.nix
       ../../modules/global/portals.nix
