@@ -1,4 +1,4 @@
-{ ... }:
+{ pkgs, ... }:
 {
   boot.blacklistedKernelModules = [
     # Obscure network protocols
@@ -59,19 +59,6 @@
   security.forcePageTableIsolation = true;
 
   environment.memoryAllocator.provider = "graphene-hardened";
-
-  programs.firejail = {
-    enable = true;
-    wrappedBinaries = {
-      /*chromium = {
-        executable = "${pkgs.chromium}/bin/chromium-browser";
-        profile = "${pkgs.firejail}/etc/firejail/chromium-browser.profile";
-        extraArgs = [
-          "--blacklist=/etc/ld-nix.so.preload"
-        ];
-      };*/
-    };
-  };
 
   security.apparmor.enable = true;
   security.apparmor.killUnconfinedConfinables = true;
