@@ -102,9 +102,24 @@ in
     #olympus.moe
     virtualHosts."https://copy.olympus.moe".extraConfig = ''
       import mtls
+
+      @mkcol_phonebackup {
+        method MKCOL
+        path /phonebackup/*
+      }
+
+      reverse_proxy @mkcol_phonebackup :3210 {
+        header_up X-Forwarded-For {remote_host}
+        @exists status 405
+        handle_response @exists {
+          respond 201
+        }
+      }
+
       reverse_proxy :3210 {
         header_up X-Forwarded-For {remote_host}
       }
+
     '';
     virtualHosts."https://immich.olympus.moe".extraConfig = ''
       import mtls
