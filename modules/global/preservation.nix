@@ -19,7 +19,7 @@
         "/var/lib/systemd/timers"
         { directory = "/var/lib/iwd/"; mode = "700"; }
         { directory = "/etc/NetworkManager/system-connections"; mode = "700"; }
-        { directory = "/var/lib/netbird-${config.networking.hostName}"; mode = "0700"; }
+        { directory = "/var/lib/netbird-${config.networking.hostName}"; mode = "0777"; }
         { directory = "/etc/libvirt"; mode = "755"; }
         "/var/log"
         { directory = "/var/lib/nixos"; inInitrd = true; }

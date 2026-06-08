@@ -9,7 +9,7 @@
 
   boot = {
     kernelPackages = pkgs.linuxPackages_zen;
-    kernelModules = [ "sg" ];
+    kernelModules = [ "sg" "hid-tmff-new" "hid-tminit-new" ];
     kernelParams = [ "amd_iommu=on" ];
     loader = {
       limine = {

@@ -1,12 +1,21 @@
 { pkgs, config, lib, inputs, ...}:
-
+let
+  hmFirefox = config.programs.firefox.finalPackage;
+  emptyFile = pkgs.writeText "empty" "";
+  firefoxNoHardened = pkgs.writeShellScriptBin "firefox" ''
+    exec ${pkgs.util-linux}/bin/unshare --mount --user --map-root-user \
+      ${pkgs.bash}/bin/bash -c "${pkgs.util-linux}/bin/mount --bind ${emptyFile} /etc/ld-nix.so.preload && exec ${hmFirefox}/bin/firefox \"\$@\"" -- "$@"
+  '';
+in
 {
 
   home.packages = [
+    (lib.hiPrio firefoxNoHardened)
   ];
 
   programs.firefox = {
     enable = true;
+    package = pkgs.firefox;
   
     profiles."default" = {
       name = "default";
