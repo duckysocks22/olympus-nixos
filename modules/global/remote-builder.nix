@@ -6,15 +6,16 @@
   '';
 
   nix.distributedBuilds = true;
-  nix.settings.builders-use-subtitutes = true;
 
   nix.buildMachines = [
-    hostName = "ssh.olympus.moe";
-    sshUser = "remotebuild";
-    sshKey = "/root/.ssh/remotebuild";
-    systems = [ "x86_64-linux" ];
-    maxJobs = 2;
-    speedFactor = 2;
-    supportedFeatures = [ "nixos-test" "big-parallel" "kvm" ];
+    {
+      hostName = "ssh.olympus.moe";
+      sshUser = "remotebuild";
+      sshKey = "/root/.ssh/remotebuild";
+      systems = [ "x86_64-linux" ];
+      maxJobs = 4;
+      speedFactor = 2;
+      supportedFeatures = [ "nixos-test" "big-parallel" "kvm" ];
+    }
   ];
 }
