@@ -9,6 +9,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/circe/disko.nix
+      ../../modules/global/remote-builder.nix
       ../../modules/packages/default.nix
       ../../modules/global/preservation.nix
       ../../modules/global/network/ssh-tunnel.nix

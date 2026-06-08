@@ -3,6 +3,7 @@
   imports = [
     ./power.nix
     ./services/jellyfin.nix
+    ./services/remote-builder.nix
     ./services/qbittorrent.nix
     ./services/ssh-tunnel.nix
     ../global/functions.nix
