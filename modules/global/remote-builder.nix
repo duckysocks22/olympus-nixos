@@ -6,6 +6,10 @@
   '';
 
   nix.distributedBuilds = true;
+  nix.settings = {
+    fallback = true;
+    builders-use-substitutes = true;
+  };
 
   nix.buildMachines = [
     {
@@ -15,7 +19,7 @@
       systems = [ "x86_64-linux" ];
       maxJobs = 4;
       speedFactor = 2;
-      supportedFeatures = [ "nixos-test" "big-parallel" "kvm" ];
+      supportedFeatures = [ "nixos-test" "flakes" "big-parallel" "kvm" ];
     }
   ];
 }
