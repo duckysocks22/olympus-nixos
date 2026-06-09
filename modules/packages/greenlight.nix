@@ -26,18 +26,18 @@
 }:
 stdenv.mkDerivation (finalAttrs: {
   pname = "greenlight";
-  version = "2.4.1";
+  version = "2.4.2";
 
   src = fetchFromGitHub {
     owner = "unknownskl";
     repo = "greenlight";
     tag = "v${finalAttrs.version}";
-    hash = "sha256-JlhVqw2LsnUZMffngFrI9jr7vzMBaa4vzq+2/+Clzco=";
+    hash = "sha256-vrQtwziP+MkBseHtqego2y31UjWCJRtyf+UD35H+iSU=";
   };
 
   yarnOfflineCache = fetchYarnDeps {
     yarnLock = "${finalAttrs.src}/yarn.lock";
-    hash = "sha256-OvVhxOn3hqWuqaK62fFdbSe3MZhQe4PXllihaLqNOyc=`";
+    hash = "sha256-ExLu7Psd1MMLyVEr3I7BQFVo0uggv+bw1KLYF50CzXk=";
   };
 
   ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
