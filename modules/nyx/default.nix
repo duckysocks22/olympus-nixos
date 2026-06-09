@@ -6,6 +6,7 @@
     ./services/remote-builder.nix
     ./services/qbittorrent.nix
     ./services/ssh-tunnel.nix
+    ./services/syncthing.nix
     ../global/functions.nix
     #./services/samba.nix
     ./nvidia.nix

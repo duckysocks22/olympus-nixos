@@ -27,6 +27,11 @@
   sops.secrets."immich/secrets" = {};
   sops.secrets."remotebuilder/athena" = {};
   sops.secrets."remotebuilder/circe" = {};
+  sops.secrets."admin/user" = {};
+  sops.secrets."admin/pass" = {};
+
+  sops.secrets."syncthing/nyx/cert" = { owner = "syncthing"; path = "/run/secrets/syncthing/nyx/cert.pem"; };
+  sops.secrets."syncthing/nyx/key" = { owner = "syncthing"; path = "/run/secrets/syncthing/nyx/key.pem"; };
 
   sops.secrets."adguardhome/domain_cert" = {
     owner = "server";
