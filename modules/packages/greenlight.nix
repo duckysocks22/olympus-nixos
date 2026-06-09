@@ -17,10 +17,20 @@
   flac,
   libxslt,
   yq,
+  atk,
+  at-spi2-atk,
+  at-spi2-core,
+  cairo,
+  cups,
+  gtk3,
+  pango,
+  libjpeg_original,
+  libxkbcommon,
   unzip,
   electron_42,
   makeWrapper,
   makeDesktopItem,
+  copyDesktopItems,
   autoPatchelfHook,
   nix-update-script,
 }:
@@ -40,7 +50,7 @@ stdenv.mkDerivation (finalAttrs: {
     hash = "sha256-ExLu7Psd1MMLyVEr3I7BQFVo0uggv+bw1KLYF50CzXk=";
   };
 
-  ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
+  env.ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
 
   strictDeps = true;
   __structuredAttrs = true;
@@ -54,6 +64,7 @@ stdenv.mkDerivation (finalAttrs: {
     unzip
     makeWrapper
     autoPatchelfHook
+    copyDesktopItems
   ];
 
   buildInputs = [
@@ -66,8 +77,16 @@ stdenv.mkDerivation (finalAttrs: {
     flac
     libxslt
     stdenv.cc.cc.lib
-  ]
-  ++ electron_42.buildInputs;
+    atk
+    at-spi2-atk
+    at-spi2-core
+    cairo
+    cups
+    gtk3
+    pango
+    libjpeg_original
+    libxkbcommon
+  ];
 
   postPatch = ''
     [ ... ]
@@ -89,13 +108,12 @@ stdenv.mkDerivation (finalAttrs: {
   installPhase = ''
     runHook preInstall
 
-    mkdir -p $out/lib/greenlight
-    mkdir -p $out/bin
+    mkdir -p $out/lib/greenlight $out/bin
 
     cp -r packages/desktop/dist/linux-unpacked/* $out/lib/greenlight/
 
     makeWrapper $out/lib/greenlight/greenlight-desktop $out/bin/greenlight \
-      --add-flags "--no-sandbox \''${NIXOS_OZONE_WL:+\''${WAYLAND_DISPLAY:+--ozone-platform-hint=auto --enable-features=WaylandWindowDecorations --enable-wayland-ime=true}}" \
+      --add-flags "--no-sandbox" \
       --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath finalAttrs.buildInputs}" \
       --inherit-argv0
 
@@ -103,27 +121,25 @@ stdenv.mkDerivation (finalAttrs: {
   '';
 
   postInstall = ''
-    mkdir -p $out/share/applications
-    cp -r ${finalAttrs.desktopItem}/share/applications/* $out/share/applications/
-
-    mkdir -p $out/share/icons/hicolor/512x512/apps
-    cp packages/desktop/flatpak/io.github.unknownskl.greenlight.png \
+    install -Dm644 packages/desktop/flatpak/io.github.unknownskl.greenlight.png \
       $out/share/icons/hicolor/512x512/apps/greenlight.png
   '';
 
-  desktopItem = makeDesktopItem {
-    name = "greenlight";
-    exec = "greenlight %U";
-    icon = "${finalAttrs.src}/packages/desktop/flatpak/io.github.unknownskl.greenlight.png";
-    desktopName = "Greenlight";
-    genericName = "Desktop client for Greenlight-Desktop";
-    comment = "${finalAttrs.meta.description}";
-    categories = [
-      "Game"
-      "Utility"
-    ];
-    startupWMClass = "Greenlight";
-  };
+  desktopItems = [
+    (makeDesktopItem {
+      name = "greenlight";
+      exec = "greenlight %U";
+      icon = "greenlight";
+      desktopName = "Greenlight";
+      genericName = "Desktop client for Greenlight-Desktop";
+      comment = finalAttrs.meta.description;
+      categories = [
+        "Game"
+        "Utility"
+      ];
+      startupWMClass = "Greenlight";
+    })
+  ];
 
   passthru.updateScript = nix-update-script { };
 
@@ -133,7 +149,7 @@ stdenv.mkDerivation (finalAttrs: {
     downloadPage = "https://github.com/unknownskl/greenlight/releases";
     license = lib.licenses.mit;
     maintainers = with lib.maintainers; [ duckysocks22 ];
-    inherit (electron_42.meta) platforms;
+    platforms = [ "x86_64-linux" ];
     mainProgram = "greenlight";
   };
 })
