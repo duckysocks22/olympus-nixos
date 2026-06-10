@@ -193,9 +193,9 @@ in
           name = "ProtonDB";
           urls = [
             {
-              template = "https://www.protondb.com/";
+              template = "https://www.protondb.com/search";
               params = [
-                { name = "q"; value = "{searchTerms}" ; ];
+                { name = "q"; value = "{searchTerms}"; }
               ];
             }
           ];
