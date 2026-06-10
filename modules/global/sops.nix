@@ -19,8 +19,8 @@
   sops.secrets."samba/local".owner = config.users.users.foxtrot.name;
   sops.secrets."samba/local".group = config.users.users.foxtrot.group;
 
-  sops.secrets."syncthing/circe/cert" = { owner = "syncthing"; path = "/run/secrets/syncthing/circe/cert.pem"; };
-  sops.secrets."syncthing/circe/key" = { owner = "syncthing"; path = "/run/secrets/syncthing/circe/key.pem"; };
+  #sops.secrets."syncthing/circe/cert" = { owner = "syncthing"; path = "/run/secrets/syncthing/circe/cert.pem"; };
+  #sops.secrets."syncthing/circe/key" = { owner = "syncthing"; path = "/run/secrets/syncthing/circe/key.pem"; };
 
   sops.secrets."netbird/client-key" = { 
     owner = "foxtrot";
