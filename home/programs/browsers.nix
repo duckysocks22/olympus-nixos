@@ -189,6 +189,19 @@ in
           definedAliases = [ "@kagi" ];
         };
 
+        protondb = {
+          name = "ProtonDB";
+          urls = [
+            {
+              template = "https://www.protondb.com/";
+              params = [
+                { name = "q"; value = "{searchTerms}" ; ];
+              ];
+            }
+          ];
+          definedAliases = [ "@proton" ];
+        };
+
         "Nix Packages" = {
           urls = [
             {
