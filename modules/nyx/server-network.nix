@@ -4,11 +4,6 @@
   imports = [
     ./services/networking/netbird.nix
   ];
-
-  services.tailscale = {
-    enable = false;
-  };
-
   systemd.network.enable = true;
 
   systemd.network.networks."enp34s0" = {
@@ -18,12 +13,6 @@
     networkConfig.Gateway = "172.17.0.254";
     networkConfig.DNS = "9.9.9.9";
     linkConfig.RequiredForOnline = "yes";
-  };
-
-  systemd.network.networks."tailscale0" = {
-    matchConfig.Name = "tailscale0";
-    networkConfig.DHCP = "ipv4";
-    linkConfig.RequiredForOnline = "no";
   };
 
   services.resolved = {
