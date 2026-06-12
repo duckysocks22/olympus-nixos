@@ -10,7 +10,11 @@
   boot = {
     kernelPackages = pkgs.linuxPackages_zen;
     kernelModules = [ "sg" "hid-tmff-new" "hid-tminit-new" ];
-    kernelParams = [ "amd_iommu=on" ];
+    kernelParams = [
+      "amd_iommu=on"
+      "amd_pstate=active"
+      "processor.max_cstate=1"
+    ];
     loader = {
       limine = {
         enable = true;

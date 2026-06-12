@@ -22,6 +22,10 @@ in
     enable = true;
   };
 
+  security.pam.loginLimits = [
+    { domain = "@users"; type = "-"; item = "rtprio"; value = "99"; }
+  ];
+
   programs.gamemode = {
     enable = true;
     settings = {

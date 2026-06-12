@@ -58,7 +58,8 @@
 
   security.forcePageTableIsolation = true;
 
-  environment.memoryAllocator.provider = "graphene-hardened";
+  # graphene-hardened removed: /etc/ld-nix.so.preload has no per-program exclusions,
+  # and it breaks gamescope's startup under Steam's restricted environment.
 
   security.apparmor.enable = true;
   security.apparmor.killUnconfinedConfinables = true;
