@@ -11,6 +11,9 @@ in
 
   programs.steam = {
     enable = true;
+    package = pkgs.steam.override {
+      extraBwrapArgs = [ "--bind" "/dev/null" "/etc/ld-nix.so.preload" ];
+    };
     extraCompatPackages = with pkgs; [
       proton-ge-bin
       dwproton
@@ -31,7 +34,7 @@ in
     settings = {
       general = {
         reaper_freq = 5;
-        desiredgov = "performance";
+        desiredgov = "powersave";
         desiredprof = "performance";
         igpu_desiredgov = -1; #default is powersave
         igpu_power_threshold = 0.3;
@@ -73,6 +76,13 @@ in
 
   environment.systemPackages = with pkgs; [
     python312Packages.yt-dlp
+    bubblewrap
+    (writeShellScriptBin "no-hardened" ''
+      exec ${bubblewrap}/bin/bwrap \
+        --dev-bind / / \
+        --bind /dev/null /etc/ld-nix.so.preload \
+        -- "$@"
+    '')
   ];
 
   programs.appimage = {

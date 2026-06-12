@@ -14,16 +14,16 @@
       }
       {
         timeout = 20;
-        command = lock;
+        command = "${pkgs.gamemode}/bin/gamemoded -s 2>/dev/null || ${lock}";
       }
       {
         timeout = 30;
-        command = display "off";
+        command = "${pkgs.gamemode}/bin/gamemoded -s 2>/dev/null || ${display "off"}";
         resumeCommand = display "on";
       }
       {
         timeout = 60;
-        command = "${pkgs.systemd}/bin/systemctl suspend";
+        command = "${pkgs.gamemode}/bin/gamemoded -s 2>/dev/null || ${pkgs.systemd}/bin/systemctl suspend";
       }
     ];
     events = [
