@@ -1,10 +1,8 @@
 { pkgs, ... }:
 {
   boot.blacklistedKernelModules = [
-    # Obscure network protocols
     "ax25" "netrom" "rose"
 
-    # Old or rare or insufficiently audited filesystems
     "adfs" "affs"
     "bfs" "befs"
     "cramfs"
@@ -23,16 +21,12 @@
   security.protectKernelImage = true;
 
   boot.kernelParams = [
-   # Don't merge slabs
    "slab_nomerge"
 
-   # Overwrite free'd pages
    "page_poison=1"
 
-   # Enable page allocator randomization
    "page_alloc.shuffle=1"
 
-   # Disable debugfs
    "debugfs=off"
   ];
   
@@ -56,10 +50,9 @@
     "net.ipv4.conf.default.send_redirects" = false;
   };
 
-  security.forcePageTableIsolation = true;
+  environment.memoryAllocator.provider = "graphene-hardened";
 
-  # graphene-hardened removed: /etc/ld-nix.so.preload has no per-program exclusions,
-  # and it breaks gamescope's startup under Steam's restricted environment.
+  security.forcePageTableIsolation = true;
 
   security.apparmor.enable = true;
   security.apparmor.killUnconfinedConfinables = true;

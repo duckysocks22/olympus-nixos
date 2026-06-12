@@ -11,6 +11,7 @@
       ../../modules/athena/disko.nix
       ../../modules/global/preservation.nix
       ../../modules/global/remote-builder.nix
+      ../../modules/global/harden.nix
       #../../modules/greeter/ly.nix
       ../../modules/global/greeter/cosmic-greeter.nix
       ../../modules/global/portals.nix

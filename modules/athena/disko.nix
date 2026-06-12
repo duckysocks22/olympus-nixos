@@ -44,6 +44,7 @@
                 name = "crypted";
                 settings = {
                   allowDiscards = true;
+                  crypttabExtraOpts = ["tpm2-device=auto"];
                 };
                 extraFormatArgs = [ "tpm2-device=auto" ];
                 content = {
