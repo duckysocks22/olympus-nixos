@@ -7,7 +7,7 @@ let
         exec ${pkgs.gamemode}/bin/gamemoderun \
           ${pkgs.bubblewrap}/bin/bwrap \
             --dev-bind / / \
-            --bind /dev/null /etc/ld-nix.so.preload \
+            --bind /dev/null "$(readlink -f /etc/ld-nix.so.preload)" \
             -- ${pkg}/bin/${binName} "$@"
       '';
     in pkgs.symlinkJoin {
