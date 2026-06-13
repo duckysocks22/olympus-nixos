@@ -66,6 +66,7 @@
             ".config/attic"
             ".config/netbird"
             ".config/git"
+            ".config/heroic"
             ".config/mozilla"
             ".config/thunderbird"
             ".config/protonmail"
