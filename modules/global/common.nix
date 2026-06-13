@@ -67,6 +67,10 @@ in
     };
   };
 
+  programs.gnupg.agent = {
+    enable = true;
+  };
+
   programs.honkers-railway-launcher.enable = true;
 
   programs.localsend = {
