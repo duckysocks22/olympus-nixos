@@ -80,6 +80,7 @@
 	    ".factorio"
             ".steam"
             ".xlcore"
+            ".MakeMKV"
             "olympus-nixos"
 	    "Desktop"
 	    "Documents"
