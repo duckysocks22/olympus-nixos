@@ -16,6 +16,7 @@
     winetricks
     protontricks
     remmina
+    filezilla
   ];
 
   programs.kitty = {
