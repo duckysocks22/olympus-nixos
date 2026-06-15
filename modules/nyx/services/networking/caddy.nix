@@ -59,11 +59,14 @@ in
         dns bunny {$BUNNY_API}
       }
     '';
-    virtualHosts."http://stream.puppygirls.net, https://stream.puppygirls.net".extraConfig = ''
-      @jellyfin_client {
-        header User-Agent *Jellyfin*
-      }
-      redir @jellyfin_client https://jellyfin.puppygirls.net{uri} permanent
+    virtualHosts."http://seerr.puppygirls.net, https://seerr.puppygirls.net".extraConfig = ''
+      header Access-Control-Allow-Origin "https://stream.puppygirls.net"
+      header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+      header Access-Control-Allow-Headers "Content-Type, Authorization, X-Api-Key"
+      header Access-Control-Allow-Credentials "true"
+
+      @options method OPTIONS
+      respond @options 204
 
       reverse_proxy :5055 {
         header_up X-Real-IP {remote_host}
@@ -73,8 +76,13 @@ in
         dns bunny {$BUNNY_API}
       }
     '';
-    virtualHosts."http://jellyfin.puppygirls.net, https://jellyfin.puppygirls.net".extraConfig = ''
-      reverse_proxy :8096
+    virtualHosts."http://stream.puppygirls.net, https://stream.puppygirls.net".extraConfig = ''
+      reverse_proxy :8096 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+      }
 
       tls {
         dns bunny {$BUNNY_API}
