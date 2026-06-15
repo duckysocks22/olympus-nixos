@@ -36,6 +36,12 @@
     };
   };
 
+  services.seerr = {
+    enable = true;
+    openFirewall = true;
+    package = pkgs-unstable.seerr;
+  };
+
   systemd.services.jellyfin.serviceConfig = {
   DeviceAllow = [
     "/dev/nvidiactl rw"

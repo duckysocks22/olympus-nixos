@@ -60,6 +60,20 @@ in
       }
     '';
     virtualHosts."http://stream.puppygirls.net, https://stream.puppygirls.net".extraConfig = ''
+      @jellyfin_client {
+        header User-Agent *Jellyfin*
+      }
+      redir @jellyfin_client https://jellyfin.puppygirls.net{uri} permanent
+
+      reverse_proxy :5055 {
+        header_up X-Real-IP {remote_host}
+      }
+
+      tls {
+        dns bunny {$BUNNY_API}
+      }
+    '';
+    virtualHosts."http://jellyfin.puppygirls.net, https://jellyfin.puppygirls.net".extraConfig = ''
       reverse_proxy :8096
 
       tls {
