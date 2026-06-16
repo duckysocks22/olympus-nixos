@@ -43,7 +43,7 @@
         package = pkgs.tdarr-node;
         serverURL = "http://127.0.0.1:8266";
         workers = {
-          transcodeCPU = 3;
+          transcodeCPU = 2;
           transcodeGPU = 0;
           healthcheckCPU = 0;
           healthcheckGPU = 4;
