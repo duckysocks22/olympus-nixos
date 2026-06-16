@@ -59,7 +59,19 @@ in
         dns bunny {$BUNNY_API}
       }
     '';
-    virtualHosts."http://seerr.puppygirls.net, https://seerr.puppygirls.net".extraConfig = ''
+    virtualHosts."http://stream.puppygirls.net, https://stream.puppygirls.net".extraConfig = ''
+      reverse_proxy :8096 {
+        header_up Host {host}
+        header_up X-Real-IP {remote_host}
+        header_up X-Forwarded-For {remote_host}
+        header_up X-Forwarded-Proto {scheme}
+      }
+
+      tls {
+        dns bunny {$BUNNY_API}
+      }
+    '';
+    virtualHosts."https://seerr.puppygirls.net".extraConfig = ''
       header Access-Control-Allow-Origin "https://stream.puppygirls.net"
       header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
       header Access-Control-Allow-Headers "Content-Type, Authorization, X-Api-Key"
@@ -76,18 +88,71 @@ in
         dns bunny {$BUNNY_API}
       }
     '';
-    virtualHosts."http://stream.puppygirls.net, https://stream.puppygirls.net".extraConfig = ''
-      reverse_proxy :8096 {
-        header_up Host {host}
-        header_up X-Real-IP {remote_host}
-        header_up X-Forwarded-For {remote_host}
-        header_up X-Forwarded-Proto {scheme}
-      }
+    virtualHosts."https://radarr.puppygirls.net".extraConfig = ''
+      header Access-Control-Allow-Origin "https://stream.puppygirls.net"
+      header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+      header Access-Control-Allow-Headers "Content-Type, Authorization, X-Api-Key"
+      header Access-Control-Allow-Credentials "true"
 
-      tls {
-        dns bunny {$BUNNY_API}
+      @options method OPTIONS
+      respond @options 204
+
+      reverse_proxy :5056 {
+        header_up X-Real-IP {remote_host}
+        transport http {
+          versions 1.1
+        }
       }
     '';
+    virtualHosts."https://sonarr.puppygirls.net".extraConfig = ''
+      header Access-Control-Allow-Origin "https://stream.puppygirls.net"
+      header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+      header Access-Control-Allow-Headers "Content-Type, Authorization, X-Api-Key"
+      header Access-Control-Allow-Credentials "true"
+
+      @options method OPTIONS
+      respond @options 204
+
+      reverse_proxy :5057 {
+        header_up X-Real-IP {remote_host}
+        transport http {
+          versions 1.1
+        }
+      }
+    '';
+    virtualHosts."https://prowlarr.puppygirls.net".extraConfig = ''
+      header Access-Control-Allow-Origin "https://stream.puppygirls.net"
+      header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+      header Access-Control-Allow-Headers "Content-Type, Authorization, X-Api-Key"
+      header Access-Control-Allow-Credentials "true"
+
+      @options method OPTIONS
+      respond @options 204
+
+      reverse_proxy :5058 {
+        header_up X-Real-IP {remote_host}
+        transport http {
+          versions 1.1
+        }
+      }
+    '';
+    virtualHosts."https://tdarr.puppygirls.net".extraConfig = ''
+      header Access-Control-Allow-Origin "https://stream.puppygirls.net"
+      header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+      header Access-Control-Allow-Headers "Content-Type, Authorization, X-Api-Key"
+      header Access-Control-Allow-Credentials "true"
+
+      @options method OPTIONS
+      respond @options 204
+
+      reverse_proxy :5059 {
+        header_up X-Real-IP {remote_host}
+        transport http {
+          versions 1.1
+        }
+      }
+    '';
+
     virtualHosts."http://music.puppygirls.net, https://music.puppygirls.net".extraConfig = ''
       reverse_proxy :4533
 

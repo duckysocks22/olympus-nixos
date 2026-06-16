@@ -12,6 +12,7 @@
 
   imports = [
     "${inputs.nixpkgs-unstable}/nixos/modules/services/misc/jellyfin.nix"
+    ./extra.nix
   ];
 
   services.jellyfin = {
@@ -36,19 +37,20 @@
     };
   };
 
-  services.seerr = {
-    enable = true;
-    openFirewall = true;
-    package = pkgs-unstable.seerr;
+  systemd.services.jellyfin.serviceConfig = {
+    DeviceAllow = [
+      "/dev/nvidiactl rw"
+      "/dev/nvidia0 rw"
+      "/dev/nvidia-uvm rw"
+      "/dev/nvidia-uvm-tools rw"
+    ];
+    PrivateDevices = false;
   };
 
-  systemd.services.jellyfin.serviceConfig = {
-  DeviceAllow = [
-    "/dev/nvidiactl rw"
-    "/dev/nvidia0 rw"
-    "/dev/nvidia-uvm rw"
-    "/dev/nvidia-uvm-tools rw"
-  ];
-  PrivateDevices = false;
-};
+  users.users.jellyfin = {
+    isSystemUser = true;
+    group = "jellyfin";
+  };
+
+  users.groups.jellyfin = {};
 }

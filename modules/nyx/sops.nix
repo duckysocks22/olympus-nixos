@@ -30,6 +30,9 @@
   sops.secrets."admin/user" = {};
   sops.secrets."admin/pass" = {};
 
+  sops.secrets."media/tdarr/server_env" = { owner = "tdarr"; };
+  sops.secrets."media/tdarr/node_env" = { owner = "tdarr"; };
+
   sops.secrets."syncthing/nyx/cert" = { owner = "syncthing"; path = "/run/secrets/syncthing/nyx/cert.pem"; };
   sops.secrets."syncthing/nyx/key" = { owner = "syncthing"; path = "/run/secrets/syncthing/nyx/key.pem"; };
 
