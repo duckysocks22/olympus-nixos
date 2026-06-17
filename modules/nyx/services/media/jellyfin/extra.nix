@@ -43,10 +43,10 @@
         package = pkgs.tdarr-node;
         serverURL = "http://127.0.0.1:8266";
         workers = {
-          transcodeCPU = 2;
-          transcodeGPU = 0;
-          healthcheckCPU = 0;
-          healthcheckGPU = 4;
+          transcodeCPU = 0;
+          transcodeGPU = 1;
+          healthcheckCPU = 4;
+          healthcheckGPU = 0;
         };
       };
     };
@@ -58,8 +58,11 @@
   };
 
   systemd.services.tdarr-node-nyx = {
+    environment = {
+      ffmpegPath = "${pkgs.ffmpeg-tdarr}/bin/ffmpeg";
+    };
     serviceConfig = {
-      ReadWritePaths = [ 
+      ReadWritePaths = [
         "/media/hdd1/services/tdarr/transcode_cache"
         "/media/hdd1/media/jellyfin/library"
       ];

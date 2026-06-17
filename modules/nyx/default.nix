@@ -2,6 +2,7 @@
 {
   imports = [
     ./power.nix
+    ./hardenedKernel.nix
     ./services/media/jellyfin/default.nix
     ./services/remote-builder.nix
     ./services/qbittorrent.nix

@@ -150,6 +150,7 @@
             {
               nixpkgs.overlays = [
                 (import ./modules/overlays/caddy.nix)
+                (import ./modules/overlays/ffmpeg-tdarr.nix)
               ];
             }
           ];

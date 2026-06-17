@@ -1,13 +1,12 @@
 { lib, ... }:
 {
   powerManagement = {
-    cpuFreqGovernor = "ondemand";
+    cpuFreqGovernor = "performance";
     cpufreq = {
-      max = 2800000;
-      min = 1000000;
+      max = 4500000;
+      min = 100000;
     };
-    powertop.enable = true;
   };
 
-  boot.kernelParams = lib.mkForce [ "amd_pstate=disable" ];
+  boot.kernelParams = lib.mkForce [ "amd_pstate=active" ];
 }
