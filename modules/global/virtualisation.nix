@@ -8,9 +8,15 @@
 
   virtualisation.libvirtd.enable = true;
   virtualisation.spiceUSBRedirection.enable = true;
+
+  virtualisation.waydroid = {
+    enable = true;
+    package = pkgs.waydroid-nftables;
+  };
   
   environment.systemPackages = with pkgs; [
     guestfs-tools
     virtiofsd
+    wl-clipboard
   ];
 }
