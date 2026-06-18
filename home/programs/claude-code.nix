@@ -215,11 +215,11 @@ in
         nix flake update                # wrong — updates everything
   '';
 
-  programs.vscode = {
+  /*programs.vscode = {
     enable = true;
     profiles."foxtrot" = {
       extensions = with pkgs.vscode-extensions; [ bbenoist.nix golang.go twxs.cmake anthropic.claude-code ];
       userSettings = { };
     };
-  };
+  };*/
 }

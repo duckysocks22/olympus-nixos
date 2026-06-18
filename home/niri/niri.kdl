@@ -255,15 +255,23 @@ window-rule {
 }
 
 window-rule {
-	// make window fill screen
+   // Games: open in real (Wayland-protocol) fullscreen so they get the
+   // actual output buffer instead of niri's tiled column. Add new games
+   // here once you know their app-id (find it via `niri msg windows`).
    match app-id="Minecraft"
    match app-id="yarc-launcher"
+   match title="Satisfactory  "
+   open-fullscreen true
+}
+
+window-rule {
+   // Apps that want to be big but stay inside niri's layout. NOT games —
+   // these are productivity apps that play badly with true fullscreen.
    match app-id="unityhub"
    match app-id="com.bitwig.BitwigStudio"
    match app-id="synthv-studio.exe"
    match app-id="wlfreerdp"
    match title="FreeRDP"
-   match title="Satisfactory  "
    open-maximized true
 }
 
