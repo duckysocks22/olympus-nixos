@@ -57,6 +57,10 @@
     };
   };
 
+  systemd.tmpfiles.rules = [
+    "d /media/hdd1/services/tdarr/transcode_cache 0755 tdarr tdarr -"
+  ];
+
   systemd.services.tdarr-node-nyx = {
     environment = {
       ffmpegPath = "${pkgs.ffmpeg-tdarr}/bin/ffmpeg";
