@@ -5,6 +5,8 @@
     ./hardenedKernel.nix
     ./services/media/jellyfin/default.nix
     ./services/remote-builder.nix
+    ./services/ntfy.nix
+    ./services/mollysocket.nix
     ./services/qbittorrent.nix
     ./services/ssh-tunnel.nix
     ./services/syncthing.nix

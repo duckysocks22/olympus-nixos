@@ -30,6 +30,8 @@
   sops.secrets."admin/user" = {};
   sops.secrets."admin/pass" = {};
 
+  sops.secrets."mollysocket/vapid_privkey" = { owner = "mollysocket"; };
+
   sops.secrets."media/tdarr/server_env" = { owner = "tdarr"; };
   sops.secrets."media/tdarr/node_env" = { owner = "tdarr"; };
 

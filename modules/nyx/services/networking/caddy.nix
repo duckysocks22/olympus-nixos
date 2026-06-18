@@ -225,6 +225,22 @@ in
       }
       import mtls
     '';
+    virtualHosts."https://ntfy.olympus.moe".extraConfig = ''
+      reverse_proxy :1147
+
+      tls {
+        dns bunny {$BUNNY_API}
+      }
+    '';
+    virtualHosts."https://molly.olympus.moe".extraConfig = ''
+      reverse_proxy :8020 {
+        header_up Host {host}
+      }
+
+      tls {
+        dns bunny {$BUNNY_API}
+      }
+    '';
   };
   networking.firewall.allowedTCPPorts = [ 80 443 ];
 }
