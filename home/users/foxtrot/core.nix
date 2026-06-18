@@ -3,6 +3,7 @@
 {
   imports = [
     ../../programs/default.nix
+    ../../programs/claude-code.nix
     ../../git.nix
     ../../niri/default.nix
     ../../shell.nix

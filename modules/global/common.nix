@@ -23,6 +23,9 @@ in
 
   programs.gamescope = {
     enable = true;
+    # --immediate-flips mitigates the FIFO swapchain drift we hit on
+    # niri+VRR+multi-monitor that caused the ~25min FPS cliff on athena.
+    args = [ "--immediate-flips" ];
   };
 
   security.pam.loginLimits = [
