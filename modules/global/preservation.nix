@@ -92,6 +92,7 @@
 	    "Videos"
           ];
           files = [
+            ".claude.json"
             ".histfile"
 	    ".zsh_history"
           ];

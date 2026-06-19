@@ -308,6 +308,11 @@ in
                   url = "https://www.humblebundle.com";
                   keyword = "humble";
                 }
+                {
+                  name = "Exchange";
+                  url = "https://swap.bitania.com";
+                  keyword = "coin";
+                }
               ];
             }
             {
