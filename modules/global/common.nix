@@ -23,6 +23,21 @@ in
 
   programs.gamescope = {
     enable = true;
+    # Wrap the gamescope binary to always clear LD_PRELOAD before launch.
+    # Steam preloads gameoverlayrenderer.so via LD_PRELOAD; this conflicts
+    # with gamescope's Vulkan compositor and causes FPS drops after ~30 min.
+    # Clearing it here means any Steam launch option using gamescope doesn't
+    # need to include LD_PRELOAD="" manually. Steam Input and achievements
+    # are unaffected — only the visual Steam overlay is disabled.
+    package = pkgs.runCommand "gamescope-ldpreload-cleared" {
+      nativeBuildInputs = [ pkgs.makeBinaryWrapper ];
+    } ''
+      mkdir -p $out/bin
+      makeWrapper ${pkgs.gamescope}/bin/gamescope $out/bin/gamescope \
+        --inherit-argv0 \
+        --unset LD_PRELOAD
+      ln -s ${pkgs.gamescope}/bin/gamescopectl $out/bin/gamescopectl
+    '';
   };
 
   security.pam.loginLimits = [

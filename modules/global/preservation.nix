@@ -24,6 +24,8 @@
         "/var/log"
         { directory = "/var/lib/nixos"; inInitrd = true; }
         { directory = "/sys/class/backlight"; inInitrd = true; }
+        "/var/cache/mullvad-vpn"
+        "/etc/mullvad-vpn/"
       ];
 
       # preserve system files

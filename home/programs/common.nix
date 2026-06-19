@@ -17,6 +17,7 @@
     protontricks
     remmina
     filezilla
+    feather
   ];
 
   programs.kitty = {

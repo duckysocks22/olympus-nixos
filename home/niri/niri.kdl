@@ -140,6 +140,15 @@ layer-rule {
     match namespace="^quickshell$"
     place-within-backdrop true
 }
+layer-rule {
+    // dms:bar sits in the "top" layer by default, which renders above all
+    // windows including fullscreen games. place-within-backdrop moves it
+    // into the backdrop zone (below the tiling layout) so fullscreen windows
+    // properly cover it. The bar's exclusive-zone still keeps tiles out of
+    // the bar area during normal use.
+    match namespace="^dms:bar$"
+    place-within-backdrop true
+}
 overview {
     workspace-shadow {
         off
@@ -255,12 +264,13 @@ window-rule {
 }
 
 window-rule {
-   // Games: open in real (Wayland-protocol) fullscreen so they get the
-   // actual output buffer instead of niri's tiled column. Add new games
-   // here once you know their app-id (find it via `niri msg windows`).
    match app-id="Minecraft"
    match app-id="yarc-launcher"
    match title="Satisfactory  "
+   // Title-based match is unreliable for Steam/Proton games: the window is
+   // mapped before the title is set, so open-fullscreen never fires.
+   // Match by app-id instead — Steam sets WM_CLASS (→ app-id) at creation time.
+   match app-id="steam_app_4576510"
    open-fullscreen true
 }
 
@@ -497,8 +507,13 @@ binds {
     Mod+Escape allow-inhibiting=false { toggle-keyboard-shortcuts-inhibit; }
     Mod+Shift+P { power-off-monitors; }
 }
+// Removed honor-xdg-activation-with-invalid-serial — it allowed Steam to
+// steal focus back from fullscreen games using invalid XDG tokens, causing
+// the game and Steam library window to fight for z-order (flickering).
+// Games launched from Steam still receive a valid token at launch and will
+// grab focus correctly. XWayland games go through xwayland-satellite which
+// issues its own tokens.
 debug {
-    honor-xdg-activation-with-invalid-serial
-}    
+}
 include "dms/cursor.kdl"
 //include "dms/binds.kdl"

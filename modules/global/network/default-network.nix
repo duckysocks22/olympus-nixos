@@ -4,6 +4,7 @@
   imports = [
     ./netbird.nix
     ./dnscrypt-proxy.nix
+    ./mullvad.nix
   ];
 
   networking.networkmanager = {

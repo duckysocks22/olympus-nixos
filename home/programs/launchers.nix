@@ -31,4 +31,12 @@ in
     pkgs.r2modman
     (wrapNoHardened pkgs.heroic "heroic")
   ];
+
+  programs.mangohud = {
+    enable = true;
+    enableSessionWide = true;
+    settings = {
+      preset = 2;
+    };
+  };
 }
