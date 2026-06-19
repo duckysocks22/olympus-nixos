@@ -93,7 +93,7 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, sops-nix, disko, preservation, ... }: 
+  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, sops-nix, disko, preservation, jovian, ... }: 
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -134,6 +134,7 @@
             ./home/default-unstable.nix
             ./modules/global/stylix/stylix.nix
             ./modules/global/lix.nix
+            jovian.nixosModules.default
         ];
           specialArgs = {
             inherit inputs;
