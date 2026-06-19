@@ -3,7 +3,7 @@
   disko.devices = {
     disk = {
       main = {
-        device = "/dev/disk/by-id/nvme-CT500P1SSD8_2012E296277B";
+        device = "/dev/disk/by-id/nvme-Phison_ESMP512GMB47C3-E13TS_22373M51232552";
 	type = "disk";
 	content = {
 	  type = "gpt";
@@ -63,12 +63,12 @@
         };
       };
       SD512 = {
-        device = "/dev/disk/by-id/nvme-Samsung_SSD_980_PRO_2TB_S76ENL0XB13704D";
+        device = "/dev/disk/by-id/mmc-SD512_0x7e015778";
 	type = "disk";
 	content = {
 	  type = "gpt";
 	  partitions = {
-	    ssd2linux = {
+	    SD512 = {
 	      size = "100%";
 	      content = {
 		type = "filesystem";

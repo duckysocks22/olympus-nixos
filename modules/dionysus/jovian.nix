@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, pkgs-unstable, ... }:
 {
   jovian = {
     steam = {
@@ -24,5 +24,5 @@
       has.amd.gpu = true;
     };
   };
-  kernelPackages = lib.mkForce pkgs.linuxPackages_zen;
+  boot.kernelPackages = lib.mkForce pkgs-unstable.linuxPackages_zen;
 }

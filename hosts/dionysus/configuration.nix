@@ -21,7 +21,7 @@
   time.timeZone = "America/New_York";
 
   services.desktopManager.plasma6.enable = true;
-  services.desktopManager.plasma-login-manager.enable = true;
+  services.displayManager.plasma-login-manager.enable = true;
   services.xserver = {
     enable = true;
     xkb.layout = "us";
@@ -29,7 +29,7 @@
 
   services.displayManager.defaultSession = "plasma";
   services.pulseaudio.enable = true;
-  services.rtkit.enable = true;
+  security.rtkit.enable = true;
   services.pipewire = {
     enable = true;
     alsa.enable = true;
