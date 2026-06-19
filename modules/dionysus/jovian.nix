@@ -1,3 +1,4 @@
+{ lib, ... }:
 {
   jovian = {
     steam = {
@@ -23,4 +24,5 @@
       has.amd.gpu = true;
     };
   };
+  kernelPackages = lib.mkForce pkgs.linuxPackages_zen;
 }
