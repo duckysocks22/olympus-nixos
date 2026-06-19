@@ -9,6 +9,7 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/dionysus/jovian.nix
+      ../../modules/dionysus/disko.nix
       ../../modules/global/users/foxtrot.nix
       ../../modules/global/system.nix
       ../../modules/global/nix/default.nix

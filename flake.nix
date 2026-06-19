@@ -135,6 +135,7 @@
             ./modules/global/stylix/stylix.nix
             ./modules/global/lix.nix
             jovian.nixosModules.default
+            disko.nixosModules.disko
         ];
           specialArgs = {
             inherit inputs;
