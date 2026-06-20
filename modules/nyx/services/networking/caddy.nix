@@ -220,7 +220,7 @@ in
       encode gzip zstd
       reverse_proxy :5006 {
         transport http {
-          tls_server_name budget.olympus.moe
+          tls_server_name budget.puppygirls.net
         }
       }
       import mtls
