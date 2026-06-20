@@ -35,7 +35,7 @@
     pkgs.nix-prefetch-git
     #pkgs.neovim
     pkgs.curl
-    pkgs.torrent7z
+    pkgs.p7zip
     pkgs.python3
     pkgs.mktorrent
     pkgs.bashmount
