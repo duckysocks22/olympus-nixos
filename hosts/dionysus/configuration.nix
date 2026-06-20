@@ -27,15 +27,7 @@
     xkb.layout = "us";
   };
 
-  services.displayManager.defaultSession = "plasma";
-  services.pulseaudio.enable = true;
   security.rtkit.enable = true;
-  services.pipewire = {
-    enable = true;
-    alsa.enable = true;
-    alsa.support32Bit = true;
-    pulse.enable = true;
-  };
 
   nixpkgs.config.allowUnfree = true;
 
@@ -44,5 +36,5 @@
     elisa
   ];
 
-  system.stateVersion = "unstable";
+  system.stateVersion = "26.11";
 }

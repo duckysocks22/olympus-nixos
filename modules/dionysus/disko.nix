@@ -40,12 +40,11 @@
                   type = "btrfs";
                   extraArgs = [ "-f" ];
                   subvolumes = {
-                    "/persistent" = {
+                    "/root" = {
                       mountOptions = [
-                        "subvol=persistent"
+                        "compress=zstd"
                         "noatime"
                       ];
-                      mountpoint = "/persistent";
                     };
                     "/nix" = {
                       mountOptions = [
