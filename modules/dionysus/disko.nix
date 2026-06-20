@@ -41,6 +41,7 @@
                   extraArgs = [ "-f" ];
                   subvolumes = {
                     "/root" = {
+                      mountpoint = "/";
                       mountOptions = [
                         "compress=zstd"
                         "noatime"
