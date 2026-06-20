@@ -16,7 +16,6 @@
     ];
 
   networking.hostName = "athena-nixos"; # Define your hostname.
-  networking.wireless.iwd.enable = true;
 
   time.timeZone = "America/New_York";
 
