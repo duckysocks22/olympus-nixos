@@ -140,15 +140,6 @@ layer-rule {
     match namespace="^quickshell$"
     place-within-backdrop true
 }
-layer-rule {
-    // dms:bar sits in the "top" layer by default, which renders above all
-    // windows including fullscreen games. place-within-backdrop moves it
-    // into the backdrop zone (below the tiling layout) so fullscreen windows
-    // properly cover it. The bar's exclusive-zone still keeps tiles out of
-    // the bar area during normal use.
-    match namespace="^dms:bar$"
-    place-within-backdrop true
-}
 overview {
     workspace-shadow {
         off
@@ -271,6 +262,7 @@ window-rule {
    // mapped before the title is set, so open-fullscreen never fires.
    // Match by app-id instead — Steam sets WM_CLASS (→ app-id) at creation time.
    match app-id="steam_app_4576510"
+   match app-id="steam_app_2246340"
    open-fullscreen true
 }
 
