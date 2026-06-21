@@ -36,10 +36,10 @@
     HandleHibernateKey = "ignore";
   };
 
-  # Use S0ix (suspend-to-idle) instead of S3. The RX 9070 XT (RDNA4/GFX12)
-  # fails to reinitialize the display pipeline after S3, crashing niri.
-  # Kept athena-specific so circe (laptop) retains S3 for battery life.
-  boot.kernelParams = [ "mem_sleep_default=s2idle" ];
+  boot.kernelParams = [
+    "mem_sleep_default=s2idle"
+    "processor.max_cstate=1"
+  ];
 
   networking.hostName = "athena-nixos"; # Define your hostname.
   # networking.wireless.enable = true;  # Enables wireless support via wpa_supplicant.

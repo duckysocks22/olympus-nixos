@@ -13,7 +13,6 @@
     kernelParams = [
       "amd_iommu=on"
       "amd_pstate=active"
-      "processor.max_cstate=1"
     ];
     loader = {
       limine = {

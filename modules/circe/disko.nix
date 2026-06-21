@@ -33,8 +33,15 @@
             swap = {
               size = "16G";
               content = {
-                type = "swap";
-                resumeDevice = true;
+                type = "luks";
+                name = "crypted-swap";
+                settings = {
+                  allowDiscards = true;
+                };
+                content = {
+                  type = "swap";
+                  resumeDevice = true;
+                };
               };
             };
 	    luks = {
@@ -45,7 +52,6 @@
                 settings = {
                   allowDiscards = true;
                 };
-                extraFormatArgs = [ "tpm2-device=auto" ];
                 content = {
                   type = "btrfs";
                   extraArgs = [ "-f" ];

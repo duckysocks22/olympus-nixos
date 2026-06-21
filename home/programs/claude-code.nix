@@ -159,6 +159,14 @@ in
 
   home.packages = [ ];
 
+  home.file.".claude/memory/code-style.md".text = ''
+    # Code Style Preferences
+
+    ## Comments
+
+    Do not add inline comments to code. Explain changes in commit messages instead.
+  '';
+
   home.file.".claude/memory/workflow.md".text = ''
     # Session Workflow
 
