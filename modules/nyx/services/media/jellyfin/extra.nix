@@ -73,6 +73,18 @@
     };
   };
 
+  systemd.services.sonarr = {
+    serviceConfig = {
+      Group = lib.mkForce "jellyfin";
+    };
+  };
+
+  systemd.services.radarr = {
+    serviceConfig = {
+      Group = lib.mkForce "jellyfin";
+    };
+  };
+
   users.users = {
     seerr = {
       isSystemUser = true;
