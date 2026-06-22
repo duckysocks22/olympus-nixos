@@ -187,6 +187,14 @@ in
     '';
 
     #olympus.moe
+    virtualHosts."https://rss.olympus.moe".extraConfig = ''
+      import mtls
+      reverse_proxy :8082
+
+      tls {
+        dns bunny {$BUNNY_API}
+      }
+    '';
     virtualHosts."https://copy.olympus.moe".extraConfig = ''
       import mtls
 

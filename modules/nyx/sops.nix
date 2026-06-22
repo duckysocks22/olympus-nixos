@@ -24,6 +24,7 @@
   sops.secrets."attic/server-token" = {};
   sops.secrets."forgejo-runner/environment" = {};
   sops.secrets."navidrome/environment" = {};
+  sops.secrets."media/freshrss" = { owner = "freshrss"; };
   sops.secrets."immich/secrets" = {};
   sops.secrets."remotebuilder/athena" = {};
   sops.secrets."remotebuilder/circe" = {};

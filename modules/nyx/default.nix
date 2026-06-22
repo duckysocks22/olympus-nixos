@@ -4,6 +4,7 @@
     ./power.nix
     ./hardenedKernel.nix
     ./services/media/jellyfin/default.nix
+    ./services/media/freshrss.nix
     ./services/remote-builder.nix
     ./services/ntfy.nix
     ./services/mollysocket.nix
