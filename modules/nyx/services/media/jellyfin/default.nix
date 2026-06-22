@@ -29,6 +29,17 @@
       enableHardwareEncoding = true;
       enableToneMapping = true;
       deleteSegments = true;
+      # Enable NVDEC hardware decoding.
+      # Without this, HEVC is software-decoded on CPU and then uploaded to CUDA
+      # for tonemap_cuda, which can lose HDR10 frame side-data on the upload and
+      # causes seek-based transcodes to produce black video on some clients.
+      # With NVDEC, frames stay in CUDA memory end-to-end and HDR metadata is
+      # preserved correctly through the full GPU pipeline.
+      hardwareDecodingCodecs = {
+        h264 = true;
+        hevc = true;
+        hevc10bit = true; # required for HDR / 10-bit HEVC (e.g. UHD remuxes)
+      };
     };
     hardwareAcceleration = {
       enable = true;
