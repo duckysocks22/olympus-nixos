@@ -18,6 +18,10 @@
     ];
 
   home-manager.users.server = import ../../home/users/server/core.nix;
+  # Claude Code writes to ~/.claude/settings.json at runtime, replacing the
+  # HM-managed symlink with a regular file. Without this, the next rebuild
+  # fails with "Existing file would be clobbered" in checkLinkTargets.
+  home-manager.backupFileExtension = "bak";
 
   users.mutableUsers = false;
   users.users.root.hashedPasswordFile = config.sops.secrets."users/server".path;

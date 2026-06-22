@@ -118,7 +118,12 @@ in
             ''}
           '';
         in "+${script}";
-        ExecStart = lib.getExe crafty-pkg;
+        # --daemon skips crafty's interactive cmd.Cmd loop. Without this flag,
+        # cmdloop() calls input() on stdin, which is /dev/null, which raises
+        # EOFError every iteration; cmd.Cmd converts that to the string "EOF",
+        # no command matches, default() prints "*** Unknown syntax: EOF", and
+        # the loop spins at full speed flooding the journal.
+        ExecStart = "${lib.getExe crafty-pkg} --daemon";
         Restart = "on-failure";
         RestartSec = "10s";
         Type = "simple";
