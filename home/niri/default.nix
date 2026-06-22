@@ -37,6 +37,6 @@
     };
   };
   
-  services.mako.enable = true;
+  services.mako.enable = false;
   services.polkit-gnome.enable = true;
 }

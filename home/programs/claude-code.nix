@@ -75,12 +75,23 @@ in
       advisorModel = "claude-opus-4-7";
       skipAutoPermissionPrompt = true;
       permissions = {
-        defaultMode = "auto";
+        defaultMode = "default";
         allow = [
           "Read(${config.home.homeDirectory}/olympus-nixos/**)"
           "Grep(${config.home.homeDirectory}/olympus-nixos/**)"
           "Glob(${config.home.homeDirectory}/olympus-nixos/**)"
+          "Bash(ls *)"
+          "Bash(grep *)"
+          "Bash(find *)"
+          "Bash(git *)"
+          "Bash(stat *)"
+          "Bash(readlink *)"
+          "Bash(ps *)"
+          "Bash(busctl *)"
+          "Bash(curl *)"
+          "Bash(which *)"
           "Bash(nix *)"
+          "Bash(sudo nix *)"
           "Bash(nix-instantiate *)"
           "Bash(nix-store *)"
           "Bash(nix-build *)"
@@ -89,6 +100,13 @@ in
           "Bash(nixos-rebuild *)"
           "Bash(sudo nixos-rebuild *)"
           "Bash(home-manager *)"
+          "Bash(systemctl *)"
+          "Bash(sudo systemctl *)"
+          "Bash(journalctl *)"
+          "Bash(sudo journalctl *)"
+          "Read(/etc/**)"
+          "Read(/run/**)"
+          "Read(/nix/store/**)"
         ];
       };
       spinnerVerbs = {
@@ -179,10 +197,51 @@ in
 
     Do this for any repo being worked in, not just olympus-nixos.
     This avoids working on stale code and prevents conflicts on push.
+
+    ## Never commit, amend, or push without explicit user approval
+
+    `git add` is allowed when required (e.g. staging a new file before a
+    rebuild). But `git commit`, `git commit --amend`, and `git push` must
+    NEVER be run unless the user has explicitly asked for it in that message.
+    When in doubt, stage the files and stop — describe what would be committed
+    and wait for the instruction.
+  '';
+
+  home.file.".claude/memory/user-context.md".text = ''
+    # User Context
+
+    ## Home directory
+
+    Always use the **current user's** home directory — whoever is running
+    Claude Code at the time. Do NOT hardcode /home/foxtrot or derive a
+    path from an email address or any other indirect source.
+
+    - In Nix expressions: use `config.home.homeDirectory`
+    - In shell commands: use $HOME or ~
+    - In reasoning: infer from `whoami` / the active session, not from
+      any email address or username seen in context
+
+    The current deploying user happens to be "foxtrot" (/home/foxtrot),
+    but this should be treated as an example, not a constant. If a
+    different user runs Claude Code, their home directory is the
+    correct reference.
   '';
 
   home.file.".claude/memory/nix-gotchas.md".text = ''
     # Nix / Flake Gotchas (olympus-nixos)
+
+    ## Self-configuration always lives in claude-code.nix
+
+    Any changes to Claude Code's own permissions, memory files, agent
+    definition, hooks, or settings must be made in:
+
+        ~/olympus-nixos/home/programs/claude-code.nix
+
+    Do NOT write to ~/.claude/settings.json, ~/.claude/memory/*, or any
+    other ~/.claude path directly — those are nix store symlinks and writes
+    will fail or be silently lost on the next rebuild. Edit claude-code.nix
+    and rebuild.
+
 
     ## Memory files are read-only nix store symlinks
 
