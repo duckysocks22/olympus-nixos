@@ -228,6 +228,13 @@ in
     virtualHosts."https://ntfy.olympus.moe".extraConfig = ''
       reverse_proxy :1147
 
+      @httpget {
+        protocol http
+        method GET
+        path_regexp ^/([-_a-z0-9]{0,64}$|docs/|static/)
+      }
+      redir @httpget https://{host}{uri}
+
       tls {
         dns bunny {$BUNNY_API}
       }
