@@ -5,6 +5,7 @@
     ../../git.nix
     ../../shell.nix
     ../../programs/common.nix
+    ../../programs/claude-code.nix
     ../../programs/nixvim.nix
     ../../programs/browsers.nix
     ../../functions.nix
