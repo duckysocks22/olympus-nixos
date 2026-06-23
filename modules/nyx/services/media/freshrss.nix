@@ -1,12 +1,13 @@
 { config, ... }:
 {
   services.freshrss = {
-    enable       = true;
-    webserver    = "nginx";
-    virtualHost  = "freshrss";
-    baseUrl      = "https://rss.olympus.moe";
-    defaultUser  = "foxtrot";
-    authType     = "form";
+    enable = true;
+    api.enable = true;
+    webserver = "nginx";
+    virtualHost = "freshrss";
+    baseUrl = "https://rss.olympus.moe";
+    defaultUser = "foxtrot";
+    authType = "form";
     passwordFile = config.sops.secrets."media/freshrss".path;
   };
 
