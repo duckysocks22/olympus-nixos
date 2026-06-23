@@ -232,7 +232,6 @@ window-rule {
     match app-id=r#"^galculator$"#
     match app-id=r#"^blueman-manager$"#
     match app-id=r#"^org\.gnome\.Nautilus$"#
-    match app-id=r#"^steam$"#
     match app-id=r#"^xdg-desktop-portal$"#
     open-floating true
 }
@@ -258,9 +257,7 @@ window-rule {
    match app-id="Minecraft"
    match app-id="yarc-launcher"
    match title="Satisfactory  "
-   // Title-based match is unreliable for Steam/Proton games: the window is
-   // mapped before the title is set, so open-fullscreen never fires.
-   // Match by app-id instead — Steam sets WM_CLASS (→ app-id) at creation time.
+   match app-id="factorio"
    match app-id="steam_app_4576510"
    match app-id="steam_app_2246340"
    open-fullscreen true
