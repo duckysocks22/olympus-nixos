@@ -65,6 +65,7 @@ in
         header_up X-Real-IP {remote_host}
         header_up X-Forwarded-For {remote_host}
         header_up X-Forwarded-Proto {scheme}
+        flush_interval -1
       }
 
       tls {
