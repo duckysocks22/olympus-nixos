@@ -13,8 +13,8 @@
       #../../modules/circe/syncthing.nix
       ../../modules/packages/default.nix
       ../../modules/global/preservation.nix
-      ../../modules/global/network/ssh-tunnel.nix
-      ../../modules/circe/steam-proxy.nix
+      #../../modules/global/network/ssh-tunnel.nix
+      #../../modules/circe/steam-proxy.nix
       ../../modules/global/harden.nix
       #../../modules/global/greeter/ly.nix
       ../../modules/global/greeter/cosmic-greeter.nix
