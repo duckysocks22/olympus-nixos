@@ -321,7 +321,7 @@ in
               bookmarks = [
                 {
                   name = "qBit - nyx-nixos";
-                  url = "http://100.111.146.104:8080";
+                  url = "https://qbit.olympus.moe";
                   keyword = "qbit";
                 }
                 {

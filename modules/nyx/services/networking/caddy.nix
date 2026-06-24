@@ -234,6 +234,12 @@ in
       }
       import mtls
     '';
+    virtualHosts."https://qbit.olympus.moe".extraConfig = ''
+      encode gzip zstd
+      reverse_proxy :8080
+
+      import mtls
+    '';
     virtualHosts."https://ntfy.olympus.moe".extraConfig = ''
       reverse_proxy :1147
 
