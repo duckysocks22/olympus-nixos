@@ -196,6 +196,13 @@ in
         dns bunny {$BUNNY_API}
       }
     '';
+    virtualHosts."https://rsshub.olympus.moe".extraConfig = ''
+      reverse_proxy :1200
+
+      tls {
+        dns bunny {$BUNNY_API}
+      }
+    '';
     virtualHosts."https://copy.olympus.moe".extraConfig = ''
       import mtls
 
