@@ -259,8 +259,8 @@ window-rule {
    match title="Satisfactory  "
    match app-id="factorio"
    match app-id="steam_app_4576510"
-   match app-id="steam_app_2246340"
    open-fullscreen true
+   open-floating false
 }
 
 window-rule {
