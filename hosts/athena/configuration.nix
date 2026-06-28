@@ -32,6 +32,9 @@
 
   services.logind.settings.Login = {
     HandlePowerKey = "ignore";
+    HandlePowerKeyLongPress = "ignore";
+    HandleSuspendKey = "ignore";
+    HandleSuspendKeyLongPress = "ignore";
     HandleRebootKey = "ignore";
     HandleHibernateKey = "ignore";
   };
