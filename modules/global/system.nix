@@ -3,6 +3,14 @@
 
   networking.networkmanager.enable = true;
   hardware.bluetooth.enable = true;
+  hardware.bluetooth.settings = {
+    General = {
+      FastConnectable = true;
+    };
+    Policy = {
+      AutoEnable = true;
+    };
+  };
   services.tuned.enable = true;
   services.upower.enable = true;
   programs.zsh.enable = true;
@@ -24,6 +32,10 @@
         canTouchEfiVariables = false;
       };
     };
+  };
+
+  programs.gpu-screen-recorder = {
+    enable = true;
   };
 
   environment.systemPackages = [
@@ -105,6 +117,9 @@
     SUBSYSTEM=="hidraw", ATTRS{idVendor}=="361d", ATTRS{idProduct}=="0202", MODE="0660", TAG+="uaccess"
     SUBSYSTEM=="hidraw", ATTRS{idVendor}=="361d", ATTRS{idProduct}=="0203", MODE="0660", TAG+="uaccess"
     SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1fc9", ATTRS{idProduct}=="0021", MODE="0660", TAG+="uaccess"
+
+    # Disable USB autosuspend for Realtek RTL8852CE Bluetooth adapter (prevents brief disconnects)
+    ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="0852", TEST=="power/control", ATTR{power/control}="on"
   '';
 
   hardware.graphics = {

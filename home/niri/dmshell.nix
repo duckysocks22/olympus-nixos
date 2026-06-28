@@ -18,6 +18,15 @@ in
 
     plugins = {
       dankBatteryAlerts.enable = true;
+      dms-screen-recorder = {
+        src = pkgs.fetchFromGitHub {
+          owner = "arqueon";
+          repo = "dms-screen-recorder";
+          rev = "v1.2.0";
+          sha256 = "sha256-jkhrjgoLM2IGUgJUkoEGdsZVf9DIxY6j9X8Lh6rA05Y=";
+        };
+        enable = true;
+      };
     };
 
     settings = {
