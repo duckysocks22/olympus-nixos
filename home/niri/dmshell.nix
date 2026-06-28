@@ -365,7 +365,7 @@ in
       lockScreenShowProfileImage = true;
       lockScreenShowPasswordField = true;
       lockScreenShowMediaPlayer = true;
-      lockScreenPowerOffMonitorsOnLock = false;
+      lockScreenPowerOffMonitorsOnLock = true;
       lockAtStartup = false;
       enableFprint = false;
       maxFprintTries = 15;

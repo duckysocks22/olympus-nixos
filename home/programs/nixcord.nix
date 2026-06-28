@@ -57,7 +57,7 @@
         replaceGoogleSearch = {
           enable = true;
           customEngineName = "DuckDuckGo";
-          customEngineURL = "https://duckduckgo.com/";
+          customEngineUrl = "https://duckduckgo.com/";
         };
         dearrow = {
           enable = true;
@@ -71,19 +71,16 @@
         fixImagesQuality.enable = true;
         fixYoutubeEmbeds.enable = true;
         youtubeAdblock.enable = true;
-        ClearURLs.enable = true;
+        clearUrls.enable = true;
         messageLinkEmbeds.enable = true;
         translate.enable = true;
         unindent.enable = true;
         volumeBooster.enable = true;
         fakeNitro.enable = true;
-        USRBG.enable = true;
-        CustomRPC.enable = true;
+        usrbg.enable = true;
+        customRpc.enable = true;
         newGuildSettings.enable = true;
         noF1.enable = true;
-        # nixcord warns this should be renamed to "PetPet", but as of the
-        # pinned nixcord input the new name isn't actually defined yet.
-        # Revisit after a nixcord flake update.
         petpet.enable = true;
         expressionCloner.enable = true;
       };
