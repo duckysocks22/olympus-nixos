@@ -11,6 +11,6 @@ in
   ];
 
   boot.extraModulePackages = [
-    hid-tmff2
+    #hid-tmff2
   ];
 }
