@@ -49,6 +49,7 @@ in
       ai-commit = ''git commit --trailer "Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"'';
       cachestore = ''attic push --ignore-upstream-cache-filter main $(ls -d /nix/store/*/ | grep -v fake_nixpkgs)'';
       cachesys = ''attic push main /run/current-system'';
+      cp = ''rsync --progress --stats'';
     };
 
     initContent = ''
