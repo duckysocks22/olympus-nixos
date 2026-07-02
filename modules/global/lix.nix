@@ -9,4 +9,6 @@
   }) ];
 
   nix.package = pkgs.lixPackageSets.stable.lix;
+
+  nix.settings.experimental-features = [ "pipe-operator" ];
 }

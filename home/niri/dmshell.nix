@@ -4,7 +4,7 @@ let
 in
 {
 
-  imports = [ inputs.dms.homeModules.dank-material-shell inputs.dms-plugin-registry.modules.default ];
+  imports = [ inputs.dms.homeModules.dank-material-shell inputs.dms-plugin-registry.homeModules.default ];
 
   programs.dank-material-shell = {
     enable = true;
