@@ -42,6 +42,12 @@
     };
   };
 
+  programs.ssh.extraConfig = ''
+    Host ssh.olympus.moe
+      HostName ssh.olympus.moe
+      Port 2222
+  '';
+
   networking.firewall = {
     allowedTCPPorts = [
       4646

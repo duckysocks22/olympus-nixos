@@ -2,8 +2,9 @@
   programs.ssh.extraConfig = ''
     Host nyx-nixos.local
       HostName nyx-nixos.local
+      Port 2222
       ConnectTimeout 5
-    Port 2222
+
   '';
 
   nix.distributedBuilds = true;
