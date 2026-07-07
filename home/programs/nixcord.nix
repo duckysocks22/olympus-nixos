@@ -39,7 +39,6 @@
       installPackage = false;
       vencord.enable = true;
     };
-    #vesktop.enable = true;
 
     config = {
       autoUpdate = true;

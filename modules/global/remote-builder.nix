@@ -1,7 +1,8 @@
 {
   programs.ssh.extraConfig = ''
-    Host ssh.olympus.moe
-      HostName ssh.olympus.moe
+    Host nyx-nixos.local
+      HostName nyx-nixos.local
+      ConnectTimeout 5
     Port 2222
   '';
 
@@ -13,7 +14,7 @@
 
   nix.buildMachines = [
     {
-      hostName = "ssh.olympus.moe";
+      hostName = "nyx-nixos.local";
       sshUser = "remotebuild";
       sshKey = "/root/.ssh/remotebuild";
       systems = [ "x86_64-linux" ];

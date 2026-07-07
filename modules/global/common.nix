@@ -107,7 +107,6 @@ in
         pkgs.icu
         pkgs.libxcrypt-legacy
         pkgs.python312
-        pkgs.python312Packages.torch
       ];
     };
   };

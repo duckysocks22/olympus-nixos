@@ -10,5 +10,5 @@
 
   nix.package = pkgs.lixPackageSets.stable.lix;
 
-  nix.settings.experimental-features = [ "pipe-operator" ];
+  nix.settings.extra-experimental-features = [ "pipe-operator" ];
 }
