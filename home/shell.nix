@@ -19,6 +19,7 @@ in
     attic-client
     gh
     btop
+    cdrdao
   ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.stdenv.hostPlatform.system}; [
     unscene
     mountiso
@@ -91,6 +92,15 @@ in
         fi
 
         sudo dd if=/dev/zero of="$1" bs=512 status="progress"
+      }
+
+      function psxrip() {
+        if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+          echo "Usage: psxrip [GAME_NAME]"
+          echo "Rips PSX game to current directory."
+        fi
+
+        cdrdao read-cd --read-raw --read-subchan rw_raw --datafile $1.bin --device /dev/sr0 --driver generic-mmc-raw $1.toc
       }
 
       export FZF_DEFAULT_OPS="${config.home.sessionVariables.FZF_DEFAULT_OPTS}"

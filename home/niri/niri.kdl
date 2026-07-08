@@ -271,6 +271,7 @@ window-rule {
    match app-id="synthv-studio.exe"
    match app-id="wlfreerdp"
    match title="FreeRDP"
+   match app-id="jellyfin-desktop"
    open-maximized true
 }
 
@@ -283,7 +284,7 @@ window-rule {
 window-rule {
 	// make window non transparent when not focused
     match app-id="firefox"
-    match app-id="org.jellyfin.JellyfinDesktop"
+    match app-id="jellyfin-desktop"
     opacity 1.0
 }
 window-rule {
