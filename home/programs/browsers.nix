@@ -92,6 +92,12 @@ in
           updates_disabled = false;
         };
 
+        "jid0-TgBNh976zF55Pb4ABiM1DXsJV4Q@jetpack" = {
+          install_url = moz "startupapps";
+          installation_mode = "force_installed";
+          updates_disabled = true;
+        };
+
         "PipedRedirect@janigma.com" = {
           install_url = moz "pipedredirectjanigma";
           installation_mode = "force_installed";
