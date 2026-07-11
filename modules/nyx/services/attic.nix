@@ -18,7 +18,8 @@
 
     settings = {
       listen = "[::]:7989";
-      
+      api-endpoint = "https://cache.puppygirls.net/";
+
       storage = {
         type = "local";
         path = "/media/hdd1/cache/";
