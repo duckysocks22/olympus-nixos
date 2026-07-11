@@ -2,10 +2,10 @@
 {
   imports = [ inputs.nixcord.homeModules.nixcord ];
 
-  # Wrap the nixcord-built Discord package with mullvad-exclude so every launch
+  # Wrap the nixcord-built Vesktop package with mullvad-exclude so every launch
   # bypasses the VPN tunnel.  symlinkJoin inherits all share/ data (desktop
-  # entry, icons) from the original package; we only replace the two bin/
-  # symlinks (discord + Discord).
+  # entry, icons) from the original package; we only replace the single bin/
+  # symlink (vesktop).
   #
   # writeShellScript is used rather than makeWrapper because makeWrapper checks
   # that the TARGET binary exists inside the build sandbox, and
@@ -13,19 +13,17 @@
   # setuid wrapper created by NixOS activation, not a store path).
   home.packages = [
     (let
-      discordWrapper = pkgs.writeShellScript "discord" ''
+      vesktopWrapper = pkgs.writeShellScript "vesktop" ''
         exec /run/wrappers/bin/mullvad-exclude \
-          ${config.programs.nixcord.finalPackage.discord}/opt/Discord/Discord \
+          ${config.programs.nixcord.finalPackage.vesktop}/bin/vesktop \
           "$@"
       '';
     in pkgs.symlinkJoin {
-      name = "discord-mullvad-excluded";
-      paths = [ config.programs.nixcord.finalPackage.discord ];
+      name = "vesktop-mullvad-excluded";
+      paths = [ config.programs.nixcord.finalPackage.vesktop ];
       postBuild = ''
-        for bin in discord Discord; do
-          rm "$out/bin/$bin"
-          ln -s ${discordWrapper} "$out/bin/$bin"
-        done
+        rm "$out/bin/vesktop"
+        ln -s ${vesktopWrapper} "$out/bin/vesktop"
       '';
     })
   ];
@@ -33,11 +31,13 @@
   programs.nixcord = {
     enable = true;
 
-    discord = {
-      # Let our mullvad-exclude wrapper above own the "discord" binary;
+    discord.enable = false;
+
+    vesktop = {
+      enable = true;
+      # Let our mullvad-exclude wrapper above own the "vesktop" binary;
       # nixcord only needs to build the package, not install it.
       installPackage = false;
-      vencord.enable = true;
     };
 
     config = {
