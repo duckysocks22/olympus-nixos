@@ -16,6 +16,7 @@
       ../../modules/global/greeter/cosmic-greeter.nix
       ../../modules/global/portals.nix
       ../../modules/global/system.nix
+      ../../modules/global/stress.nix
       ../../modules/global/users/foxtrot.nix
       ../../modules/athena/samba-local.nix
       ../../modules/global/common.nix
