@@ -109,6 +109,11 @@ in
           installation_mode = "force_installed";
           updates_disabled = false;
         };
+        "knockoff@knockoff.shopping" = {
+          install_url = moz "knockoff-amazon-brand-filter";
+          installation_mode = "force_installed";
+          updates_disabled = false;
+        };
 
         "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
           install_url = moz "bitwarden-password-manager";
