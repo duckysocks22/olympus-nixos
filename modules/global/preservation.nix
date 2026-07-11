@@ -66,6 +66,8 @@
             ".config/DankMaterialShell"
             ".config/Signal"
             ".config/discord"
+            ".config/Vencord"
+            ".config/vesktop"
             ".config/attic"
             ".config/netbird"
             ".config/git"
