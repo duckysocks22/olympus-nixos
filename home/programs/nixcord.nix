@@ -52,6 +52,7 @@
       enable = true;
       installPackage = false;
       krisp.enable = true;
+      vencord.enable = true;
     };
 
     /*vesktop = {
