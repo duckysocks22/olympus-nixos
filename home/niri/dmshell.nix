@@ -12,7 +12,7 @@ in
     enableSystemMonitoring = true;
     enableVPN = false;
     enableDynamicTheming = true;
-    enableAudioWavelength = true;
+    enableAudioWavelength = false;
     enableCalendarEvents = true;
     enableClipboardPaste = true;
 
