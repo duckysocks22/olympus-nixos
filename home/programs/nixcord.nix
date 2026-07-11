@@ -2,10 +2,10 @@
 {
   imports = [ inputs.nixcord.homeModules.nixcord ];
 
-  # Wrap the nixcord-built Vesktop package with mullvad-exclude so every launch
+  # Wrap the nixcord-built Discord package with mullvad-exclude so every launch
   # bypasses the VPN tunnel.  symlinkJoin inherits all share/ data (desktop
-  # entry, icons) from the original package; we only replace the single bin/
-  # symlink (vesktop).
+  # entry, icons) from the original package; we only replace the bin/ symlinks
+  # (discord and Discord, both of which point to the same underlying binary).
   #
   # writeShellScript is used rather than makeWrapper because makeWrapper checks
   # that the TARGET binary exists inside the build sandbox, and
@@ -13,32 +13,53 @@
   # setuid wrapper created by NixOS activation, not a store path).
   home.packages = [
     (let
-      vesktopWrapper = pkgs.writeShellScript "vesktop" ''
+      discordWrapper = pkgs.writeShellScript "discord" ''
         exec /run/wrappers/bin/mullvad-exclude \
-          ${config.programs.nixcord.finalPackage.vesktop}/bin/vesktop \
+          ${config.programs.nixcord.finalPackage.discord}/bin/discord \
           "$@"
       '';
     in pkgs.symlinkJoin {
-      name = "vesktop-mullvad-excluded";
-      paths = [ config.programs.nixcord.finalPackage.vesktop ];
+      name = "discord-mullvad-excluded";
+      paths = [ config.programs.nixcord.finalPackage.discord ];
       postBuild = ''
-        rm "$out/bin/vesktop"
-        ln -s ${vesktopWrapper} "$out/bin/vesktop"
+        rm "$out/bin/discord"
+        ln -s ${discordWrapper} "$out/bin/discord"
+        rm "$out/bin/Discord"
+        ln -s ${discordWrapper} "$out/bin/Discord"
       '';
     })
+
+    # (let
+    #   vesktopWrapper = pkgs.writeShellScript "vesktop" ''
+    #     exec /run/wrappers/bin/mullvad-exclude \
+    #       ${config.programs.nixcord.finalPackage.vesktop}/bin/vesktop \
+    #       "$@"
+    #   '';
+    # in pkgs.symlinkJoin {
+    #   name = "vesktop-mullvad-excluded";
+    #   paths = [ config.programs.nixcord.finalPackage.vesktop ];
+    #   postBuild = ''
+    #     rm "$out/bin/vesktop"
+    #     ln -s ${vesktopWrapper} "$out/bin/vesktop"
+    #   '';
+    # })
   ];
 
   programs.nixcord = {
     enable = true;
 
-    discord.enable = false;
+    discord = {
+      enable = true;
+      installPackage = false;
+      krisp.enable = true;
+    };
 
-    vesktop = {
+    /*vesktop = {
       enable = true;
       # Let our mullvad-exclude wrapper above own the "vesktop" binary;
       # nixcord only needs to build the package, not install it.
       installPackage = false;
-    };
+    };*/
 
     config = {
       autoUpdate = true;
