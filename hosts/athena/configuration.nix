@@ -94,10 +94,28 @@
   # $ nix search wget
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   environment.systemPackages = with pkgs; [
-    git  
+    git
     #neovim
     wget
+    liquidctl
   ];
+
+  services.udev.packages = [ pkgs.liquidctl ];
+
+  systemd.services.liquidcfg = {
+    description = "NZXT Kraken fan/pump curve";
+    wantedBy = [ "multi-user.target" ];
+    after = [ "multi-user.target" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = pkgs.writeShellScript "liquidcfg" ''
+        ${pkgs.liquidctl}/bin/liquidctl --match kraken initialize
+        ${pkgs.liquidctl}/bin/liquidctl --match kraken set pump speed 80
+        ${pkgs.liquidctl}/bin/liquidctl --match kraken set fan speed 20 30 30 50 40 75 50 100
+      '';
+    };
+  };
+
 
   environment.variables.EDITOR = "nvim";
 
