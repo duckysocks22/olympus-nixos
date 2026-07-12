@@ -88,6 +88,7 @@ in
 
   environment.systemPackages = with pkgs; [
     python312Packages.yt-dlp
+    unzip
     bubblewrap
     (writeShellScriptBin "no-hardened" ''
       exec ${bubblewrap}/bin/bwrap \
