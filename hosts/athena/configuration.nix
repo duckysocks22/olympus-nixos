@@ -27,6 +27,7 @@
       ../../modules/global/virtualisation.nix
       ../../modules/global/local-printing.nix
       ../../modules/packages/default.nix
+      ../../modules/athena/sunshine.nix
     ];
 
   #home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;

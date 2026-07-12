@@ -282,6 +282,15 @@ window-rule {
 }
 
 window-rule {
+  // Monster Hunter Wilds uses Borderless Window (no true exclusive fullscreen).
+  // Floating lets niri honour the game's own size requests so it can fill the
+  // display without the tiling column constraining it.
+  match app-id="steam_app_2246340"
+  open-floating true
+}
+
+
+window-rule {
 	// make window non transparent when not focused
     match app-id="firefox"
     match app-id="jellyfin-desktop"
