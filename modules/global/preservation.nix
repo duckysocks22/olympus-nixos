@@ -74,6 +74,7 @@
             ".config/heroic"
             ".config/mozilla"
             ".config/filezilla"
+            ".config/sunshine"
             ".local/state/nvim"
 	    ".local/state/neovim"
             ".local/state/wireplumber"
