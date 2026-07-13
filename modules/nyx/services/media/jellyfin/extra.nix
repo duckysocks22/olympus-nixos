@@ -30,7 +30,7 @@
   };
 
   services.tdarr = {
-    enable = true;
+    enable = false;
     package = pkgs-unstable.tdarr;
     dataDir = "/media/hdd1/services/tdarr";
     user = "tdarr";
@@ -73,7 +73,7 @@
   };
 
   systemd.timers.tdarr-server-restart = {
-    wantedBy = [ "timers.target" ];
+    wantedBy = [];
     timerConfig = {
       OnCalendar = "*-*-* 03,15:00:00"; # 3am and 3pm
       Persistent = true;
@@ -81,6 +81,7 @@
   };
 
   systemd.services.tdarr-node-nyx = {
+    enable = false;
     environment = {
       ffmpegPath = "${pkgs.ffmpeg-tdarr}/bin/ffmpeg";
     };
