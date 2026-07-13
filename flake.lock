@@ -1641,6 +1641,27 @@
         "url": "https://git.outfoxxed.me/quickshell/quickshell"
       }
     },
+    "reshade": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ],
+        "treefmt-nix": "treefmt-nix"
+      },
+      "locked": {
+        "lastModified": 1783378075,
+        "narHash": "sha256-+5gvtuDjwA3ZhONhs0zcFgYiuZDIpFnh34ZRLF+KJ7w=",
+        "owner": "LovingMelody",
+        "repo": "nix-reshade",
+        "rev": "5ec6e568050cbd08125513a341782a18f472d352",
+        "type": "github"
+      },
+      "original": {
+        "owner": "LovingMelody",
+        "repo": "nix-reshade",
+        "type": "github"
+      }
+    },
     "root": {
       "inputs": {
         "aagl": "aagl",
@@ -1666,6 +1687,7 @@
         "nixvim": "nixvim",
         "preservation": "preservation",
         "px7-radio-git": "px7-radio-git",
+        "reshade": "reshade",
         "sops-nix": "sops-nix",
         "stylix": "stylix_2"
       }
@@ -2040,6 +2062,27 @@
       "original": {
         "owner": "tinted-theming",
         "repo": "base16-zed",
+        "type": "github"
+      }
+    },
+    "treefmt-nix": {
+      "inputs": {
+        "nixpkgs": [
+          "reshade",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1780220602,
+        "narHash": "sha256-eynAfOmbmxJnkp7YewvCEbShNnnYJ9gLLqkzsYtBPeM=",
+        "owner": "numtide",
+        "repo": "treefmt-nix",
+        "rev": "db947814a175b7ca6ded66e21383d938df01c227",
+        "type": "github"
+      },
+      "original": {
+        "owner": "numtide",
+        "repo": "treefmt-nix",
         "type": "github"
       }
     },

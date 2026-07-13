@@ -91,6 +91,10 @@
     preservation = {
       url = "github:nix-community/preservation";
     };
+    reshade = {
+      url = "github:LovingMelody/nix-reshade";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, sops-nix, disko, preservation, jovian, ... }: 
