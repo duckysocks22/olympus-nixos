@@ -300,6 +300,11 @@ in
                   keyword = "stb";
                 }
                 {
+                  name = "Steam Hardware Hub";
+                  url = "https://steamhardware.io";
+                  keyword = "steamhw";
+                }
+                {
                   name = "IsThereAnyDeal?";
                   url = "https://www.isthereanydeal.com";
                   keyword = "itad";
