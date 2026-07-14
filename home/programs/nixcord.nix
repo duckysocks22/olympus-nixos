@@ -66,6 +66,9 @@
       autoUpdate = true;
       autoUpdateNotification = true;
       useQuickCss = true;
+      themeLinks = [
+        "https://raw.githubusercontent.com/round-panda/gruvbox-sharp/54f0612a1d0fb38d3f2c7a7f4b697b5ad607d312/GruvboxSharp.theme.css"
+      ];
       frameless = true;
       plugins = {
         noBlockedMessages = {
