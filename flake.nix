@@ -46,9 +46,6 @@
       url = "git+https://dawn.wine/foxtrottt/px7-radio-nix.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    jovian = {
-      url = "github:Jovian-Experiments/Jovian-NixOS";
-    };
     nixcord = {
       url = "github:FlameFlag/nixcord";
     };
@@ -97,7 +94,7 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, sops-nix, disko, preservation, jovian, ... }: 
+  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, sops-nix, disko, preservation,  ... }: 
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
@@ -132,15 +129,6 @@
 	    inherit pkgs-unstable; 
 	  };
         };
-        dionysus-nixos = nixpkgs-unstable.lib.nixosSystem {
-          modules = [
-            ./hosts/dionysus/configuration.nix
-            ./home/default-unstable.nix
-            ./modules/global/stylix/stylix.nix
-            ./modules/global/lix.nix
-            jovian.nixosModules.default
-            disko.nixosModules.disko
-        ];
           specialArgs = {
             inherit inputs;
             inherit pkgs-unstable;
