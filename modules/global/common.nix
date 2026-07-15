@@ -86,7 +86,7 @@ in
     openFirewall = true;
   };
 
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = (with pkgs; [
     python312Packages.yt-dlp
     unzip
     bubblewrap
@@ -96,7 +96,10 @@ in
         --bind /dev/null /etc/ld-nix.so.preload \
         -- "$@"
     '')
-  ];
+  ]) ++ (with inputs.reshade.packages.${pkgs.system}; [ 
+    reshade
+    reshade-shaders-full
+  ]);
 
   programs.appimage = {
     enable = true;
