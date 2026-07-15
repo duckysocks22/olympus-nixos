@@ -9,11 +9,12 @@
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
       ../../modules/global/system.nix
+      ../../modules/global/nix/default.nix
       #../../modules/nyx/hardenedKernel.nix
-      ../../modules/nyx/server.nix
+      ../../modules/server/server.nix
       ../../modules/global/nix/default.nix
       ../../modules/nyx/rebuild-throttle.nix
-      ../../modules/nyx/sops.nix
+      ../../modules/server/sops.nix
       ../../modules/global/netwatch.nix
     ];
 
@@ -69,11 +70,6 @@
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
-
-  # List packages installed in system profile. To search, run:
-  # $ nix search wget
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  nix.settings.system-features = [ "benchmark" "big-parallel" "kvm" "nixos-test" ];
   nix.settings.trusted-users = [ "nixremote" ];
   environment.systemPackages = with pkgs; [
     vim # Do not forget to add an editor to edit configuration.nix! The Nano editor is also installed by default.

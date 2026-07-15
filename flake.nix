@@ -129,22 +129,33 @@
 	    inherit pkgs-unstable; 
 	  };
         };
-          specialArgs = {
-            inherit inputs;
-            inherit pkgs-unstable;
-          };
-        };
         nyx-nixos = nixpkgs.lib.nixosSystem {
           modules = [
             ./hosts/nyx/configuration.nix
             ./modules/global/stylix/stylix.nix
             ./home/default.nix
             ./modules/global/lix.nix
-
             {
               nixpkgs.overlays = [
                 (import ./modules/overlays/caddy.nix)
                 (import ./modules/overlays/ffmpeg-tdarr.nix)
+              ];
+            }
+          ];
+          specialArgs = {
+            inherit inputs;
+            inherit pkgs-unstable;
+          };
+        };
+        hermera-nixos = nixpkgs.lib.nixosSystem {
+          modules = [
+            ./hosts/hermera/configuration.nix
+            ./home/default.nix
+            ./modules/global/lix.nix
+            disko.nixosModules.disko
+            {
+              nixpkgs.overlays = [
+                (import ./modules/overlays/caddy.nix)
               ];
             }
           ];
@@ -165,6 +176,6 @@
             inherit pkgs-unstable;
           };
         };
-    };
+      };
   };
 }

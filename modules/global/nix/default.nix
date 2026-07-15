@@ -2,6 +2,9 @@
 {
   nix = {
     settings = {
+      experimental-features = [ "nix-command" "flakes" ];
+      system-features = [ "benchmark" "big-parallel" "kvm" "nixos-test" ];
+
       auto-optimise-store = true;
       keep-derivations = true;
       keep-outputs = true;
