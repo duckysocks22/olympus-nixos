@@ -1,4 +1,4 @@
-{ inputs, pkgs, config, ... }:
+{ inputs, pkgs, config, lib, ... }:
 {
   imports = [ inputs.nixcord.homeModules.nixcord ];
 
@@ -45,6 +45,14 @@
     # })
   ];
 
+  # Vencord writes quickCss.css atomically (write-tmp + rename), which
+  # replaces home-manager's symlink with a regular file.  On the next rebuild
+  # checkLinkTargets sees the regular file and aborts the entire activation,
+  # so nixcord-vencord-settings never runs and plugins are never applied.
+  # force = true tells home-manager to overwrite the regular file with the
+  # managed symlink every switch, re-asserting the Nix-declared CSS content.
+  home.file."${config.programs.nixcord.configDir}/settings/quickCss.css".force = true;
+
   programs.nixcord = {
     enable = true;
 
@@ -53,14 +61,10 @@
       installPackage = false;
       krisp.enable = true;
       vencord.enable = true;
+      settings = {
+        openasar = { setup = false; };
+      };
     };
-
-    /*vesktop = {
-      enable = true;
-      # Let our mullvad-exclude wrapper above own the "vesktop" binary;
-      # nixcord only needs to build the package, not install it.
-      installPackage = false;
-    };*/
 
     config = {
       autoUpdate = true;
