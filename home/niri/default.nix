@@ -7,7 +7,7 @@
     ./dmshell.nix
     ./cursors.nix
     ];
-  home.packages = [ pkgs.niri pkgs.dconf pkgs.slurp ];
+  home.packages = [ pkgs.niri pkgs.dconf pkgs.slurp pkgs.libnotify ];
 
   xdg.configFile = {
     "niri/config.kdl" = { source = ./niri.kdl; force = true; };
