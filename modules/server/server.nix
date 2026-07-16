@@ -1,9 +1,5 @@
 { pkgs, config, ... }:
 {
-  imports = [
-    ./default.nix   
-    ./server-network.nix
-  ];
   users.users.server = {
     isNormalUser = true;
     home = "/home/server";
