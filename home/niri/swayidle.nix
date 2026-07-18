@@ -23,7 +23,7 @@
       }
       {
         timeout = 60;
-        command = "${pkgs.gamemode}/bin/gamemoded -s 2>/dev/null || ${pkgs.systemd}/bin/systemctl suspend";
+        command = "${pkgs.gamemode}/bin/gamemoded -s 2>/dev/null || ${pkgs.systemd}/bin/systemd-inhibit --list | ${pkgs.gnugrep}/bin/grep -q 'sleep.*block' || ${pkgs.systemd}/bin/systemctl suspend";
       }
     ];
     events = [
