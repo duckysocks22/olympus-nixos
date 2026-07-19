@@ -3,10 +3,6 @@
 let
   gamemoderun = pkgs.writeShellScriptBin "gamemoderun" ''
     exec env \
-      PROTON_USE_WAYLAND=1 \
-      PROTON_ENABLE_WAYLAND=1 \
-      PROTON_ENABLE_HDR=1 \
-      PROTON_USE_SDL=1 \
       ${pkgs.gamemode}/bin/gamemoderun "$@"
   '';
 
