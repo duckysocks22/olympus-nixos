@@ -425,14 +425,34 @@ in
               toolbar = false;
               bookmarks = [
                 {
-                  name = "Navidrome";
-                  url = "http://100.111.146.104:4533";
-                  keyword = "navi";
+                  name = "Jellyfin";
+                  url = "https://stream.puppygirls.net";
+                  keyword = "stream";
                 }
                 {
-                  name = "NextDNS";
-                  url = "https://my.nextdns.io/";
-                  keyword = "dns";
+                  name = "Navidrome";
+                  url = "https://music.puppygirls.net";
+                  keyword = "music";
+                }
+                {
+                  name = "seerr";
+                  url = "https://seerr.puppygirls.net";
+                  keyword = "seerr";
+                }
+                {
+                  name = "radarr";
+                  url = "https://radarr.puppygirls.net";
+                  keyword = "radarr";
+                }
+                {
+                  name = "sonarr";
+                  url = "https://sonarr.puppygirls.net";
+                  keyword = "sonarr";
+                }
+                {
+                  name = "BunnyDNS";
+                  url = "https://www.bunny.net/dns/";
+                  keyword = "bunny";
                 }
               ];
             }
