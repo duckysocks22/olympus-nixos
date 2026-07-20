@@ -493,6 +493,10 @@ in
               toolbar = false;
               bookmarks = [
                 {
+                  name = "NixOS Wiki";
+                  url = "https://wiki.nixos.org";
+                }
+                {
                   name = "Nixpkgs Manual";
                   url = "https://nixos.org/manual/nixpkgs/stable/";
                   keyword = "manpkg";
