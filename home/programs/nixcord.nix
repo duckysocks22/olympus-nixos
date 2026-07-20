@@ -62,7 +62,7 @@
       krisp.enable = true;
       vencord.enable = true;
       settings = {
-        openasar = { setup = false; };
+        openasar = { setup = true; };
       };
     };
 

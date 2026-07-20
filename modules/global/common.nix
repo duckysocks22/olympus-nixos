@@ -23,14 +23,6 @@ in
 
   programs.gamescope = {
     enable = true;
-    package = pkgs.symlinkJoin {
-      name = "gamescope-ldpreload-cleared";
-      paths = [ pkgs.gamescope ];
-      nativeBuildInputs = [ pkgs.makeBinaryWrapper ];
-      postBuild = ''
-        wrapProgram $out/bin/gamescope --unset LD_PRELOAD
-      '';
-    };
   };
 
   security.pam.loginLimits = [

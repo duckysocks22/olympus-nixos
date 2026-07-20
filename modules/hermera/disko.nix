@@ -8,22 +8,20 @@
           type = "gpt";
           partitions = {
             ESP = {
-              priority = 1;
-              start = "1M";
-              end = "128M";
+              name = "ESP";
+              size = "1G";
               type = "EF00";
+
               content = {
                 type = "filesystem";
                 format = "vfat";
                 mountpoint = "/boot";
-                mountOptions = [ "umask=0077" ];
               };
             };
             swap = {
               size = "16G";
               content = {
                 type = "swap";
-                discardPolicy = "both";
                 resumeDevice = true;
               };
             };
@@ -40,10 +38,10 @@
                     mountOptions = [ "compress=zstd" ];
                     mountpoint = "/home";
                   };
-                  "/home/user" = { };
                   "/nix" = {
                     mountOptions = [
                       "compress=zstd"
+                      "subvol=nix";
                       "noatime"
                     ];
                     mountpoint = "/nix";

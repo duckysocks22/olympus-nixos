@@ -287,6 +287,7 @@ window-rule {
   // display without the tiling column constraining it.
   match app-id="steam_app_2246340"
   open-floating true
+  open-fullscreen true
 }
 
 
