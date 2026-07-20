@@ -36,6 +36,28 @@ in
   imports = [
     inputs.nix-index-database.homeModules.default
   ];
+
+  programs.git = {
+    enable = true;
+    ignores = [ "result" ".direnv" ".claude/settings.local.json" ];
+    settings = {
+      push = { autoSetupRemote = true; };
+      credential = {
+        "https://dawn.wine" = {
+          helper = "oauth";
+        };
+      };
+    };
+    signing = {
+      signByDefault = true;
+    };
+  };
+
+  programs.ssh = {
+    enable = true;
+    addKeysToAgent = "yes";
+  };
+
   programs.zsh = {
     enable = true;
     syntaxHighlighting.enable = true;
