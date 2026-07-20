@@ -83,6 +83,23 @@
           
         };
 
+        "/olympus_shared" = {
+          path = "/media/hdd1/shares/shared";
+
+          access = {
+            rwd = [ "socks" ];
+          };
+
+          flags = {
+            fk = 4;
+            scan = 30;
+            e2d = true;
+            d2t = true;
+            nohash = ".iso$";
+            dots = true;
+            dostsrch = true;
+          };
+        };
       };
       openFilesLimit = 8192;
     };
