@@ -1,4 +1,4 @@
-{ config, pkgs, ...}:
+{ config, pkgs, ... }:
 {
   services.nginx = {
     enable = true;
@@ -7,8 +7,8 @@
     virtualHosts."www.puppygirls.net" = {
       enableACME = true;
       forceSSL = true;
-        
-      root = ${pkgs.callPackage ./puppygirls {}};
+
+      root = pkgs.callPackage ./puppygirls { };
 
       locations."/robots.txt" = {
         extraConfig = ''
