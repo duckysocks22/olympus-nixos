@@ -28,7 +28,7 @@
     #./services/dawarich.nix
     ./services/game-servers/crafty-controller.nix
     #./services/piped-backend.nix
-    #./services/game-servers/minecraft.nix
+    ./services/game-servers/minecraft/default.nix
     ./services/game-servers/factorio.nix
     ./services/homeassistant/default.nix
     ./services/copyparty.nix
