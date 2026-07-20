@@ -1,4 +1,4 @@
-{ config, ...}:
+{ config, ... }:
 {
 
   imports = [
@@ -94,7 +94,7 @@
         ];
       };
 
-      default_config = {};
+      default_config = { };
     };
   };
 

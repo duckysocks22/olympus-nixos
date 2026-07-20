@@ -94,34 +94,34 @@ buildPythonApplication (finalAttrs: {
   # .nix-store-path marker) only the code — app/ and main.py — is refreshed so
   # that user data (servers/, config/, logs/, local/) is never clobbered.
   postFixup = ''
-    cat > $out/bin/crafty-controller << EOF
-#!/bin/sh
-CRAFTY_HOME="\''${CRAFTY_HOME:-\$HOME/.local/share/crafty-controller}"
-VERSION_MARKER="\$CRAFTY_HOME/.nix-store-path"
+        cat > $out/bin/crafty-controller << EOF
+    #!/bin/sh
+    CRAFTY_HOME="\''${CRAFTY_HOME:-\$HOME/.local/share/crafty-controller}"
+    VERSION_MARKER="\$CRAFTY_HOME/.nix-store-path"
 
-if [ ! -d "\$CRAFTY_HOME" ]; then
-  echo "Installing crafty-controller to \$CRAFTY_HOME..."
-  mkdir -p "\$CRAFTY_HOME"
-  cp -r $out/share/crafty-controller/. "\$CRAFTY_HOME/"
-  chmod -R u+w "\$CRAFTY_HOME"
-  echo "$out" > "\$VERSION_MARKER"
-elif [ ! -f "\$VERSION_MARKER" ] || [ "\$(cat "\$VERSION_MARKER")" != "$out" ]; then
-  echo "Updating crafty-controller in \$CRAFTY_HOME..."
-  # -T treats the destination as the target directory itself rather than a
-  # parent; without it, cp -r nests into \$CRAFTY_HOME/app/app/ whenever
-  # \$CRAFTY_HOME/app already exists (which it does, since ExecStartPre
-  # in the NixOS service creates app/config before the launcher runs).
-  cp -rT $out/share/crafty-controller/app "\$CRAFTY_HOME/app"
-  cp $out/share/crafty-controller/main.py "\$CRAFTY_HOME/main.py"
-  chmod -R u+w "\$CRAFTY_HOME/app" "\$CRAFTY_HOME/main.py"
-  echo "$out" > "\$VERSION_MARKER"
-fi
+    if [ ! -d "\$CRAFTY_HOME" ]; then
+      echo "Installing crafty-controller to \$CRAFTY_HOME..."
+      mkdir -p "\$CRAFTY_HOME"
+      cp -r $out/share/crafty-controller/. "\$CRAFTY_HOME/"
+      chmod -R u+w "\$CRAFTY_HOME"
+      echo "$out" > "\$VERSION_MARKER"
+    elif [ ! -f "\$VERSION_MARKER" ] || [ "\$(cat "\$VERSION_MARKER")" != "$out" ]; then
+      echo "Updating crafty-controller in \$CRAFTY_HOME..."
+      # -T treats the destination as the target directory itself rather than a
+      # parent; without it, cp -r nests into \$CRAFTY_HOME/app/app/ whenever
+      # \$CRAFTY_HOME/app already exists (which it does, since ExecStartPre
+      # in the NixOS service creates app/config before the launcher runs).
+      cp -rT $out/share/crafty-controller/app "\$CRAFTY_HOME/app"
+      cp $out/share/crafty-controller/main.py "\$CRAFTY_HOME/main.py"
+      chmod -R u+w "\$CRAFTY_HOME/app" "\$CRAFTY_HOME/main.py"
+      echo "$out" > "\$VERSION_MARKER"
+    fi
 
-mkdir -p "\$CRAFTY_HOME/logs" "\$CRAFTY_HOME/local" "\$CRAFTY_HOME/servers" "\$CRAFTY_HOME/config"
-cd "\$CRAFTY_HOME"
-PYTHONPATH="${makePythonPath finalAttrs.propagatedBuildInputs}:\$CRAFTY_HOME" PATH="${pkgs.jdk25}/bin:\$PATH" LD_LIBRARY_PATH="${pkgs.libudev-zero}/lib:\$LD_LIBRARY_PATH" exec ${python}/bin/python "\$CRAFTY_HOME/main.py" "\$@"
-EOF
-    chmod +x $out/bin/crafty-controller
+    mkdir -p "\$CRAFTY_HOME/logs" "\$CRAFTY_HOME/local" "\$CRAFTY_HOME/servers" "\$CRAFTY_HOME/config"
+    cd "\$CRAFTY_HOME"
+    PYTHONPATH="${makePythonPath finalAttrs.propagatedBuildInputs}:\$CRAFTY_HOME" PATH="${pkgs.jdk25}/bin:\$PATH" LD_LIBRARY_PATH="${pkgs.libudev-zero}/lib:\$LD_LIBRARY_PATH" exec ${python}/bin/python "\$CRAFTY_HOME/main.py" "\$@"
+    EOF
+        chmod +x $out/bin/crafty-controller
   '';
 
   meta = {

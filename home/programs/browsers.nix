@@ -1,4 +1,10 @@
-{ pkgs, config, lib, inputs, ...}:
+{
+  pkgs,
+  config,
+  lib,
+  inputs,
+  ...
+}:
 let
   hmFirefox = config.programs.firefox.finalPackage;
   emptyFile = pkgs.writeText "empty" "";
@@ -16,7 +22,7 @@ in
   programs.firefox = {
     enable = true;
     package = pkgs.firefox;
-  
+
     profiles."default" = {
       name = "default";
       userChrome = ''
@@ -63,97 +69,99 @@ in
       OfferToSaveLogins = false;
       DefaultDownloadDirectory = "${config.home.homeDirectory}/Downloads";
 
-      ExtensionSettings = let
-        moz = short: "https://addons.mozilla.org/firefox/downloads/latest/${short}/latest.xpi";
-      in {
-        "*".installation_mode = "blocked";
+      ExtensionSettings =
+        let
+          moz = short: "https://addons.mozilla.org/firefox/downloads/latest/${short}/latest.xpi";
+        in
+        {
+          "*".installation_mode = "blocked";
 
-        "uBlock0@raymondhill.net" = {
-          install_url = moz "ublock-origin";
-          installation_mode = "force_installed";
-          updates_disabled = false;
-        };
+          "uBlock0@raymondhill.net" = {
+            install_url = moz "ublock-origin";
+            installation_mode = "force_installed";
+            updates_disabled = false;
+          };
 
-        "search@kagi.com" = {
-          install_url = moz "kagi-search-for-firefox";
-          installation_mode = "force_installed";
-          updates_disabled = false;
-        };
+          "search@kagi.com" = {
+            install_url = moz "kagi-search-for-firefox";
+            installation_mode = "force_installed";
+            updates_disabled = false;
+          };
 
-        "deArrow@ajay.app" = {
-          install_url = moz "dearrow";
-          installation_mode = "force_installed";
-          updates_disabled = false;
-        };
+          "deArrow@ajay.app" = {
+            install_url = moz "dearrow";
+            installation_mode = "force_installed";
+            updates_disabled = false;
+          };
 
-        "sponsorBlocker@ajay.app" = {
-          install_url = moz "sponsorblock";
-          installation_mode = "force_installed";
-          updates_disabled = false;
-        };
+          "sponsorBlocker@ajay.app" = {
+            install_url = moz "sponsorblock";
+            installation_mode = "force_installed";
+            updates_disabled = false;
+          };
 
-        "jid0-TgBNh976zF55Pb4ABiM1DXsJV4Q@jetpack" = {
-          install_url = moz "startupapps";
-          installation_mode = "force_installed";
-          updates_disabled = true;
-        };
+          "jid0-TgBNh976zF55Pb4ABiM1DXsJV4Q@jetpack" = {
+            install_url = moz "startupapps";
+            installation_mode = "force_installed";
+            updates_disabled = true;
+          };
 
-        "PipedRedirect@janigma.com" = {
-          install_url = moz "pipedredirectjanigma";
-          installation_mode = "force_installed";
-          updates_disabled = true;
-        };
+          "PipedRedirect@janigma.com" = {
+            install_url = moz "pipedredirectjanigma";
+            installation_mode = "force_installed";
+            updates_disabled = true;
+          };
 
-        "firefox-extension@steamdb.info" = {
-          install_url = moz "steam-database";
-          installation_mode = "force_installed";
-          updates_disabled = false;
-        };
-        "knockoff@knockoff.shopping" = {
-          install_url = moz "knockoff-amazon-brand-filter";
-          installation_mode = "force_installed";
-          updates_disabled = false;
-        };
+          "firefox-extension@steamdb.info" = {
+            install_url = moz "steam-database";
+            installation_mode = "force_installed";
+            updates_disabled = false;
+          };
+          "knockoff@knockoff.shopping" = {
+            install_url = moz "knockoff-amazon-brand-filter";
+            installation_mode = "force_installed";
+            updates_disabled = false;
+          };
 
-        "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
-          install_url = moz "bitwarden-password-manager";
-          installation_mode = "force_installed";
-          updates_disabled = false;
-        };
+          "{446900e4-71c2-419f-a6a7-df9c091e268b}" = {
+            install_url = moz "bitwarden-password-manager";
+            installation_mode = "force_installed";
+            updates_disabled = false;
+          };
 
-        "{e6e36c9a-8323-446c-b720-a176017e38ff}" = {
-          install_url = moz "torrent-control";
-          installation_mode = "force_installed";
-          updates_disabled = true;
-        };
+          "{e6e36c9a-8323-446c-b720-a176017e38ff}" = {
+            install_url = moz "torrent-control";
+            installation_mode = "force_installed";
+            updates_disabled = true;
+          };
 
-        "{99c277af-d778-4a0b-9faa-b1d8165f0a55}" = {
-          install_url = moz "nicothin-dark-theme";
-          installation_mode = "force_installed";
-          updates_disabled = true;
-        };
+          "{99c277af-d778-4a0b-9faa-b1d8165f0a55}" = {
+            install_url = moz "nicothin-dark-theme";
+            installation_mode = "force_installed";
+            updates_disabled = true;
+          };
 
-        "{aecec67f-0d10-4fa7-b7c7-609a2db280cf}" = {
-          install_url = moz "violentmonkey";
-          installation_mode = "force_installed";
-          updates_disabled = true;
+          "{aecec67f-0d10-4fa7-b7c7-609a2db280cf}" = {
+            install_url = moz "violentmonkey";
+            installation_mode = "force_installed";
+            updates_disabled = true;
+          };
         };
-      };
 
       "3rdparty".Extensions = {
         "uBlock0@raymondhill.net".adminSettings = {
           userSettings = rec {
-          uiTheme            = "dark";
-          uiAccentCustom     = true;
-          uiAccentCustom0    = "#8300ff";
-          cloudStorageEnabled = lib.mkForce false;
+            uiTheme = "dark";
+            uiAccentCustom = true;
+            uiAccentCustom0 = "#8300ff";
+            cloudStorageEnabled = lib.mkForce false;
 
-          importedLists = [
-            "https:#filters.adtidy.org/extension/ublock/filters/3.txt"
-            "https:#github.com/DandelionSprout/adfilt/raw/master/LegitimateURLShortener.txt"
-          ];
+            importedLists = [
+              "https:#filters.adtidy.org/extension/ublock/filters/3.txt"
+              "https:#github.com/DandelionSprout/adfilt/raw/master/LegitimateURLShortener.txt"
+            ];
 
-          externalLists = lib.concatStringsSep "\n" importedLists;
+            externalLists = lib.concatStringsSep "\n" importedLists;
           };
 
           selectedFilterLists = [
@@ -177,7 +185,7 @@ in
         };
         # Torrent Control Settings
         "{e6e36c9a-8323-446c-b720-a176017e38ff}".adminSettings = {
-          
+
         };
       };
     };
@@ -193,7 +201,10 @@ in
             {
               template = "https://kagi.com/search";
               params = [
-                { name = "q"; value = "{searchTerms}"; }
+                {
+                  name = "q";
+                  value = "{searchTerms}";
+                }
               ];
             }
           ];
@@ -206,7 +217,10 @@ in
             {
               template = "https://www.protondb.com/search";
               params = [
-                { name = "q"; value = "{searchTerms}"; }
+                {
+                  name = "q";
+                  value = "{searchTerms}";
+                }
               ];
             }
           ];
@@ -218,8 +232,14 @@ in
             {
               template = "https://search.nixos.org/packages";
               params = [
-                { name = "channel"; value = "26.05"; }
-                { name = "query"; value = "{searchTerms}"; }
+                {
+                  name = "channel";
+                  value = "26.05";
+                }
+                {
+                  name = "query";
+                  value = "{searchTerms}";
+                }
               ];
             }
           ];
@@ -232,12 +252,18 @@ in
             {
               template = "https://search.nixos.org/options";
               params = [
-                { name = "channel"; value = "26.05"; }
-                { name = "query";   value = "{searchTerms}"; }
+                {
+                  name = "channel";
+                  value = "26.05";
+                }
+                {
+                  name = "query";
+                  value = "{searchTerms}";
+                }
               ];
             }
           ];
-          icon           = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+          icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
           definedAliases = [ "@no" ];
         };
 
@@ -246,11 +272,14 @@ in
             {
               template = "https://wiki.nixos.org/w/index.php";
               params = [
-                { name = "search"; value = "{searchTerms}"; }
+                {
+                  name = "search";
+                  value = "{searchTerms}";
+                }
               ];
             }
           ];
-          icon           = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
+          icon = "${pkgs.nixos-icons}/share/icons/hicolor/scalable/apps/nix-snowflake.svg";
           definedAliases = [ "@nw" ];
         };
 
@@ -259,7 +288,10 @@ in
             {
               template = "https://noogle.dev/";
               params = [
-                { name = "term"; value = "{searchTerms}"; }
+                {
+                  name = "term";
+                  value = "{searchTerms}";
+                }
               ];
             }
           ];

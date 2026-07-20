@@ -1,4 +1,9 @@
-{ pkgs, util, lib, ... }:
+{
+  pkgs,
+  util,
+  lib,
+  ...
+}:
 let
   exec = lib.getExe pkgs.actual-server;
   configPath = ./config.json;

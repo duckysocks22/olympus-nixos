@@ -1,10 +1,18 @@
-{ inputs, pkgs, lib, ...}:
+{
+  inputs,
+  pkgs,
+  lib,
+  ...
+}:
 let
   pfp = ../pfp/suletta_pfp.jpg;
 in
 {
 
-  imports = [ inputs.dms.homeModules.dank-material-shell inputs.dms-plugin-registry.homeModules.default ];
+  imports = [
+    inputs.dms.homeModules.dank-material-shell
+    inputs.dms-plugin-registry.homeModules.default
+  ];
 
   programs.dank-material-shell = {
     enable = true;
@@ -33,7 +41,7 @@ in
       currentThemeName = "dynamic";
       currentThemeCategory = "dynamic";
       customThemeFile = "";
-      registryThemeVariants = {};
+      registryThemeVariants = { };
       matugenScheme = "scheme-tonal-spot";
       runUserMatugenTemplates = true;
       matugenTargetMonitor = "";
@@ -78,7 +86,7 @@ in
       showCpuTemp = true;
       showGpuTemp = true;
       selectedGpuIndex = 0;
-      enabledGpuPciIds = [];
+      enabledGpuPciIds = [ ];
       showSystemTray = true;
       systemTrayIconTintMode = "primary";
       systemTrayIconTintSaturation = 50;
@@ -166,7 +174,7 @@ in
       workspaceFocusedBorderEnabled = false;
       workspaceFocusedBorderColor = "primary";
       workspaceFocusedBorderThickness = 2;
-      workspaceNameIcons = {};
+      workspaceNameIcons = { };
       waveProgressEnabled = true;
       scrollTitleEnabled = true;
       audioVisualizerEnabled = true;
@@ -227,14 +235,14 @@ in
       appLauncherViewMode = "list";
       spotlightModalViewMode = "list";
       browserPickerViewMode = "grid";
-      browserUsageHistory = {};
+      browserUsageHistory = { };
       appPickerViewMode = "grid";
-      filePickerUsageHistory = {};
+      filePickerUsageHistory = { };
       sortAppsAlphabetically = false;
       appLauncherGridColumns = 4;
       spotlightCloseNiriOverview = true;
-      spotlightSectionViewModes = {};
-      appDrawerSectionViewModes = {};
+      spotlightSectionViewModes = { };
+      appDrawerSectionViewModes = { };
       niriOverviewOverlayEnabled = true;
       dankLauncherV2Size = "compact";
       dankLauncherV2BorderEnabled = false;
@@ -301,11 +309,11 @@ in
       fadeToDpmsEnabled = true;
       fadeToDpmsGracePeriod = 5;
       launchPrefix = "";
-      brightnessDevicePins = {};
-      wifiNetworkPins = {};
-      bluetoothDevicePins = {};
-      audioInputDevicePins = {};
-      audioOutputDevicePins = {};
+      brightnessDevicePins = { };
+      wifiNetworkPins = { };
+      bluetoothDevicePins = { };
+      audioInputDevicePins = { };
+      audioOutputDevicePins = { };
       gtkThemingEnabled = false;
       qtThemingEnabled = false;
       syncModeWithPortal = true;
@@ -397,7 +405,7 @@ in
       notificationHistorySaveLow = false;
       notificationHistorySaveNormal = true;
       notificationHistorySaveCritical = true;
-      notificationRules = [];
+      notificationRules = [ ];
       osdAlwaysShowValue = false;
       osdPosition = 5;
       osdVolumeEnabled = true;
@@ -432,12 +440,12 @@ in
       updaterCustomCommand = "";
       updaterTerminalAdditionalParams = "";
       displayNameMode = "system";
-      screenPreferences = {};
-      showOnLastDisplay = {};
-      niriOutputSettings = {};
-      hyprlandOutputSettings = {};
-      displayProfiles = {};
-      activeDisplayProfile = {};
+      screenPreferences = { };
+      showOnLastDisplay = { };
+      niriOutputSettings = { };
+      hyprlandOutputSettings = { };
+      displayProfiles = { };
+      activeDisplayProfile = { };
       displayProfileAutoSelect = false;
       displayShowDisconnected = false;
       displaySnapToEdge = true;
@@ -554,19 +562,19 @@ in
       systemMonitorDisplayPreferences = [
         "all"
       ];
-      systemMonitorVariants = [];
-      desktopWidgetPositions = {};
-      desktopWidgetGridSettings = {};
-      desktopWidgetInstances = [];
-      desktopWidgetGroups = [];
+      systemMonitorVariants = [ ];
+      desktopWidgetPositions = { };
+      desktopWidgetGridSettings = { };
+      desktopWidgetInstances = [ ];
+      desktopWidgetGroups = [ ];
       builtInPluginSettings = {
         dms_settings_search = {
           trigger = "?";
         };
       };
       clipboardEnterToPaste = false;
-      launcherPluginVisibility = {};
-      launcherPluginOrder = [];
+      launcherPluginVisibility = { };
+      launcherPluginOrder = [ ];
       configVersion = 5;
     };
 
@@ -575,13 +583,13 @@ in
       doNotDisturb = false;
       wallpaperPath = ../wallpapers/bafkreidxnbp4exjkrvd7vpfylv4bfz5n4w66wpnuodip5kkq3mguqwyixi.jpg;
       perMonitorWallpaper = false;
-      monitorWallpapers = {};
+      monitorWallpapers = { };
       perModeWallpaper = false;
       wallpaperPathLight = "";
       wallpaperPathDark = "";
-      monitorWallpapersLight = {};
-      monitorWallpapersDark = {};
-      monitorWallpaperFillModes = {};
+      monitorWallpapersLight = { };
+      monitorWallpapersDark = { };
+      monitorWallpaperFillModes = { };
       wallpaperTransition = "fade";
       includedTransitions = [
         "fade"
@@ -596,7 +604,7 @@ in
       wallpaperCyclingMode = "interval";
       wallpaperCyclingInterval = 300;
       wallpaperCyclingTime = "06:00";
-      monitorCyclingSettings = {};
+      monitorCyclingSettings = { };
       nightModeEnabled = true;
       nightModeTemperature = 5200;
       nightModeHighTemperature = 6500;
@@ -619,31 +627,31 @@ in
       themeModeShareGammaSettings = true;
       weatherLocation = "New York, NY";
       weatherCoordinates = "40.7128,-74.0060";
-      pinnedApps = [];
-      barPinnedApps = [];
+      pinnedApps = [ ];
+      barPinnedApps = [ ];
       dockLauncherPosition = 0;
-      hiddenTrayIds = [];
-      trayItemOrder = [];
-      recentColors = [];
+      hiddenTrayIds = [ ];
+      trayItemOrder = [ ];
+      recentColors = [ ];
       showThirdPartyPlugins = false;
       launchPrefix = "";
       lastBrightnessDevice = "";
-      brightnessExponentialDevices = {};
-      brightnessUserSetValues = {};
-      brightnessExponentValues = {};
+      brightnessExponentialDevices = { };
+      brightnessUserSetValues = { };
+      brightnessExponentValues = { };
       selectedGpuIndex = 0;
       nvidiaGpuTempEnabled = false;
       nonNvidiaGpuTempEnabled = false;
-      enabledGpuPciIds = [];
+      enabledGpuPciIds = [ ];
       wifiDeviceOverride = "";
       weatherHourlyDetailed = true;
-      hiddenApps = [];
-      appOverrides = {};
+      hiddenApps = [ ];
+      appOverrides = { };
       searchAppActions = true;
       vpnLastConnected = "";
-      deviceMaxVolumes = {};
-      hiddenOutputDeviceNames = [];
-      hiddenInputDeviceNames = [];
+      deviceMaxVolumes = { };
+      hiddenOutputDeviceNames = [ ];
+      hiddenInputDeviceNames = [ ];
       launcherLastMode = "all";
       appDrawerLastMode = "apps";
       niriOverviewLastMode = "apps";

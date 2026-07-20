@@ -1,8 +1,22 @@
-{ pkgs, fetchFromGithub, buildLinux, lib, ... }:
+{
+  pkgs,
+  fetchFromGithub,
+  buildLinux,
+  lib,
+  ...
+}:
 let
-linux_hardened_pkg = { fetchFromGitHub, buildLinux, lib, ... } @ args:
+  linux_hardened_pkg =
+    {
+      fetchFromGitHub,
+      buildLinux,
+      lib,
+      ...
+    }@args:
 
-      buildLinux (args // rec {
+    buildLinux (
+      args
+      // rec {
         version = "6.12.79-hardened1";
         hash = "sha256-TKrLHk4aB47vqehEdp5ks4WtMCq/XCDr9ro3eQOoPvE=";
         extraMeta.branch = "6.12";
@@ -14,7 +28,7 @@ linux_hardened_pkg = { fetchFromGitHub, buildLinux, lib, ... } @ args:
           repo = "linux-hardened";
           tag = "v${version}";
         };
-        kernelPatches = [];
+        kernelPatches = [ ];
 
         structuredExtraConfig = with lib.kernel; {
           # Perform additional validation of commonly targeted structures.
@@ -82,9 +96,11 @@ linux_hardened_pkg = { fetchFromGitHub, buildLinux, lib, ... } @ args:
           # not needed for less than a decade old glibc versions
           LEGACY_VSYSCALL_NONE = yes;
         };
-      } // (args.argsOverride or {}));
-    linux_hardened = pkgs.callPackage linux_hardened_pkg{};
-    kernelHarden = lib.recurseIntoAttrs (pkgs.linuxPackagesFor linux_hardened);
+      }
+      // (args.argsOverride or { })
+    );
+  linux_hardened = pkgs.callPackage linux_hardened_pkg { };
+  kernelHarden = lib.recurseIntoAttrs (pkgs.linuxPackagesFor linux_hardened);
 in
 {
   boot.kernelPackages = lib.mkForce kernelHarden;

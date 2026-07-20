@@ -4,7 +4,7 @@
   stylix.targets.kitty = {
     enable = true;
     variant256Colors = true;
-};
+  };
   stylix.targets.gtk = {
     enable = true;
   };
@@ -35,10 +35,9 @@
   stylix.targets.nixvim = {
     enable = true;
   };
-  
+
   stylix.targets.btop = {
     enable = true;
     colors.enable = true;
   };
 }
-

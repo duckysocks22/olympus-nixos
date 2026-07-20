@@ -1,4 +1,4 @@
-{ pkgs, ...}:
+{ pkgs, ... }:
 {
   systemd.services.owntracks = {
     enable = true;
@@ -6,7 +6,7 @@
     serviceConfig = {
       ExecStart = ''
         ${pkgs.owntracks-recorder}/bin/ot-recorder
-        '';
+      '';
       DynamicUser = true;
       StateDirectory = "owntracks";
       Restart = "always";

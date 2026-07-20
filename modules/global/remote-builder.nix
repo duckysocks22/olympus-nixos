@@ -21,7 +21,12 @@
       systems = [ "x86_64-linux" ];
       maxJobs = 4;
       speedFactor = 2;
-      supportedFeatures = [ "nixos-test" "flakes" "big-parallel" "kvm" ];
+      supportedFeatures = [
+        "nixos-test"
+        "flakes"
+        "big-parallel"
+        "kvm"
+      ];
     }
   ];
 }

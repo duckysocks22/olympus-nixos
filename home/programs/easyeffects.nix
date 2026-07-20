@@ -6,7 +6,7 @@
     extraPresets = {
       BaseAudio = {
         "input" = {
-          "blocklist" = [];
+          "blocklist" = [ ];
           "compressor#0" = {
             "attack" = 15.0;
             "boost-amount" = 0.0;
@@ -56,21 +56,21 @@
             "post-filter-beta" = 0.019999999552965164;
           };
           "deesser#0" = {
-          "bypass" = false;
-          "detection" = "RMS";
-          "f1-freq" = 4000.0;
-          "f1-level" = -6.0;
-          "f2-freq" = 8000.0;
-          "f2-level" = -6.0;
-          "f2-q" = 1.5;
-          "input-gain" = 0.0;
-          "laxity" = 15;
-          "makeup" = 0.0;
-          "mode" = "Split";
-          "output-gain" = 0.0;
-          "ratio" = 3.0;
-          "sc-listen" = false;
-          "threshold" = -22.0;
+            "bypass" = false;
+            "detection" = "RMS";
+            "f1-freq" = 4000.0;
+            "f1-level" = -6.0;
+            "f2-freq" = 8000.0;
+            "f2-level" = -6.0;
+            "f2-q" = 1.5;
+            "input-gain" = 0.0;
+            "laxity" = 15;
+            "makeup" = 0.0;
+            "mode" = "Split";
+            "output-gain" = 0.0;
+            "ratio" = 3.0;
+            "sc-listen" = false;
+            "threshold" = -22.0;
           };
           "equalizer#0" = {
             "balance" = 0.1;

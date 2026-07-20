@@ -1,4 +1,10 @@
-{ inputs, pkgs, config, lib, ... }:
+{
+  inputs,
+  pkgs,
+  config,
+  lib,
+  ...
+}:
 {
   imports = [ inputs.nixcord.homeModules.nixcord ];
 
@@ -12,22 +18,25 @@
   # /run/wrappers/bin/mullvad-exclude is only present at runtime (it is a
   # setuid wrapper created by NixOS activation, not a store path).
   home.packages = [
-    (let
-      discordWrapper = pkgs.writeShellScript "discord" ''
-        exec /run/wrappers/bin/mullvad-exclude \
-          ${config.programs.nixcord.finalPackage.discord}/bin/discord \
-          "$@"
-      '';
-    in pkgs.symlinkJoin {
-      name = "discord-mullvad-excluded";
-      paths = [ config.programs.nixcord.finalPackage.discord ];
-      postBuild = ''
-        rm "$out/bin/discord"
-        ln -s ${discordWrapper} "$out/bin/discord"
-        rm "$out/bin/Discord"
-        ln -s ${discordWrapper} "$out/bin/Discord"
-      '';
-    })
+    (
+      let
+        discordWrapper = pkgs.writeShellScript "discord" ''
+          exec /run/wrappers/bin/mullvad-exclude \
+            ${config.programs.nixcord.finalPackage.discord}/bin/discord \
+            "$@"
+        '';
+      in
+      pkgs.symlinkJoin {
+        name = "discord-mullvad-excluded";
+        paths = [ config.programs.nixcord.finalPackage.discord ];
+        postBuild = ''
+          rm "$out/bin/discord"
+          ln -s ${discordWrapper} "$out/bin/discord"
+          rm "$out/bin/Discord"
+          ln -s ${discordWrapper} "$out/bin/Discord"
+        '';
+      }
+    )
 
     # (let
     #   vesktopWrapper = pkgs.writeShellScript "vesktop" ''
@@ -62,7 +71,9 @@
       krisp.enable = true;
       vencord.enable = true;
       settings = {
-        openasar = { setup = true; };
+        openasar = {
+          setup = true;
+        };
       };
     };
 

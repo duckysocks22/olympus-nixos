@@ -17,8 +17,10 @@
   # Cap it to 500 messages per 30 s — enough to see real events, not the flood.
   # (only applies when the service is enabled; unconditional overrides create a
   # stub unit with no ExecStart= which systemd rejects as a bad-unit-file)
-  systemd.services.crafty-controller.serviceConfig = lib.mkIf config.services.crafty-controller.enable {
-    LogRateLimitIntervalSec = "30s";
-    LogRateLimitBurst = 500;
-  };
+  systemd.services.crafty-controller.serviceConfig =
+    lib.mkIf config.services.crafty-controller.enable
+      {
+        LogRateLimitIntervalSec = "30s";
+        LogRateLimitBurst = 500;
+      };
 }

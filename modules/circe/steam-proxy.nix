@@ -20,7 +20,10 @@ in
 {
   systemd.services.privoxy-steam = {
     description = "Privoxy for Steam cloud saves";
-    after = [ "network.target" "autossh-steam-proxy.service" ];
+    after = [
+      "network.target"
+      "autossh-steam-proxy.service"
+    ];
     wantedBy = [ "multi-user.target" ];
     environment.PROXYCHAINS_CONF_FILE = "${proxychainsCfg}";
     serviceConfig = {
@@ -30,13 +33,25 @@ in
     };
   };
 
-  programs.steam.package = lib.mkForce (pkgs.steam.override {
-    extraBwrapArgs = [
-      "--bind" "/dev/null" "/etc/ld-nix.so.preload"
-      "--setenv" "http_proxy"  "http://127.0.0.1:8118"
-      "--setenv" "HTTP_PROXY"  "http://127.0.0.1:8118"
-      "--setenv" "https_proxy" "http://127.0.0.1:8118"
-      "--setenv" "HTTPS_PROXY" "http://127.0.0.1:8118"
-    ];
-  });
+  programs.steam.package = lib.mkForce (
+    pkgs.steam.override {
+      extraBwrapArgs = [
+        "--bind"
+        "/dev/null"
+        "/etc/ld-nix.so.preload"
+        "--setenv"
+        "http_proxy"
+        "http://127.0.0.1:8118"
+        "--setenv"
+        "HTTP_PROXY"
+        "http://127.0.0.1:8118"
+        "--setenv"
+        "https_proxy"
+        "http://127.0.0.1:8118"
+        "--setenv"
+        "HTTPS_PROXY"
+        "http://127.0.0.1:8118"
+      ];
+    }
+  );
 }

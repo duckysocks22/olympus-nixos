@@ -1,4 +1,11 @@
-{ config, lib, stylix, inputs, pkgs, ... }:
+{
+  config,
+  lib,
+  stylix,
+  inputs,
+  pkgs,
+  ...
+}:
 
 {
   imports = [
@@ -20,7 +27,7 @@
   home = {
     sessionVariables = {
       SCREENDIR = "${config.xdg.dataHome}/screen";
-      _JAVA_OPTIONS="-Djava.util.prefs.userRoot=${config.xdg.dataHome}/java";
+      _JAVA_OPTIONS = "-Djava.util.prefs.userRoot=${config.xdg.dataHome}/java";
       XDG_CONFIG_HOME = config.xdg.configHome;
       XDG_CACHE_HOME = config.xdg.cacheHome;
       XDG_DATA_HOME = config.xdg.dataHome;
@@ -32,7 +39,7 @@
   # Nicely reload system units when changing configs
   systemd.user.startServices = "sd-switch";
 
-  home.activation.xdgPortalRestart = config.lib.dag.entryAfter ["writeBoundary"] ''
+  home.activation.xdgPortalRestart = config.lib.dag.entryAfter [ "writeBoundary" ] ''
     # Guard against running during system activation when the user session
     # isn't up yet — systemctl --user will fail if there is no D-Bus session.
     if ${pkgs.systemd}/bin/systemctl --user is-active --quiet xdg-desktop-portal.service 2>/dev/null; then

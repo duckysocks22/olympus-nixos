@@ -1,19 +1,29 @@
 { pkgs, ... }:
 {
   boot.blacklistedKernelModules = [
-    "ax25" "netrom" "rose"
+    "ax25"
+    "netrom"
+    "rose"
 
-    "adfs" "affs"
-    "bfs" "befs"
+    "adfs"
+    "affs"
+    "bfs"
+    "befs"
     "cramfs"
-    "efs" "erofs" "exofs"
-    "freevxfs" "f2fs"
-    "hfs" "hpfs"
+    "efs"
+    "erofs"
+    "exofs"
+    "freevxfs"
+    "f2fs"
+    "hfs"
+    "hpfs"
     "jfs"
     "minix"
-    "nilfs2" "ntfs"
+    "nilfs2"
+    "ntfs"
     "omfs"
-    "qnx4" "qnx6"
+    "qnx4"
+    "qnx6"
     "sysv"
     "ufs"
   ];
@@ -21,15 +31,15 @@
   security.protectKernelImage = true;
 
   boot.kernelParams = [
-   "slab_nomerge"
+    "slab_nomerge"
 
-   "page_poison=1"
+    "page_poison=1"
 
-   "page_alloc.shuffle=1"
+    "page_alloc.shuffle=1"
 
-   "debugfs=off"
+    "debugfs=off"
   ];
-  
+
   boot.kernel.sysctl = {
     "kernel.kptr_restrict" = "2";
     "net.core.bpf_jit_enable" = false;

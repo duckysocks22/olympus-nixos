@@ -1,4 +1,4 @@
-{ lib, ...}:
+{ lib, ... }:
 {
   disko.devices = {
 
@@ -15,11 +15,11 @@
     disk = {
       main = {
         device = "/dev/disk/by-id/nvme-SAMSUNG_MZVL81T0HFLB-00BH1_S7T8NF0Y375930";
-	type = "disk";
-	content = {
-	  type = "gpt";
+        type = "disk";
+        content = {
+          type = "gpt";
           partitions = {
-	    ESP = {
+            ESP = {
               name = "ESP";
               size = "1G";
               type = "EF00";
@@ -29,7 +29,7 @@
                 format = "vfat";
                 mountpoint = "/boot";
               };
-	    };
+            };
             swap = {
               size = "16G";
               content = {
@@ -44,9 +44,9 @@
                 };
               };
             };
-	    luks = {
-	      size = "100%";
-                content = {
+            luks = {
+              size = "100%";
+              content = {
                 type = "luks";
                 name = "crypted";
                 settings = {
@@ -75,7 +75,7 @@
                 };
               };
             };
-	  };
+          };
         };
       };
     };

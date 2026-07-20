@@ -1,8 +1,8 @@
-{ config, ...}:
+{ config, ... }:
 {
   users.users.share = {
     description = "Write-access to samba media shares";
-    # Add this user to a group with permission to access the expected files 
+    # Add this user to a group with permission to access the expected files
     group = "share";
     extraGroups = [ "users" ];
     # Password can be set in clear text with a literal string or from a file.
@@ -12,16 +12,18 @@
     isSystemUser = true;
   };
 
-  users.groups.share = {};
+  users.groups.share = { };
 
-  /* system.activationScripts = {
-    # The "init_smbpasswd" script name is arbitrary, but a useful label for tracking
-    # failed scripts in the build output. An absolute path to smbpasswd is necessary
-    # as it is not in $PATH in the activation script's environment. The password
-    # is repeated twice with newline characters as smbpasswd requires a password
-    # confirmation even in non-interactive mode where input is piped in through stdin. 
-    init_smbpasswd.text = ''
-      /run/current-system/sw/bin/printf "$(/run/current-system/sw/bin/cat ${config.sops.secrets."samba-nyx/socks".path})\n$(/run/current-system/sw/bin/cat ${config.sops.secrets."samba-nyx/socks".path})\n" | /run/current-system/sw/bin/smbpasswd -sa socks
-    '';
-  }; */
+  /*
+    system.activationScripts = {
+      # The "init_smbpasswd" script name is arbitrary, but a useful label for tracking
+      # failed scripts in the build output. An absolute path to smbpasswd is necessary
+      # as it is not in $PATH in the activation script's environment. The password
+      # is repeated twice with newline characters as smbpasswd requires a password
+      # confirmation even in non-interactive mode where input is piped in through stdin.
+      init_smbpasswd.text = ''
+        /run/current-system/sw/bin/printf "$(/run/current-system/sw/bin/cat ${config.sops.secrets."samba-nyx/socks".path})\n$(/run/current-system/sw/bin/cat ${config.sops.secrets."samba-nyx/socks".path})\n" | /run/current-system/sw/bin/smbpasswd -sa socks
+      '';
+    };
+  */
 }

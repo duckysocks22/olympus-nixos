@@ -6,13 +6,27 @@
     ./xwayland.nix
     ./dmshell.nix
     ./cursors.nix
-    ];
-  home.packages = [ pkgs.niri pkgs.dconf pkgs.slurp pkgs.libnotify ];
+  ];
+  home.packages = [
+    pkgs.niri
+    pkgs.dconf
+    pkgs.slurp
+    pkgs.libnotify
+  ];
 
   xdg.configFile = {
-    "niri/config.kdl" = { source = ./niri.kdl; force = true; };
-    "niri/dms/cursor.kdl" = { source = ./dms/cursor.kdl; force = true; };
-    "niri/dms/binds.kdl" = { source = ./dms/binds.kdl; force = true; };
+    "niri/config.kdl" = {
+      source = ./niri.kdl;
+      force = true;
+    };
+    "niri/dms/cursor.kdl" = {
+      source = ./dms/cursor.kdl;
+      force = true;
+    };
+    "niri/dms/binds.kdl" = {
+      source = ./dms/binds.kdl;
+      force = true;
+    };
     #"noctalia/settings.json".force = true;
   };
 
@@ -36,7 +50,7 @@
       };
     };
   };
-  
+
   services.mako.enable = false;
   services.polkit-gnome.enable = true;
 }

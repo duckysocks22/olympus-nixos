@@ -1,6 +1,6 @@
-{ config, pkgs, ...}:
+{ config, pkgs, ... }:
 let
-  puppygirls = pkgs.callPackage ../web/puppygirls {};
+  puppygirls = pkgs.callPackage ../web/puppygirls { };
 in
 {
   services.caddy = {
@@ -271,5 +271,8 @@ in
       }
     '';
   };
-  networking.firewall.allowedTCPPorts = [ 80 443 ];
+  networking.firewall.allowedTCPPorts = [
+    80
+    443
+  ];
 }
