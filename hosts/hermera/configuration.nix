@@ -2,11 +2,12 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ../../modules/hermera/disko.nix
     ../../modules/global/system.nix
     ../../modules/global/nix/default.nix
     ../../modules/global/netwatch.nix
-    ../../modules/hermera/sops.nix
-    ../../modules/hermera/server.nix
+    ../../modules/server/sops.nix
+    ../../modules/server/server.nix
   ];
 
   home-manager.users.server = import ../../home/users/server/core.nix;
@@ -15,7 +16,7 @@
   users.mutableUsers = false;
   users.users.root.hashedPasswordFile = config.sops.secrets."users/server".path;
 
-  system.sleep.settings.Sleep = {
+  systemd.sleep.settings.Sleep = {
     AllowSuspend = false;
     AllowHibernation = false;
     AllowHypridSleep = false;
