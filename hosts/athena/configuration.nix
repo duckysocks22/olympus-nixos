@@ -2,33 +2,38 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, inputs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ../../modules/athena/disko.nix
-      ../../modules/global/preservation.nix
-      ../../modules/global/remote-builder.nix
-      ../../modules/global/harden.nix
-      #../../modules/greeter/ly.nix
-      ../../modules/global/greeter/cosmic-greeter.nix
-      ../../modules/global/portals.nix
-      ../../modules/global/system.nix
-      ../../modules/global/stress.nix
-      ../../modules/global/users/foxtrot.nix
-      ../../modules/athena/samba-local.nix
-      ../../modules/global/common.nix
-      ../../modules/global/network/default-network.nix
-      ../../modules/global/services/thelounge.nix
-      ../../modules/global/nix/default.nix
-      ../../modules/global/sops.nix
-      ../../modules/global/virtualisation.nix
-      ../../modules/global/local-printing.nix
-      ../../modules/packages/default.nix
-      ../../modules/athena/sunshine.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    ../../modules/athena/disko.nix
+    ../../modules/global/preservation.nix
+    ../../modules/global/remote-builder.nix
+    ../../modules/global/harden.nix
+    #../../modules/greeter/ly.nix
+    ../../modules/global/greeter/cosmic-greeter.nix
+    ../../modules/global/portals.nix
+    ../../modules/global/system.nix
+    ../../modules/global/stress.nix
+    ../../modules/global/users/foxtrot.nix
+    ../../modules/athena/samba-local.nix
+    ../../modules/global/common.nix
+    ../../modules/global/network/default-network.nix
+    ../../modules/global/services/thelounge.nix
+    ../../modules/global/nix/default.nix
+    ../../modules/global/sops.nix
+    ../../modules/global/virtualisation.nix
+    ../../modules/global/local-printing.nix
+    ../../modules/packages/default.nix
+    ../../modules/athena/sunshine.nix
+  ];
 
   #home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
 
@@ -56,7 +61,6 @@
   # Enable network manager applet
   networking.wireless.iwd.enable = true;
 
-
   # Set your time zone.
   time.timeZone = "America/New_York";
 
@@ -65,7 +69,6 @@
     layout = "us";
     variant = "";
   };
-
 
   # Please remove and make own module,,,,, -------------------------------------------------------------
 
@@ -87,7 +90,6 @@
 
   # Enable touchpad support (enabled default in most desktopManager).
   # services.xserver.libinput.enable = true;
-
 
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
@@ -114,7 +116,6 @@
       '';
     };
   };
-
 
   environment.variables.EDITOR = "nvim";
 

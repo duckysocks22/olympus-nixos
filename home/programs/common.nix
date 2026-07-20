@@ -1,7 +1,7 @@
-{ pkgs, ...}:
+{ pkgs, ... }:
 {
-  home.packages = with pkgs; [ 
-    kitty 
+  home.packages = with pkgs; [
+    kitty
     zellij
     fastfetch
     #xfce.thunar // Issues viewing fileshare

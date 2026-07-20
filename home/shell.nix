@@ -1,31 +1,39 @@
-{ pkgs, config, inputs, pkgs-unstable, ... }:
+{
+  pkgs,
+  config,
+  inputs,
+  pkgs-unstable,
+  ...
+}:
 let
   pkg2zip = pkgs.callPackage ../modules/packages/pkg2zip.nix { };
   carddump = pkgs.callPackage ../modules/scripts/carddump.nix { };
   attic-client = pkgs-unstable.attic-client;
 in
 {
-  home.packages = (with pkgs; [
-    ripgrep
-    tmux
-    elmPackages.nodejs
-    inputs.px7-radio-git.packages.${pkgs.stdenv.hostPlatform.system}.default
-    pkg2zip
-    carddump
-    jp2a # Image to ASCII Converter
-    shellcheck # Shell script checker
-    dust # Tree-formatted disk analyzer
-    rclone
-    attic-client
-    gh
-    btop
-    cdrdao
-  ]) ++ (with inputs.luxxy-pkgs.packages.${pkgs.stdenv.hostPlatform.system}; [
-    unscene
-    mountiso
-  ]);
+  home.packages =
+    (with pkgs; [
+      ripgrep
+      tmux
+      elmPackages.nodejs
+      inputs.px7-radio-git.packages.${pkgs.stdenv.hostPlatform.system}.default
+      pkg2zip
+      carddump
+      jp2a # Image to ASCII Converter
+      shellcheck # Shell script checker
+      dust # Tree-formatted disk analyzer
+      rclone
+      attic-client
+      gh
+      btop
+      cdrdao
+    ])
+    ++ (with inputs.luxxy-pkgs.packages.${pkgs.stdenv.hostPlatform.system}; [
+      unscene
+      mountiso
+    ]);
 
-  imports = [ 
+  imports = [
     inputs.nix-index-database.homeModules.default
   ];
   programs.zsh = {
@@ -36,21 +44,21 @@ in
       vi = "nvim";
       rebuild = "sudo nixos-rebuild switch -L --flake ${config.home.homeDirectory}/olympus-nixos";
       par = ''
-      cd ${config.home.homeDirectory}/olympus-nixos
-      git pull
-      sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/olympus-nixos
-      attic push main /run/current-system'';
+        cd ${config.home.homeDirectory}/olympus-nixos
+        git pull
+        sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/olympus-nixos
+        attic push main /run/current-system'';
       cleanup = "sudo nix-collect-garbage --delete-old";
       hb = "HandBrakeCLI";
       buildiso = ''
-      cd ~/olympus-nixos
-      nix build -L .#nixosConfigurations.olympus-iso.config.system.build.isoImage
+        cd ~/olympus-nixos
+        nix build -L .#nixosConfigurations.olympus-iso.config.system.build.isoImage
       '';
       weather = ''curl "wttr.in/?u"'';
       ai-commit = ''git commit --trailer "Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"'';
-      cachestore = ''attic push --ignore-upstream-cache-filter main $(ls -d /nix/store/*/ | grep -v fake_nixpkgs)'';
-      cachesys = ''attic push main /run/current-system'';
-      cp = ''rsync --progress --stats'';
+      cachestore = "attic push --ignore-upstream-cache-filter main $(ls -d /nix/store/*/ | grep -v fake_nixpkgs)";
+      cachesys = "attic push main /run/current-system";
+      cp = "rsync --progress --stats";
     };
 
     initContent = ''
@@ -113,20 +121,20 @@ in
     };
 
     plugins = [
-    {
-      name = pkgs.zsh-fzf-tab.pname;
-      src = "${pkgs.zsh-fzf-tab}/share/fzf-tab";
-      file = "fzf-tab.plugin.zsh";
-    }
-    {
-      name = pkgs.zsh-autosuggestions.pname;
-      src = pkgs.zsh-autosuggestions.src;
-      file = "zsh-autosuggestions.plugin.zsh";
-    }
+      {
+        name = pkgs.zsh-fzf-tab.pname;
+        src = "${pkgs.zsh-fzf-tab}/share/fzf-tab";
+        file = "fzf-tab.plugin.zsh";
+      }
+      {
+        name = pkgs.zsh-autosuggestions.pname;
+        src = pkgs.zsh-autosuggestions.src;
+        file = "zsh-autosuggestions.plugin.zsh";
+      }
     ];
   };
 
-   xdg.configFile = {
+  xdg.configFile = {
     "fastfetch/config.jsonc".source = ./config/fastfetch.jsonc;
     "fastfetch/ascii.txt".source = ./config/ascii.txt;
     #"noctalia/settings.json".force = true;
@@ -138,16 +146,16 @@ in
     enable = true;
     enableZshIntegration = true;
     defaultOptions = [
-    "--ansi"
-    "--bind=tab:down,btab:up,change:top,ctrl-space:toggle"
-    "--border=rounded"
-    "--cycle"
-    "--ignore-case"
-    "--info=hidden"
-    "--layout=reverse"
-    "--multi"
-    "--tiebreak=begin"
-  ];
+      "--ansi"
+      "--bind=tab:down,btab:up,change:top,ctrl-space:toggle"
+      "--border=rounded"
+      "--cycle"
+      "--ignore-case"
+      "--info=hidden"
+      "--layout=reverse"
+      "--multi"
+      "--tiebreak=begin"
+    ];
   };
 
   stylix.targets.fzf.enable = true;
@@ -165,8 +173,8 @@ in
 
   dconf.settings = {
     "org/virt-manager/virt-manager/connections" = {
-      autoconnect = ["qemu:///system"];
-      uris = ["qemu:///system"];
+      autoconnect = [ "qemu:///system" ];
+      uris = [ "qemu:///system" ];
     };
   };
 

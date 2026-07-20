@@ -2,35 +2,40 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, inputs, ... }:
+{
+  config,
+  pkgs,
+  inputs,
+  ...
+}:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ../../modules/circe/disko.nix
-      ../../modules/global/remote-builder.nix
-      #../../modules/circe/syncthing.nix
-      ../../modules/packages/default.nix
-      ../../modules/global/preservation.nix
-      #../../modules/global/network/ssh-tunnel.nix
-      #../../modules/circe/steam-proxy.nix
-      ../../modules/global/harden.nix
-      #../../modules/global/greeter/ly.nix
-      ../../modules/global/greeter/cosmic-greeter.nix
-      ../../modules/global/portals.nix
-      ../../modules/global/system.nix
-      ../../modules/global/users/foxtrot.nix
-      ../../modules/global/common.nix
-      ../../modules/global/network/default-network.nix
-      ../../modules/global/services/thelounge.nix
-      ../../modules/global/nix/default.nix
-      ../../modules/global/sops.nix
-      ../../modules/global/virtualisation.nix
-      ../../modules/global/local-printing.nix
-      ../../modules/athena/samba-local.nix
-      ../../modules/global/fonts.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    ../../modules/circe/disko.nix
+    ../../modules/global/remote-builder.nix
+    #../../modules/circe/syncthing.nix
+    ../../modules/packages/default.nix
+    ../../modules/global/preservation.nix
+    #../../modules/global/network/ssh-tunnel.nix
+    #../../modules/circe/steam-proxy.nix
+    ../../modules/global/harden.nix
+    #../../modules/global/greeter/ly.nix
+    ../../modules/global/greeter/cosmic-greeter.nix
+    ../../modules/global/portals.nix
+    ../../modules/global/system.nix
+    ../../modules/global/users/foxtrot.nix
+    ../../modules/global/common.nix
+    ../../modules/global/network/default-network.nix
+    ../../modules/global/services/thelounge.nix
+    ../../modules/global/nix/default.nix
+    ../../modules/global/sops.nix
+    ../../modules/global/virtualisation.nix
+    ../../modules/global/local-printing.nix
+    ../../modules/athena/samba-local.nix
+    ../../modules/global/fonts.nix
+  ];
 
   #home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
 
@@ -76,7 +81,7 @@
   nixpkgs.config.allowUnfree = true;
 
   environment.systemPackages = with pkgs; [
-    git  
+    git
     #neovim
     wget
   ];

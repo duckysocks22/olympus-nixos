@@ -1,4 +1,9 @@
-{ pkgs, lib, inputs, ...}:
+{
+  pkgs,
+  lib,
+  inputs,
+  ...
+}:
 {
   imports = [ inputs.nixvim.homeModules.nixvim ];
 
@@ -9,15 +14,15 @@
     plugins = {
       lazy = {
         enable = true;
-	settings = {
+        settings = {
 
-	};
+        };
       };
       indent-blankline = {
-	enable = true;
-	settings = {
+        enable = true;
+        settings = {
 
-	};
+        };
       };
       direnv = {
         enable = true;

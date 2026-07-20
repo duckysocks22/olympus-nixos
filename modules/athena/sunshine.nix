@@ -7,7 +7,7 @@
     openFirewall = true;
   };
 
-  networking.firewall.allowedTCPPorts = [ 
+  networking.firewall.allowedTCPPorts = [
     47984
     47989
     47990

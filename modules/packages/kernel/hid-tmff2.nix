@@ -17,8 +17,11 @@ stdenv.mkDerivation rec {
     hash = "sha256-jKmWfBBT3md4kxw49iIwr2yM6Yhr31RLER1Mu/fhBmQ=";
     fetchSubmodules = true;
   };
-  
-  hardeningDisable = [ "pic" "format" ];
+
+  hardeningDisable = [
+    "pic"
+    "format"
+  ];
   nativeBuildInputs = kernel.moduleBuildDependencies;
 
   makeFlags = [

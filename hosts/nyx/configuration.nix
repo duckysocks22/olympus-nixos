@@ -2,23 +2,28 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, lib, ... }:
+{
+  config,
+  pkgs,
+  lib,
+  ...
+}:
 
 {
-  imports =
-    [ # Include the results of the hardware scan.
-      ./hardware-configuration.nix
-      ../../modules/global/system.nix
-      ../../modules/global/nix/default.nix
-      #../../modules/nyx/hardenedKernel.nix
-      ../../modules/server/server.nix
-      ../../modules/nyx/default.nix
-      ../../modules/nyx/server-network.nix
-      ../../modules/global/nix/default.nix
-      ../../modules/nyx/rebuild-throttle.nix
-      ../../modules/server/sops.nix
-      ../../modules/global/netwatch.nix
-    ];
+  imports = [
+    # Include the results of the hardware scan.
+    ./hardware-configuration.nix
+    ../../modules/global/system.nix
+    ../../modules/global/nix/default.nix
+    #../../modules/nyx/hardenedKernel.nix
+    ../../modules/server/server.nix
+    ../../modules/nyx/default.nix
+    ../../modules/nyx/server-network.nix
+    ../../modules/global/nix/default.nix
+    ../../modules/nyx/rebuild-throttle.nix
+    ../../modules/server/sops.nix
+    ../../modules/global/netwatch.nix
+  ];
 
   home-manager.users.server = import ../../home/users/server/core.nix;
   # Claude Code writes to ~/.claude/settings.json at runtime, replacing the

@@ -1,4 +1,9 @@
-{ pkgs, config, lib, ...}:
+{
+  pkgs,
+  config,
+  lib,
+  ...
+}:
 {
   services.frigate = {
     enable = true;
@@ -13,22 +18,28 @@
           mode = "all";
         };
       };
-      
+
       auth = {
       };
 
       ffmpeg.hwaccel_args = "preset-nvidia";
 
       cameras."entry-way" = {
-        ffmpeg.inputs = [ 
+        ffmpeg.inputs = [
           {
             path = "rtsp://127.0.0.1:8554/entry-way-main";
-            input_args = [ "-rtsp_transport" "tcp" ];
+            input_args = [
+              "-rtsp_transport"
+              "tcp"
+            ];
             roles = [ "record" ];
-          } 
+          }
           {
             path = "rtsp://127.0.0.1:8554/entry-way-sub";
-            input_args = [ "-rtsp_transport" "tcp" ];
+            input_args = [
+              "-rtsp_transport"
+              "tcp"
+            ];
             roles = [ "detect" ];
           }
         ];
@@ -44,7 +55,10 @@
   systemd.services.frigate = {
     environment.LIBVA_DRIVER_NAME = "nvidia";
     serviceConfig = {
-      SupplementaryGroups = ["render" "video"];
+      SupplementaryGroups = [
+        "render"
+        "video"
+      ];
       AmbientCapabilities = "CAP_PERFMON";
     };
   };

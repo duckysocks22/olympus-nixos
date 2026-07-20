@@ -1,8 +1,11 @@
-{ config, pkgs, ...}:
+{ config, pkgs, ... }:
 {
   programs.virt-manager.enable = true;
 
-  users.groups.libvirtd.members = [ "foxtrot" "server" ];
+  users.groups.libvirtd.members = [
+    "foxtrot"
+    "server"
+  ];
 
   users.users.foxtrot.extraGroups = [ "libvirtd" ];
 
@@ -13,7 +16,7 @@
     enable = true;
     package = pkgs.waydroid-nftables;
   };
-  
+
   environment.systemPackages = with pkgs; [
     guestfs-tools
     virtiofsd

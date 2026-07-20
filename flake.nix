@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:NixOs/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOs/nixpkgs/nixos-unstable";
-    
+
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
     };
@@ -94,40 +94,53 @@
     };
   };
 
-  outputs = inputs@{ self, nixpkgs, nixpkgs-unstable, sops-nix, disko, preservation,  ... }: 
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      nixpkgs-unstable,
+      sops-nix,
+      disko,
+      preservation,
+      ...
+    }:
     let
       system = "x86_64-linux";
       pkgs = nixpkgs.legacyPackages.${system};
-      pkgs-unstable = import nixpkgs-unstable { inherit system; config.allowUnfree = true; };
-    in {
+      pkgs-unstable = import nixpkgs-unstable {
+        inherit system;
+        config.allowUnfree = true;
+      };
+    in
+    {
       nixosConfigurations = {
         athena-nixos = nixpkgs.lib.nixosSystem {
           modules = [
             ./hosts/athena/configuration.nix
-	    ./home/default.nix
-	    ./modules/global/stylix/stylix.nix
-	    ./modules/global/lix.nix
-	    disko.nixosModules.disko
+            ./home/default.nix
+            ./modules/global/stylix/stylix.nix
+            ./modules/global/lix.nix
+            disko.nixosModules.disko
             preservation.nixosModules.default
           ];
-	  specialArgs = { 
-	    inherit inputs; 
+          specialArgs = {
+            inherit inputs;
             inherit pkgs-unstable;
-	  };
+          };
         };
         circe-nixos = nixpkgs.lib.nixosSystem {
           modules = [
             ./hosts/circe/configuration.nix
-	    ./home/default.nix
-	    ./modules/global/stylix/stylix.nix
-	    ./modules/global/lix.nix
+            ./home/default.nix
+            ./modules/global/stylix/stylix.nix
+            ./modules/global/lix.nix
             disko.nixosModules.disko
             preservation.nixosModules.default
           ];
-	  specialArgs = { 
-	    inherit inputs; 
-	    inherit pkgs-unstable; 
-	  };
+          specialArgs = {
+            inherit inputs;
+            inherit pkgs-unstable;
+          };
         };
         nyx-nixos = nixpkgs.lib.nixosSystem {
           modules = [
@@ -167,9 +180,9 @@
         olympus-iso = nixpkgs.lib.nixosSystem {
           modules = [
             ./hosts/olympus-iso/configuration.nix
-	    ./home/default.nix
-	    ./modules/global/stylix/stylix.nix
-	    ./modules/global/lix.nix
+            ./home/default.nix
+            ./modules/global/stylix/stylix.nix
+            ./modules/global/lix.nix
           ];
           specialArgs = {
             inherit inputs;
@@ -177,5 +190,5 @@
           };
         };
       };
-  };
+    };
 }

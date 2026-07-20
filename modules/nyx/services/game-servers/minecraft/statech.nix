@@ -1,4 +1,9 @@
-{ util, pkgs, lib, ... }:
+{
+  util,
+  pkgs,
+  lib,
+  ...
+}:
 {
   systemd.services.mc-statech-industries = util.functions.mkSimpleService {
     description = "Minecraft Statech Industries Server";

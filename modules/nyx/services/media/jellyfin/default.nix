@@ -1,4 +1,9 @@
-{ pkgs-unstable, pkgs, inputs, ... }:
+{
+  pkgs-unstable,
+  pkgs,
+  inputs,
+  ...
+}:
 {
 
   environment.systemPackages = with pkgs; [
@@ -63,5 +68,5 @@
     group = "jellyfin";
   };
 
-  users.groups.jellyfin = {};
+  users.groups.jellyfin = { };
 }

@@ -1,4 +1,9 @@
-{ lib, pkgs, config, ... }:
+{
+  lib,
+  pkgs,
+  config,
+  ...
+}:
 let
   claudeRules = pkgs.fetchurl {
     url = "https://raw.githubusercontent.com/sisyphusse1-ops/claude-code-pro-pack/refs/heads/main/CLAUDE.md";
@@ -46,26 +51,29 @@ let
 
   statuslineScript = pkgs.writeShellApplication {
     name = "claude-statusline";
-    runtimeInputs = [ pkgs.jq pkgs.git ];
+    runtimeInputs = [
+      pkgs.jq
+      pkgs.git
+    ];
     text = builtins.readFile ./claude-statusline.sh;
   };
 
-    writeConfig = pkgs.writeShellScript "write-claude-config.sh" ''
-      PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH"
-      settings="${cfg.configDir}/settings.json"
-      mkdir -p "${cfg.configDir}"
-      if [ -f "$settings" ]; then
-        tmp="$(jq -r '${lib.concatStringsSep "|" (lib.mapAttrsToList (n1: v1:
-          ".${n1}=${builtins.toJSON v1}"
-        ) cfg.settings)}' \
-          "$settings"
-        )" && cat <<< "$tmp" > "$settings"
-      else
-        [ -L "$settings" ] && rm "$settings"
-        echo '${builtins.toJSON cfg.settings}' > "$settings"
-      fi
-      chmod 644 "$settings"
-    '';
+  writeConfig = pkgs.writeShellScript "write-claude-config.sh" ''
+    PATH="${lib.makeBinPath [ pkgs.jq ]}:$PATH"
+    settings="${cfg.configDir}/settings.json"
+    mkdir -p "${cfg.configDir}"
+    if [ -f "$settings" ]; then
+      tmp="$(jq -r '${
+        lib.concatStringsSep "|" (lib.mapAttrsToList (n1: v1: ".${n1}=${builtins.toJSON v1}") cfg.settings)
+      }' \
+        "$settings"
+      )" && cat <<< "$tmp" > "$settings"
+    else
+      [ -L "$settings" ] && rm "$settings"
+      echo '${builtins.toJSON cfg.settings}' > "$settings"
+    fi
+    chmod 644 "$settings"
+  '';
 in
 {
   programs.claude-code = {
@@ -111,7 +119,15 @@ in
       };
       spinnerVerbs = {
         mode = "replace";
-        verbs = [ "Pawbapping 🐾" "Tailwagging 🐾" "Snuggling 🐾" "Barking 🐾" "Biting 🐾" "Napping 🐾" "Whining 🐾" ];
+        verbs = [
+          "Pawbapping 🐾"
+          "Tailwagging 🐾"
+          "Snuggling 🐾"
+          "Barking 🐾"
+          "Biting 🐾"
+          "Napping 🐾"
+          "Whining 🐾"
+        ];
       };
       statusLine = {
         type = "command";
@@ -121,13 +137,23 @@ in
         PreToolUse = [
           {
             matcher = "Bash";
-            hooks = [{ type = "command"; command = "${saveSettingsRef}"; }];
+            hooks = [
+              {
+                type = "command";
+                command = "${saveSettingsRef}";
+              }
+            ];
           }
         ];
         PostToolUse = [
           {
             matcher = "Bash";
-            hooks = [{ type = "command"; command = "${notifyOnSettingsChange}"; }];
+            hooks = [
+              {
+                type = "command";
+                command = "${notifyOnSettingsChange}";
+              }
+            ];
           }
         ];
       };
@@ -282,11 +308,13 @@ in
         nix flake update                # wrong — updates everything
   '';
 
-  /*programs.vscode = {
-    enable = true;
-    profiles."foxtrot" = {
-      extensions = with pkgs.vscode-extensions; [ bbenoist.nix golang.go twxs.cmake anthropic.claude-code ];
-      userSettings = { };
+  /*
+    programs.vscode = {
+      enable = true;
+      profiles."foxtrot" = {
+        extensions = with pkgs.vscode-extensions; [ bbenoist.nix golang.go twxs.cmake anthropic.claude-code ];
+        userSettings = { };
+      };
     };
-  };*/
+  */
 }

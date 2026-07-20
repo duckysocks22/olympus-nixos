@@ -1,4 +1,4 @@
-{ pkgs, config, ...}:
+{ pkgs, config, ... }:
 
 {
   xdg.portal = {
@@ -11,7 +11,7 @@
     ];
     config.niri = {
       "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];
-      "org.freedesktop.impl.portal.ScreenCast" = [ "gnome"];
+      "org.freedesktop.impl.portal.ScreenCast" = [ "gnome" ];
     };
     config.gnome = {
       "org.freedesktop.impl.portal.FileChooser" = [ "gtk" ];

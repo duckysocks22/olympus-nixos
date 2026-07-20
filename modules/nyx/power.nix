@@ -8,5 +8,8 @@
     };
   };
 
-  boot.kernelParams = lib.mkForce [ "amd_pstate=active" "crashkernel=256M" ];
+  boot.kernelParams = lib.mkForce [
+    "amd_pstate=active"
+    "crashkernel=256M"
+  ];
 }

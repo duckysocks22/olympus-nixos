@@ -12,14 +12,20 @@
   };
 
   services.nginx.virtualHosts."freshrss" = {
-    listen = [{ addr = "127.0.0.1"; port = 8082; ssl = false; }];
+    listen = [
+      {
+        addr = "127.0.0.1";
+        port = 8082;
+        ssl = false;
+      }
+    ];
   };
 
   services.rsshub = {
     enable = true;
     settings = {
       LISTEN_INADDR_ANY = true;
-      PORT =  1200;
+      PORT = 1200;
     };
     redis.enable = true;
   };

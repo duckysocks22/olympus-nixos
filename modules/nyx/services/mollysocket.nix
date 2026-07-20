@@ -20,5 +20,5 @@
     group = "mollysocket";
   };
 
-  users.groups.mollysocket = {};
+  users.groups.mollysocket = { };
 }

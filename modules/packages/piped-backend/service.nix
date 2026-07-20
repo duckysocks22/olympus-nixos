@@ -6,8 +6,8 @@
 }:
 let
   cfg = config.services.piped-backend;
-  piped-pkg = pkgs.callPackage ./default.nix {};
-  format = pkgs.formats.json {};
+  piped-pkg = pkgs.callPackage ./default.nix { };
+  format = pkgs.formats.json { };
 in
 {
   options.services.piped-backend = {
@@ -47,7 +47,7 @@ in
 
     settings = lib.mkOption {
       type = format.type;
-      default = {};
+      default = { };
       example = lib.literalExpression ''
         {
           
@@ -62,92 +62,99 @@ in
     };
   };
 
-  config = lib.mkIf cfg.enable (let
-    generatedConfig = format.generate "config.properties" cfg.settings;
-  in {
-    users.users.${cfg.user} = {
-      isSystemUser = true;
-      group = cfg.group;
-      home = cfg.dataDir;
-    };
+  config =
+    lib.mkIf cfg.enable (
+      let
+        generatedConfig = format.generate "config.properties" cfg.settings;
+      in
+      {
+        users.users.${cfg.user} = {
+          isSystemUser = true;
+          group = cfg.group;
+          home = cfg.dataDir;
+        };
 
-    users.groups.${cfg.group} = {};
+        users.groups.${cfg.group} = { };
 
-    systemd.services.piped-backend = {
-      description = "Piped-Backend API";
-      wantedBy = [ "multi-user.target" ];
-      after = [ "network.target" ];
-      serviceConfig = {
-        User = cfg.user;
-        Group = cfg.group;
-        WorkingDirectory = cfg.dataDir;
-        ExecStartPre = let
-          script = pkgs.writeShellScript "piped-backend-prestart" ''
-            mkdir -p "${cfg.dataDir}"
-            chown ${cfg.user}:${cfg.group} "${cfg.dataDir}"
-            chmod 0750 "${cfg.dataDir}"
-            
-            cp ${piped-pkg}/share/piped-backend/config.properties "${cfg.dataDir}/config.properties"
-            chown ${cfg.user}:${cfg.group} "${cfg.dataDir}/config.properties"
-            
-            while IFS='=' read -r key value; do
-              [[ "$$key" =~ ^#.*$ || -z "$$key" ]] && continue
-              sed -i "s|^$$key=.*|$$key=$$value|" "${cfg.dataDir}/config.properties"
-              grep -q "^$$key=" "${cfg.dataDir}/config.properties" \
-                || echo "$$key=$$value" >> "${cfg.dataDir}/config.properties"
-            done < ${generatedConfig}
-            
-            chmod 0440 "${cfg.dataDir}/config.properties"
-          '';
-        in "+${script}";
-        ExecStart = lib.getExe piped-pkg;
-        Restart = "on-failure";
-        RestartSec = "10s";
-        Type = "simple";
+        systemd.services.piped-backend = {
+          description = "Piped-Backend API";
+          wantedBy = [ "multi-user.target" ];
+          after = [ "network.target" ];
+          serviceConfig = {
+            User = cfg.user;
+            Group = cfg.group;
+            WorkingDirectory = cfg.dataDir;
+            ExecStartPre =
+              let
+                script = pkgs.writeShellScript "piped-backend-prestart" ''
+                  mkdir -p "${cfg.dataDir}"
+                  chown ${cfg.user}:${cfg.group} "${cfg.dataDir}"
+                  chmod 0750 "${cfg.dataDir}"
+
+                  cp ${piped-pkg}/share/piped-backend/config.properties "${cfg.dataDir}/config.properties"
+                  chown ${cfg.user}:${cfg.group} "${cfg.dataDir}/config.properties"
+
+                  while IFS='=' read -r key value; do
+                    [[ "$$key" =~ ^#.*$ || -z "$$key" ]] && continue
+                    sed -i "s|^$$key=.*|$$key=$$value|" "${cfg.dataDir}/config.properties"
+                    grep -q "^$$key=" "${cfg.dataDir}/config.properties" \
+                      || echo "$$key=$$value" >> "${cfg.dataDir}/config.properties"
+                  done < ${generatedConfig}
+
+                  chmod 0440 "${cfg.dataDir}/config.properties"
+                '';
+              in
+              "+${script}";
+            ExecStart = lib.getExe piped-pkg;
+            Restart = "on-failure";
+            RestartSec = "10s";
+            Type = "simple";
+          };
+        };
+      }
+    )
+    ++ lib.mkIf cfg.database.enable {
+      systemd.services.piped-postgresql = {
+        description = "Piped-Backend SQL Database";
+        wantedBy = [ "piped-backend.service" ];
+        after = [ "network.target" ];
+        serviceConfig = {
+          User = cfg.user;
+          Group = cfg.group;
+          WorkingDirectory = cfg.dataDir;
+          ExecStart = lib.getExe pkgs.postgresql;
+          Restart = "on-falure";
+
+          # Hardening from NixOS postgresql module
+          CapabilityBoundingSet = [ "" ];
+          DevicePolicy = "closed";
+          PrivateTmp = true;
+          ProtectHome = true;
+          ProtectSystem = "strict";
+          NoNewPrivileges = true;
+          LockPersonality = true;
+          PrivateDevices = true;
+          PrivateMounts = true;
+          ProcSubset = "pid";
+          ProtectClock = true;
+          ProtectControlGroups = true;
+          ProtectHostname = true;
+          ProtectKernelLogs = true;
+          ProtectKernelModules = true;
+          ProtectKernelTunables = true;
+          ProtectProc = "invisible";
+          RemoveIPC = true;
+          RestrictAddressFamilies = [
+            "AF_INET"
+            "AF_INET6"
+            "AF_NETLINK" # used for network interface enumeration
+            "AF_UNIX"
+          ];
+          RestrictNamespaces = true;
+          RestrictRealtime = true;
+          RestrictSUIDSGID = true;
+          SystemCallArchitectures = "native";
+        };
       };
     };
-  }) ++ lib.mkIf cfg.database.enable {
-    systemd.services.piped-postgresql = {
-      description = "Piped-Backend SQL Database";
-      wantedBy = [ "piped-backend.service" ];
-      after = [ "network.target" ];
-      serviceConfig = {
-        User = cfg.user;
-        Group = cfg.group;
-        WorkingDirectory = cfg.dataDir;
-        ExecStart = lib.getExe pkgs.postgresql;
-        Restart = "on-falure";
-
-        # Hardening from NixOS postgresql module
-        CapabilityBoundingSet = [ "" ];
-        DevicePolicy = "closed";
-        PrivateTmp = true;
-        ProtectHome = true;
-        ProtectSystem = "strict";
-        NoNewPrivileges = true;
-        LockPersonality = true;
-        PrivateDevices = true;
-        PrivateMounts = true;
-        ProcSubset = "pid";
-        ProtectClock = true;
-        ProtectControlGroups = true;
-        ProtectHostname = true;
-        ProtectKernelLogs = true;
-        ProtectKernelModules = true;
-        ProtectKernelTunables = true;
-        ProtectProc = "invisible";
-        RemoveIPC = true;
-        RestrictAddressFamilies = [
-          "AF_INET"
-          "AF_INET6"
-          "AF_NETLINK" # used for network interface enumeration
-          "AF_UNIX"
-        ];
-        RestrictNamespaces = true;
-        RestrictRealtime = true;
-        RestrictSUIDSGID = true;
-        SystemCallArchitectures = "native";
-      };
-    };
-  };
 }

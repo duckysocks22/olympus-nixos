@@ -1,4 +1,9 @@
-{ util, pkgs, lib, ... }:
+{
+  util,
+  pkgs,
+  lib,
+  ...
+}:
 {
   systemd.services.ofsm = util.functions.mkSimpleService {
     description = "Open Factorio Server Manager";

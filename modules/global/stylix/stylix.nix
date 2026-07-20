@@ -1,4 +1,9 @@
-{ inputs, pkgs, stylix, ... }:
+{
+  inputs,
+  pkgs,
+  stylix,
+  ...
+}:
 {
   imports = [ inputs.stylix.nixosModules.stylix ];
 
@@ -12,7 +17,7 @@
 
   stylix.autoEnable = false;
   stylix.targets.gtk.enable = true;
-  
+
   stylix.base16Scheme = "${pkgs.base16-schemes}/share/themes/paraiso.yaml";
   stylix.fonts = {
     serif = {

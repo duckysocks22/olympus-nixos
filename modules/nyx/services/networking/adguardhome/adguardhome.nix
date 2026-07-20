@@ -49,18 +49,33 @@
         };
       };
 
-      trusted_proxies = [ "127.0.0.1" "172.17.100.1" ];
-
-      filters = map(url: { enabled = true; url = url; }) [
-        "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.txt"
-        "https://raw.githubusercontent.com/Perflyst/PiHoleBlocklist/refs/heads/master/SmartTV.txt"
-        "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.txt"
-        "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/popupads.txt"
+      trusted_proxies = [
+        "127.0.0.1"
+        "172.17.100.1"
       ];
 
-      whitelist_filters = map(url: { enabled = true; url = url; }) [
-        "https://dawn.wine/foxtrottt/olympus-nixos/raw/branch/main/modules/nyx/services/networking/adguardhome/allowlist.txt"
-      ];
+      filters =
+        map
+          (url: {
+            enabled = true;
+            url = url;
+          })
+          [
+            "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.txt"
+            "https://raw.githubusercontent.com/Perflyst/PiHoleBlocklist/refs/heads/master/SmartTV.txt"
+            "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.txt"
+            "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/popupads.txt"
+          ];
+
+      whitelist_filters =
+        map
+          (url: {
+            enabled = true;
+            url = url;
+          })
+          [
+            "https://dawn.wine/foxtrottt/olympus-nixos/raw/branch/main/modules/nyx/services/networking/adguardhome/allowlist.txt"
+          ];
 
       protection_enabled = false;
     };

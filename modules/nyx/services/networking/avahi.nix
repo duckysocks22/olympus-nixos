@@ -1,4 +1,10 @@
-{ util, pkgs, lib, ... }:{
+{
+  util,
+  pkgs,
+  lib,
+  ...
+}:
+{
   services.avahi = {
     enable = true;
     openFirewall = true;

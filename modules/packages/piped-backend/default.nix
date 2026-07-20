@@ -52,7 +52,7 @@ stdenv.mkDerivation (finalAttrs: {
     license = lib.licenses.gpl3;
     maintainers = with lib.maintainers; [ duckysocks22 ];
     platforms = [ "x86_64-linux" ];
-    sourceProvenance = with lib.sourceTypes ; [
+    sourceProvenance = with lib.sourceTypes; [
       fromSource
       binaryBytecode
     ];

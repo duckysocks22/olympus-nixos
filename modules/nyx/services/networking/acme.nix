@@ -29,14 +29,16 @@ in
       };
     };
   };
-  /* systemd.services."acme-order-renew-${domainName}" = {
-    serviceConfig = {
-      LoadCredential = [
-        "target:${config.sops.secrets."cloudflare/api".path}"
-      ];
-      Environment = [
-        "CLOUDFLARE_DNS_API_TOKEN=%d/target"
-      ];
+  /*
+    systemd.services."acme-order-renew-${domainName}" = {
+      serviceConfig = {
+        LoadCredential = [
+          "target:${config.sops.secrets."cloudflare/api".path}"
+        ];
+        Environment = [
+          "CLOUDFLARE_DNS_API_TOKEN=%d/target"
+        ];
+      };
     };
-  }; */
+  */
 }

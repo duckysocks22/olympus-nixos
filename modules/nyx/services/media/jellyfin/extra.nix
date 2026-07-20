@@ -1,4 +1,10 @@
-{ pkgs, pkgs-unstable, lib, config, ... }:
+{
+  pkgs,
+  pkgs-unstable,
+  lib,
+  config,
+  ...
+}:
 {
   services.seerr = {
     enable = true;
@@ -25,7 +31,7 @@
     enable = true;
     package = pkgs-unstable.prowlarr;
     settings = {
-     server.port = 5058;
+      server.port = 5058;
     };
   };
 
@@ -73,7 +79,7 @@
   };
 
   systemd.timers.tdarr-server-restart = {
-    wantedBy = [];
+    wantedBy = [ ];
     timerConfig = {
       OnCalendar = "*-*-* 03,15:00:00"; # 3am and 3pm
       Persistent = true;
@@ -109,36 +115,57 @@
     seerr = {
       isSystemUser = true;
       group = "seerr";
-      extraGroups = [ "jellyfin" "torrent" ];
+      extraGroups = [
+        "jellyfin"
+        "torrent"
+      ];
     };
     radarr = {
       isSystemUser = true;
       group = "radarr";
-      extraGroups = [ "jellyfin" "torrent" ];
+      extraGroups = [
+        "jellyfin"
+        "torrent"
+      ];
     };
     sonarr = {
       isSystemUser = true;
       group = "sonarr";
-      extraGroups = [ "jellyfin" "torrent" ];
+      extraGroups = [
+        "jellyfin"
+        "torrent"
+      ];
     };
     prowlarr = {
       isSystemUser = true;
       group = "prowlarr";
-      extraGroups = [ "jellyfin" "torrent" ];
+      extraGroups = [
+        "jellyfin"
+        "torrent"
+      ];
     };
     tdarr = {
       isSystemUser = true;
       group = "tdarr";
-      extraGroups = [ "jellyfin" "torrent" ];
+      extraGroups = [
+        "jellyfin"
+        "torrent"
+      ];
     };
   };
 
   users.groups = {
-    seerr = {};
-    radarr = {};
-    prowlarr = {};
-    tdarr = {};
+    seerr = { };
+    radarr = { };
+    prowlarr = { };
+    tdarr = { };
   };
-  
-  networking.firewall.allowedTCPPorts = [ 5055 5056 5057 5058 5059 ];
+
+  networking.firewall.allowedTCPPorts = [
+    5055
+    5056
+    5057
+    5058
+    5059
+  ];
 }

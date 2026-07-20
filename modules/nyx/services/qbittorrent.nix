@@ -1,6 +1,15 @@
-{ util, pkgs, lib, ... }:
 {
-  systemd.services.qbittorrent = util.functions.mkSimpleService { description = "Headless qBittorrent"; ExecStart = lib.getExe pkgs.qbittorrent-nox; user = "server";};
+  util,
+  pkgs,
+  lib,
+  ...
+}:
+{
+  systemd.services.qbittorrent = util.functions.mkSimpleService {
+    description = "Headless qBittorrent";
+    ExecStart = lib.getExe pkgs.qbittorrent-nox;
+    user = "server";
+  };
 
-  users.groups.torrent = {};
+  users.groups.torrent = { };
 }

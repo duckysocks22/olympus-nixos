@@ -1,6 +1,11 @@
-{ config, pkgs, pkgs-unstable, ... }:
 {
-  services.netbird = { 
+  config,
+  pkgs,
+  pkgs-unstable,
+  ...
+}:
+{
+  services.netbird = {
     package = pkgs-unstable.netbird;
     clients.${config.networking.hostName} = {
 

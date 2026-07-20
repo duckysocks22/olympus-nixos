@@ -1,9 +1,22 @@
-{ inputs, lib, config, ...}:
+{
+  inputs,
+  lib,
+  config,
+  ...
+}:
 {
   nix = {
     settings = {
-      experimental-features = [ "nix-command" "flakes" ];
-      system-features = [ "benchmark" "big-parallel" "kvm" "nixos-test" ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
+      system-features = [
+        "benchmark"
+        "big-parallel"
+        "kvm"
+        "nixos-test"
+      ];
 
       auto-optimise-store = true;
       keep-derivations = true;

@@ -1,4 +1,4 @@
-{ pkgs, config, ...}:
+{ pkgs, config, ... }:
 {
 
   networking.networkmanager.enable = true;
@@ -17,7 +17,11 @@
 
   boot = {
     kernelPackages = pkgs.linuxPackages_zen;
-    kernelModules = [ "sg" "hid-tmff-new" "hid-tminit-new" ];
+    kernelModules = [
+      "sg"
+      "hid-tmff-new"
+      "hid-tminit-new"
+    ];
     kernelParams = [
       "amd_iommu=on"
       "amd_pstate=active"

@@ -21,7 +21,7 @@
   services.tailscale = {
     enable = false;
   };
-  
+
   services.avahi = {
     enable = true;
     publish = {

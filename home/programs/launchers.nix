@@ -1,4 +1,4 @@
-{ pkgs, inputs, ...}:
+{ pkgs, inputs, ... }:
 
 let
   gamemoderun = pkgs.writeShellScriptBin "gamemoderun" ''
@@ -6,7 +6,8 @@ let
       ${pkgs.gamemode}/bin/gamemoderun "$@"
   '';
 
-  wrapNoHardened = pkg: binName:
+  wrapNoHardened =
+    pkg: binName:
     let
       wrapper = pkgs.writeShellScript "${binName}-no-hardened" ''
         exec ${gamemoderun}/bin/gamemoderun \
@@ -15,7 +16,8 @@ let
             --bind /dev/null "$(readlink -f /etc/ld-nix.so.preload)" \
             -- ${pkg}/bin/${binName} "$@"
       '';
-    in pkgs.symlinkJoin {
+    in
+    pkgs.symlinkJoin {
       name = "${pkg.pname or pkg.name}-no-hardened";
       paths = [ pkg ];
       postBuild = ''

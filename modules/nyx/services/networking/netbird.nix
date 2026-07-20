@@ -1,9 +1,14 @@
-{ config, pkgs, pkgs-unstable, ...}:
+{
+  config,
+  pkgs,
+  pkgs-unstable,
+  ...
+}:
 {
   services.netbird = {
     package = pkgs-unstable.netbird;
     clients.nyx-nixos = {
-      
+
       # Automatically login to your Netbird network with a setup key
       # This is mostly useful for server computers.
       # For manual setup instructions, see the wiki page section below.

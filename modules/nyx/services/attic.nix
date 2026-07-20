@@ -1,15 +1,24 @@
-{ inputs, pkgs, pkgs-unstable, config, lib, ...}:
+{
+  inputs,
+  pkgs,
+  pkgs-unstable,
+  config,
+  lib,
+  ...
+}:
 {
 
   imports = [
     inputs.attic.nixosModules.atticd
   ];
 
-  environment.systemPackages = (with pkgs; [
+  environment.systemPackages =
+    (with pkgs; [
 
-  ]) ++ (with pkgs-unstable; [
-    attic-server
-  ]);
+    ])
+    ++ (with pkgs-unstable; [
+      attic-server
+    ]);
 
   services.atticd = {
     enable = true;
@@ -41,8 +50,8 @@
   };
 
   systemd.services.atticd.serviceConfig = {
-  ReadWritePaths = [ "/media/hdd1/cache" ];
-  ProtectHome = lib.mkForce false;
-  ProtectSystem = lib.mkForce "full"; 
+    ReadWritePaths = [ "/media/hdd1/cache" ];
+    ProtectHome = lib.mkForce false;
+    ProtectSystem = lib.mkForce "full";
   };
 }

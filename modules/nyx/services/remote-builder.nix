@@ -11,7 +11,7 @@
     ];
   };
 
-  users.groups.remotebuild = {};
+  users.groups.remotebuild = { };
 
   nix = {
     nrBuildUsers = 64;
