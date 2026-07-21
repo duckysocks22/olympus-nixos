@@ -1,10 +1,6 @@
 {
   "hostname": "0.0.0.0",
   "dataDir":"/media/hdd1/services/actual-finance/",
-  "allowedLoginMethods":"password",
-  "https": {
-    "key": "/var/lib/caddy/.local/share/caddy/certificates/acme-v02.api.letsencrypt.org-directory/budget.puppygirls.net/budget.puppygirls.net.key",
-    "cert": "/var/lib/caddy/.local/share/caddy/certificates/acme-v02.api.letsencrypt.org-directory/budget.puppygirls.net/budget.puppygirls.net.crt"
-  }
+  "allowedLoginMethods":"password"
 }
 

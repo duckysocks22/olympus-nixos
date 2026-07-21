@@ -234,11 +234,7 @@ in
     '';
     virtualHosts."https://budget.olympus.moe".extraConfig = ''
       encode gzip zstd
-      reverse_proxy :5006 {
-        transport http {
-          tls_server_name budget.puppygirls.net
-        }
-      }
+      reverse_proxy :5006
       import mtls
     '';
     virtualHosts."https://qbit.olympus.moe".extraConfig = ''
