@@ -1,5 +1,14 @@
 { pkgs, ... }:
 {
+  xdg.mimeApps = {
+    enable = true;
+    defaultApplications = {
+      "x-scheme-handler/unityhub" = "unityhub.desktop";
+      "x-scheme-handler/claude-cli" = "claude-code-url-handler.desktop";
+    };
+  };
+
+  xdg.configFile."mimeapps.list".force = true;
   home.packages = with pkgs; [
     kitty
     zellij
