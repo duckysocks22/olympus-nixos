@@ -92,6 +92,7 @@ in
       python312Packages.yt-dlp
       unzip
       bubblewrap
+      nixfmt-tree
       (writeShellScriptBin "no-hardened" ''
         exec ${bubblewrap}/bin/bwrap \
           --dev-bind / / \

@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git -C /home/foxtrot/olympus-nixos show 9cc6578)",
+      "Bash(git -C /home/foxtrot/olympus-nixos show ff2b364)",
+      "Bash(niri msg *)"
+    ]
+  }
+}

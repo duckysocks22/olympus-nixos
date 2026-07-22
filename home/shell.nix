@@ -39,9 +39,15 @@ in
 
   programs.git = {
     enable = true;
-    ignores = [ "result" ".direnv" ".claude/settings.local.json" ];
+    ignores = [
+      "result"
+      ".direnv"
+      ".claude/settings.local.json"
+    ];
     settings = {
-      push = { autoSetupRemote = true; };
+      push = {
+        autoSetupRemote = true;
+      };
       credential = {
         "https://dawn.wine" = {
           helper = "oauth";
