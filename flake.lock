@@ -400,11 +400,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1780245063,
-        "narHash": "sha256-DrUuH1YMJH/hJ/ELqG4wfUaoP3wn194rK9qomcUMHTk=",
+        "lastModified": 1784567976,
+        "narHash": "sha256-PTIX/YvuVJ4erjJtLGrZXcJV5YLRUviGJcWPkziBCug=",
         "ref": "refs/heads/master",
-        "rev": "55d566873e2b54976c55f9e49268a1cb7c2c29a8",
-        "revCount": 114,
+        "rev": "a1373bf1fd8f11e1f1bf0dfbb15c9cff179c0ae9",
+        "revCount": 115,
         "type": "git",
         "url": "https://dawn.wine/foxtrottt/elysia-on-nix.git"
       },
