@@ -118,6 +118,7 @@
             ".steam"
             ".xlcore"
             ".MakeMKV"
+            "Unity"
             "olympus-nixos"
             "Desktop"
             "Documents"
