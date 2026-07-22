@@ -37,31 +37,6 @@ in
     inputs.nix-index-database.homeModules.default
   ];
 
-  programs.git = {
-    enable = true;
-    ignores = [
-      "result"
-      ".direnv"
-      ".claude/settings.local.json"
-    ];
-    settings = {
-      push = {
-        autoSetupRemote = true;
-      };
-      credential = {
-        "https://dawn.wine" = {
-          helper = "oauth";
-        };
-        helper = "libsecret";
-      };
-    };
-    signing = {
-      format = "ssh";
-      key = "~/.ssh/id_ed25519.pub";
-      signByDefault = true;
-    };
-  };
-
   programs.ssh = {
     enable = true;
     enableDefaultConfig = false;
