@@ -108,6 +108,7 @@
             ".config/filezilla"
             ".config/sunshine"
             ".config/blender"
+            ".config/unity3d"
             ".local/state/nvim"
             ".local/state/neovim"
             ".local/state/wireplumber"
