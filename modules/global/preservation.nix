@@ -107,6 +107,7 @@
             ".config/mozilla"
             ".config/filezilla"
             ".config/sunshine"
+            ".config/blender"
             ".local/state/nvim"
             ".local/state/neovim"
             ".local/state/wireplumber"
