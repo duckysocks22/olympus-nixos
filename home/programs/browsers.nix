@@ -318,9 +318,20 @@ in
               keyword = "ao3";
             }
             {
-              name = "How Long To Beat";
-              url = "https://howlongtobeat.com/";
-              keyword = "hltb";
+              name = "Gaming";
+              toolbar = false;
+              bookmarks = [
+                {
+                  name = "Backloggd";
+                  url = "https://backloggd.com/";
+                  keyword = "backlog";
+                }
+                {
+                  name = "How Long To Beat";
+                  url = "https://howlongtobeat.com";
+                  keyword = "hltb";
+                }
+              ];
             }
             {
               name = "Shopping";
