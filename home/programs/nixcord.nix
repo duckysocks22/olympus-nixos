@@ -70,6 +70,11 @@
       installPackage = false;
       krisp.enable = true;
       vencord.enable = true;
+      # Enable PipeWire-backed screen capture so the XDG portal window-picker
+      # dialog appears when screen-sharing on Wayland.  Without this flag,
+      # Electron's desktopCapturer.getSources() silently returns nothing on
+      # Wayland (no X11 window enumeration) and the share dialog never opens.
+      commandLineArgs = [ "--enable-features=WebRTCPipeWireCapturer" ];
       settings = {
         openasar = {
           setup = true;
