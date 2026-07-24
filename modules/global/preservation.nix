@@ -17,6 +17,7 @@
         "/var/lib/systemd/coredump"
         "/var/lib/systemd/rfkill"
         "/var/lib/systemd/timers"
+        "/var/lib/waydroid"
         {
           directory = "/var/lib/iwd/";
           mode = "700";
