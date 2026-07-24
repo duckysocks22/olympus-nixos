@@ -67,12 +67,21 @@ output "Acer Technologies Acer XFA240 0x91001AB2" {
     mode "1920x1080@119.982"
     position x=1920 y=200
     variable-refresh-rate on-demand=true
-    
+
     layout {
       default-column-width { proportion 0.5; }
 
       border { off; }
     }
+}
+
+output "DP-1" {
+    // Virtual display for Sunshine game streaming.
+    // Kept off at startup so the desktop stays on the real monitors.
+    // Sunshine's global_prep_cmd enables it at 4K@120Hz (VIC 118) and
+    // disables the physical outputs while a stream is active.
+    mode "3840x2160@120.000"
+    off
 }
 // Settings that influence how windows are positioned and sized.
 // Find more information on the wiki:
