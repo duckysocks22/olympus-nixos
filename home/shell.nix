@@ -60,13 +60,15 @@ in
 
     shellAliases = {
       vi = "nvim";
-      rebuild = "sudo nixos-rebuild switch -L --flake ${config.home.homeDirectory}/olympus-nixos";
+      #rebuild = "sudo nixos-rebuild switch -L --flake ${config.home.homeDirectory}/olympus-nixos";
+      rebuild = "nh os switch";
       par = ''
         cd ${config.home.homeDirectory}/olympus-nixos
         git pull
         sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/olympus-nixos
         attic push main /run/current-system'';
-      cleanup = "sudo nix-collect-garbage --delete-old";
+      #cleanup = "sudo nix-collect-garbage --delete-old";
+      cleanup = "nh clean all";
       hb = "HandBrakeCLI";
       buildiso = ''
         cd ~/olympus-nixos

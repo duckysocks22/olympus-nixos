@@ -88,6 +88,10 @@
           command = "/run/current-system/sw/bin/nixos-rebuild";
           options = [ "NOPASSWD" ];
         }
+        {
+          command = "${pkgs.nh}/bin/nh os switch";
+          options = [ "NOPASSWD" ];
+        }
       ];
     }
   ];
