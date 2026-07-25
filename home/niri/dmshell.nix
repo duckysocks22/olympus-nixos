@@ -4,9 +4,6 @@
   lib,
   ...
 }:
-let
-  pfp = ../pfp/suletta_pfp.jpg;
-in
 {
 
   imports = [
@@ -14,8 +11,22 @@ in
     inputs.dms-plugin-registry.homeModules.default
   ];
 
+  # DMS has a severe memory leak in quickshell 0.3.0 — it peaks at 23-26 GB
+  # over a few hours. With MemoryMax=12G, systemd kills and restarts DMS before
+  # it can exhaust RAM. The DMS module's own systemd.enable creates the service;
+  # we merge extra [Service] properties into it here using the same raw format.
+  systemd.user.services.dms.Service = {
+    MemoryMax = "12G";
+    RestartSec = "5s";
+  };
+  # 0 = no burst limit (allow unlimited restarts — needed while leak exists)
+  # StartLimitIntervalSec belongs in [Unit], not [Service].
+  systemd.user.services.dms.Unit.StartLimitIntervalSec = 0;
+
+
   programs.dank-material-shell = {
     enable = true;
+    systemd.enable = true;
     dgop.package = inputs.dgop.packages.${pkgs.stdenv.hostPlatform.system}.default;
     enableSystemMonitoring = true;
     enableVPN = false;
