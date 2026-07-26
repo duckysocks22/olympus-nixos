@@ -26,7 +26,7 @@
         "https://cache.puppygirls.net/main"
       ];
       trusted-public-keys = [
-        "main:OiT7TySueZMWxt1dpP7/SVwyhOwWu4L11tm1QhT2Qd8="
+        "main:8CPTNnHIH/5Bte4K50QWVlPi2nZR2Q6H1BY75cgst80="
       ];
     };
     nixPath = lib.mapAttrsToList (n: v: "${n}=flake:${n}") inputs;

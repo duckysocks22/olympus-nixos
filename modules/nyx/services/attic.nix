@@ -20,6 +20,10 @@
       attic-server
     ]);
 
+  # Direct path to the local atticd instance — bypasses nginx and avoids a
+  # round-trip over the public endpoint when pushing or substituting on nyx itself.
+  nix.settings.substituters = [ "http://localhost:7989/main" ];
+
   services.atticd = {
     enable = true;
     environmentFile = "${config.sops.secrets."attic/server-token".path}";
@@ -32,7 +36,9 @@
       # Use PostgreSQL instead of SQLite — SQLite serialises all writes behind a
       # single file lock, causing pool timeouts when Nix pushes many chunks in
       # parallel.  PostgreSQL handles concurrent writes correctly.
-      database.url = "postgresql:///attic?host=/run/postgresql";
+      # Explicitly specify the user — newer attic-server (2026-07-06+) no longer
+      # infers the PostgreSQL username from the OS user and defaults to "anonymous".
+      database.url = "postgresql:///attic?host=/run/postgresql&user=atticd";
 
       storage = {
         type = "local";
