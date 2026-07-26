@@ -93,6 +93,31 @@ in
       unzip
       bubblewrap
       nixfmt-tree
+      (writeShellScriptBin "gamescope-run" ''
+        gamescope_args=()
+        game_cmd=()
+        sep_found=false
+
+        for arg in "$@"; do
+          if [[ "$arg" == "--" && "$sep_found" == "false" ]]; then
+            sep_found=true
+          elif [[ "$sep_found" == "true" ]]; then
+            game_cmd+=("$arg")
+          else
+            gamescope_args+=("$arg")
+          fi
+        done
+
+        # No -- provided: treat everything as the game command
+        if [[ "$sep_found" == "false" ]]; then
+          game_cmd=("''${gamescope_args[@]}")
+          gamescope_args=()
+        fi
+
+        exec env LD_PRELOAD= ${pkgs.gamescope}/bin/gamescope \
+          "''${gamescope_args[@]}" \
+          -- env LD_PRELOAD="$LD_PRELOAD" "''${game_cmd[@]}"
+      '')
       (writeShellScriptBin "no-hardened" ''
         exec ${bubblewrap}/bin/bwrap \
           --dev-bind / / \

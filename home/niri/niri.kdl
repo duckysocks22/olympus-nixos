@@ -292,10 +292,11 @@ window-rule {
 }
 
 window-rule {
-  // Monster Hunter Wilds uses Borderless Window (no true exclusive fullscreen).
-  // Floating lets niri honour the game's own size requests so it can fill the
-  // display without the tiling column constraining it.
-  match app-id="steam_app_2246340"
+  // All games launched via gamescope-run have app-id "gamescope".
+  // Floating lets niri honour gamescope's own size requests; fullscreen
+  // removes the need for --fullscreen in the launch options (which would
+  // cause gamescope to grab the cursor).
+  match app-id="gamescope"
   open-floating true
   open-fullscreen true
 }
