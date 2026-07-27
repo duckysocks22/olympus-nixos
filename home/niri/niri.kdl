@@ -269,8 +269,10 @@ window-rule {
    match title="Satisfactory  "
    match app-id="factorio"
    match app-id="steam_app_4576510"
+   match app-id="gamescope"
+   match app-id="ffxiv_dx11.exe"
    open-fullscreen true
-   open-floating false
+   open-floating true
 }
 
 window-rule {
@@ -283,22 +285,6 @@ window-rule {
    match title="FreeRDP"
    match app-id="jellyfin-desktop"
    open-maximized true
-}
-
-window-rule {
-        // set window to fullscreen on launch
-  match title="Satisfactory  "
-  open-fullscreen true
-}
-
-window-rule {
-  // All games launched via gamescope-run have app-id "gamescope".
-  // Floating lets niri honour gamescope's own size requests; fullscreen
-  // removes the need for --fullscreen in the launch options (which would
-  // cause gamescope to grab the cursor).
-  match app-id="gamescope"
-  open-floating true
-  open-fullscreen true
 }
 
 
