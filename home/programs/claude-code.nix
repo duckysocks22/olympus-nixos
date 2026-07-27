@@ -80,7 +80,8 @@ in
     enable = true;
     settings = {
       agent = "code-reviewer";
-      advisorModel = "claude-opus-4-7";
+      model = "claude-sonnet-5";
+      advisorModel = "claude-opus-5";
       skipAutoPermissionPrompt = true;
       permissions = {
         defaultMode = "default";
