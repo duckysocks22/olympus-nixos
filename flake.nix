@@ -122,6 +122,7 @@
             ./modules/global/lix.nix
             disko.nixosModules.disko
             preservation.nixosModules.default
+            inputs.dms.nixosModules.greeter
           ];
           specialArgs = {
             inherit inputs;
@@ -136,6 +137,7 @@
             ./modules/global/lix.nix
             disko.nixosModules.disko
             preservation.nixosModules.default
+            inputs.dms.nixosModules.greeter
           ];
           specialArgs = {
             inherit inputs;

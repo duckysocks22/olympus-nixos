@@ -21,8 +21,7 @@
     #../../modules/global/network/ssh-tunnel.nix
     #../../modules/circe/steam-proxy.nix
     ../../modules/global/harden.nix
-    #../../modules/global/greeter/ly.nix
-    ../../modules/global/greeter/cosmic-greeter.nix
+    ../../modules/global/greeter/dms-greeter.nix
     ../../modules/global/portals.nix
     ../../modules/global/system.nix
     ../../modules/global/users/foxtrot.nix
