@@ -14,6 +14,7 @@
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ../../modules/athena/disko.nix
+    ../../modules/athena/network.nix
     ../../modules/global/preservation.nix
     ../../modules/global/remote-builder.nix
     ../../modules/global/harden.nix

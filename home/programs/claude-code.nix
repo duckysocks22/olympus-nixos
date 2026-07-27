@@ -1,6 +1,7 @@
 {
   lib,
   pkgs,
+  pkgs-unstable,
   config,
   ...
 }:
@@ -78,6 +79,7 @@ in
 {
   programs.claude-code = {
     enable = true;
+    package = pkgs-unstable.claude-code;
     settings = {
       agent = "code-reviewer";
       model = "claude-sonnet-5";
