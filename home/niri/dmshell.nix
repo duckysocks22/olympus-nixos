@@ -23,7 +23,6 @@
   # StartLimitIntervalSec belongs in [Unit], not [Service].
   systemd.user.services.dms.Unit.StartLimitIntervalSec = 0;
 
-
   programs.dank-material-shell = {
     enable = true;
     systemd.enable = true;

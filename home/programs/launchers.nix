@@ -31,6 +31,7 @@ in
   home.packages = [
     gamemoderun
     pkgs.prismlauncher
+    pkgs.moonlight-qt
     inputs.elysia.packages.x86_64-linux.default
     #inputs.agl.packages.x86_64-linux.default
     (wrapNoHardened pkgs.xivlauncher "XIVLauncher.Core")

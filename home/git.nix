@@ -2,12 +2,24 @@
 {
   programs.git = {
     enable = true;
-    ignores = [ "result" ".direnv" ".claude/settings.local.json" ];
+    ignores = [
+      "result"
+      ".direnv"
+      ".claude"
+    ];
     settings = {
-      push = { autoSetupRemote = true; };
-      pull = { rebase = false; };
-      init = { defaultBranch = "main"; };
-      commit = { gpgSign = true; };
+      push = {
+        autoSetupRemote = true;
+      };
+      pull = {
+        rebase = false;
+      };
+      init = {
+        defaultBranch = "main";
+      };
+      commit = {
+        gpgSign = true;
+      };
       user = {
         name = "foxtrottt";
         email = "code@olympus.moe";
