@@ -42,7 +42,7 @@
 
   boot.kernel.sysctl = {
     "kernel.kptr_restrict" = "2";
-    "net.core.bpf_jit_enable" = false;
+    "net.core.bpf_jit_enable" = true;
     "kernel.ftrace_enabled" = false;
     "kernel.io_uring_disabled" = 2;
     "net.ipv4.conf.all.log_martians" = true;
@@ -62,7 +62,7 @@
 
   environment.memoryAllocator.provider = "graphene-hardened";
 
-  security.forcePageTableIsolation = true;
+  security.forcePageTableIsolation = false;
 
   security.apparmor.enable = true;
   security.apparmor.killUnconfinedConfinables = true;
