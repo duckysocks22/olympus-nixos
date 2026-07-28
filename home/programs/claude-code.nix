@@ -90,7 +90,6 @@ in
         allow = [
           "Read(${config.home.homeDirectory}/olympus-nixos/**)"
           "Grep(${config.home.homeDirectory}/olympus-nixos/**)"
-          "Glob(${config.home.homeDirectory}/olympus-nixos/**)"
           "Bash(ls *)"
           "Bash(grep *)"
           "Bash(find *)"
