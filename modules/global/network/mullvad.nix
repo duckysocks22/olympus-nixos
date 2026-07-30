@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ config, pkgs, ... }:
 {
   services.mullvad-vpn = {
     enable = true;
@@ -12,9 +12,10 @@
     serviceConfig = {
       Type = "oneshot";
       RemainAfterExit = true;
+      TimeoutStartSec = 60;
     };
     script = ''
-      until ${pkgs.mullvad-vpn}/bin/mullvad dns set custom 127.0.0.1; do
+      until ${config.services.mullvad-vpn.package}/bin/mullvad dns set custom 127.0.0.1; do
         sleep 1
       done
     '';
