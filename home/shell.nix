@@ -65,7 +65,7 @@ in
       par = ''
         cd ${config.home.homeDirectory}/olympus-nixos
         git pull
-        sudo nixos-rebuild switch --flake ${config.home.homeDirectory}/olympus-nixos
+        nh os switch
         attic push main /run/current-system'';
       #cleanup = "sudo nix-collect-garbage --delete-old";
       cleanup = "nh clean all";
