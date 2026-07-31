@@ -3,7 +3,7 @@
   users.users.server = {
     isNormalUser = true;
     home = "/home/server";
-    hashedPasswordFile = config.sops.secrets."users/server".path;
+    initialHashedPassword = "$y$j9T$0OK5hvt8iD98PRltJfZPa.$8dFOtgIgkxdI6roz6yQoxg.NdJV95rheMlIo/FhSgT.";
     extraGroups = [
       "audio"
       "input"

@@ -167,6 +167,7 @@
             ./hosts/hermera/configuration.nix
             ./home/default.nix
             ./modules/global/lix.nix
+            ./modules/global/stylix/stylix.nix
             disko.nixosModules.disko
             {
               nixpkgs.overlays = [

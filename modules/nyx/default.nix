@@ -9,7 +9,6 @@
     ./services/ntfy.nix
     ./services/mollysocket.nix
     ./services/qbittorrent.nix
-    ./services/ssh-tunnel.nix
     ./services/syncthing.nix
     ../global/functions.nix
     #./services/samba.nix
@@ -31,7 +30,6 @@
     ./services/game-servers/minecraft/default.nix
     ./services/game-servers/factorio.nix
     ./services/homeassistant/default.nix
-    ./services/copyparty.nix
     ./services/docker.nix
     ./services/mosquitto.nix
     ../global/power/disable-shutdown.nix

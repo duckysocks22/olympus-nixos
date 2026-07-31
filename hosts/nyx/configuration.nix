@@ -18,10 +18,11 @@
     #../../modules/nyx/hardenedKernel.nix
     ../../modules/server/server.nix
     ../../modules/nyx/default.nix
+    ../../modules/server/default.nix
     ../../modules/nyx/server-network.nix
     ../../modules/global/nix/default.nix
     ../../modules/nyx/rebuild-throttle.nix
-    ../../modules/server/sops.nix
+    ../../modules/nyx/sops.nix
     ../../modules/global/netwatch.nix
   ];
 
