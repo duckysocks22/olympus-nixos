@@ -1,7 +1,7 @@
 { ... }:
 {
   imports = [
-    ./services/media/copyparty.nix
     ./server-network.nix
+    ./services/adguardhome/adguardhome.nix
   ];
 }

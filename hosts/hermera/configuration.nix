@@ -7,6 +7,7 @@
 {
   imports = [
     ./hardware-configuration.nix
+    ../../modules/hermera/default.nix
     ../../modules/hermera/disko.nix
     ../../modules/hermera/sops.nix
     ../../modules/global/system.nix
