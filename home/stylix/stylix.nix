@@ -8,7 +8,9 @@
   stylix.targets.gtk = {
     enable = true;
   };
-
+  stylix.targets.opencode = {
+    enable = true;
+  };
   stylix.targets.gnome = {
     enable = true;
   };

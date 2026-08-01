@@ -11,6 +11,7 @@
   imports = [
     ../../programs/default.nix
     ../../programs/claude-code.nix
+    ../../programs/opencode.nix
     ../../git.nix
     ../../niri/default.nix
     ../../shell.nix

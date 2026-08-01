@@ -129,6 +129,7 @@
             "Music"
             "Pictures"
             "Videos"
+            "Monero"
           ];
           files = [
             ".claude.json"

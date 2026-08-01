@@ -76,6 +76,7 @@ in
       '';
       weather = ''curl "wttr.in/?u"'';
       ai-commit = ''git commit --trailer "Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"'';
+      ds-commit = ''git commit --trailer "Co-Authored-By: DeepSeek V4 Flash <noreply@deepseek.com>"'';
       cachestore = "attic push --ignore-upstream-cache-filter main $(ls -d /nix/store/*/ | grep -v fake_nixpkgs)";
       cachesys = "attic push main /run/current-system";
       cp = "rsync --progress --stats";
