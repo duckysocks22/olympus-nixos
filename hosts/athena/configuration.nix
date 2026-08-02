@@ -32,6 +32,7 @@
     ../../modules/global/sops.nix
     ../../modules/global/virtualisation.nix
     ../../modules/global/local-printing.nix
+    ../../modules/global/functions.nix
     ../../modules/packages/default.nix
     ../../modules/athena/sunshine.nix
   ];
