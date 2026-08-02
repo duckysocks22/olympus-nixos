@@ -105,16 +105,16 @@ in
       wan_encrpytion_mode = "2";
       global_prep_cmd = builtins.toJSON [
         {
-          "do" = "wlr-randr --output DP-1 --on --mode 3840x2160@120";
-          "undo" = "wlr-randr --output DP-1 --off";
+          "do" = "if [ -n \"$WAYLAND_DISPLAY\" ]; then wlr-randr --output DP-1 --on --mode 3840x2160@120; fi";
+          "undo" = "if [ -n \"$WAYLAND_DISPLAY\" ]; then wlr-randr --output DP-1 --off; fi";
         }
         {
-          "do" = "wlr-randr --output DP-2 --off";
-          "undo" = "wlr-randr --output DP-2 --on";
+          "do" = "if [ -n \"$WAYLAND_DISPLAY\" ]; then wlr-randr --output DP-2 --off; fi";
+          "undo" = "if [ -n \"$WAYLAND_DISPLAY\" ]; then wlr-randr --output DP-2 --on; fi";
         }
         {
-          "do" = "wlr-randr --output HDMI-A-1 --off";
-          "undo" = "wlr-randr --output HDMI-A-1 --on";
+          "do" = "if [ -n \"$WAYLAND_DISPLAY\" ]; then wlr-randr --output HDMI-A-1 --off; fi";
+          "undo" = "if [ -n \"$WAYLAND_DISPLAY\" ]; then wlr-randr --output HDMI-A-1 --on; fi";
         }
       ];
     };
@@ -139,6 +139,13 @@ in
 
   sops.secrets."sunshine/password" = {
     owner = config.users.users.foxtrot.name;
+  };
+
+  systemd.user.services.sunshine = {
+    wantedBy = lib.mkForce [ "default.target" ];
+    partOf = lib.mkForce [ ];
+    wants = lib.mkForce [ ];
+    after = lib.mkForce [ ];
   };
 
   systemd.user.services.sunshine.serviceConfig.ExecStartPre = [

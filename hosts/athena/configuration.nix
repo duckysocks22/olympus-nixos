@@ -39,6 +39,21 @@
 
   #home-manager.users.foxtrot = import ../../home/users/foxtrot/core.nix;
 
+  programs.steam.gamescopeSession = {
+    enable = true;
+    args = [
+      "--prefer-output"
+      "DP-1"
+      "-W"
+      "3840"
+      "-H"
+      "2160"
+      "-r"
+      "120"
+      "--hdr-enabled"
+    ];
+  };
+
   services.logind.settings.Login = {
     HandlePowerKey = "ignore";
     HandlePowerKeyLongPress = "ignore";
