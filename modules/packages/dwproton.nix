@@ -9,11 +9,11 @@
 }:
 stdenvNoCC.mkDerivation (finalAttrs: {
   pname = "dwproton-bin";
-  version = "dwproton-11.0-5";
+  version = "dwproton-11.0-10";
 
   src = fetchzip {
     url = "https://dawn.wine/dawn-winery/dwproton/releases/download/${finalAttrs.version}/${finalAttrs.version}-x86_64.tar.xz";
-    hash = "sha256-2x4xotJ2aJYbg+G2TDPqyU7uuoc/hZQon9CA6SFGin0=";
+    hash = "sha256-QHQ42rY9UzTRXvgp2uxR4cm4hELGPYE/p6aYQZQrfW0=";
   };
 
   dontUnpack = true;
