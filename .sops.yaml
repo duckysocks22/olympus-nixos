@@ -3,6 +3,7 @@ keys:
   - &desktop_athena_host age1fmxm8550lcm2jthe65kj307rfjdchncg5hm4qv2ayazn4v5x9gcs0w9klg
   - &server_nyx age1upa07ee3tlz5saqlfl5qhzjjrxeq28yprpuw2qjs4v6xrc890gtq56xkr5
   - &laptop_circe age147r3y7lukp6set6f8kpsf50x28gusx8qtutl7jezvnwwk2hwqgrqa723lv
+  - &server_hermera age133d38ewarhx8zzcxgnje443xvtf8wf39r47sfmqrnczg4qhz4fgqg7l42a
 creation_rules:
   - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
@@ -11,3 +12,4 @@ creation_rules:
       - *desktop_athena_host
       - *server_nyx
       - *laptop_circe
+      - *server_hermera
