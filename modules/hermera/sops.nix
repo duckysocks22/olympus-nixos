@@ -9,7 +9,6 @@
 
   sops.age.keyFile = "${config.users.users.server.home}/.config/sops/age/keys.txt";
 
-
   sops.secrets."users/server" = { };
   sops.secrets."users/foxtrot" = { };
   sops.secrets."netbird/routing-key" = { };

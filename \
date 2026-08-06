@@ -87,10 +87,10 @@
       autoUpdateNotification = true;
       useQuickCss = true;
       themeLinks = [
-        #"https://capnkitten.github.io/Material-Discord/Material-Discord.theme.css"
-      ];
-      enabledThemes = [
-        "dank-discord.css"
+        #gruvbox-sharp
+        /*"https://raw.githubusercontent.com/round-panda/gruvbox-sharp/54f0612a1d0fb38d3f2c7a7f4b697b5ad607d312/GruvboxSharp.theme.css"*/
+        #Midnight
+        "https://raw.githubusercontent.com/refact0r/midnight-discord/refs/heads/master/themes/flavors/midnight-catppuccin-macchiato.theme.css"
       ];
       frameless = true;
       plugins = {
@@ -135,10 +135,6 @@
     quickCss = "
     @import url('https://abbie.github.io/discord-css/import.css');
     @import url(https://codeberg.org/ridge/Discord-Adblock/raw/branch/main/discord-adblock.css);
-
-    .theme-dark {
-        --main-color hsl(20,7%,9%) - hsl (0,0%,98%
-    }
     ";
   };
 }

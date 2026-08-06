@@ -1,4 +1,10 @@
-{ pkgs, config, util, lib, ... }:
+{
+  pkgs,
+  config,
+  util,
+  lib,
+  ...
+}:
 let
   moondeckBuddy = pkgs.callPackage ../packages/moondeckbuddy.nix { };
 

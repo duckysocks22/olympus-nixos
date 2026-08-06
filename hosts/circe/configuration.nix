@@ -14,7 +14,7 @@
     # Include the results of the hardware scan.
     ./hardware-configuration.nix
     ../../modules/circe/disko.nix
-    ../../modules/global/remote-builder.nix
+    #../../modules/global/remote-builder.nix
     #../../modules/circe/syncthing.nix
     ../../modules/packages/default.nix
     ../../modules/global/preservation.nix
