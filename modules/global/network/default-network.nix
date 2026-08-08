@@ -1,4 +1,19 @@
-{ pkgs, pkgs-unstable, ... }:
+{
+  config,
+  pkgs,
+  pkgs-unstable,
+  ...
+}:
+let
+  staticIp = {
+    "athena-nixos" = "172.17.25.1/16";
+    "circe-nixos" = "172.17.25.2/16";
+  };
+  autoconnect = {
+    "athena-nixos" = "false";
+    "circe-nixos" = "true";
+  };
+in
 {
 
   imports = [
@@ -13,6 +28,33 @@
       backend = "iwd";
       powersave = false;
       scanRandMacAddress = false;
+    };
+    ensureProfiles = {
+      environmentFiles = [ config.sops.secrets."bazinga/pass".path ];
+      profiles.bazinga = {
+        connection = {
+          id = "bazinga";
+          type = "wifi";
+          autoconnect = autoconnect.${config.networking.hostName};
+          autoconnect-priority = 100;
+        };
+        wifi.ssid = "bazinga";
+        wifi-security = {
+          key-mgmt = "wpa-psk";
+          psk = "$BAZINGA_PSK";
+        };
+        ipv4 = {
+          method = "manual";
+          address1 = staticIp.${config.networking.hostName};
+          gateway = "172.17.0.254";
+          dns = "127.0.0.1";
+          ignore-auto-dns = true;
+        };
+        ipv6 = {
+          addr-gen-mode = "stable-privacy";
+          method = "auto";
+        };
+      };
     };
   };
 

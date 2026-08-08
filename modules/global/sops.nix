@@ -25,6 +25,8 @@
   sops.secrets."work/user" = { };
   sops.secrets."work/pass" = { };
 
+  sops.secrets."bazinga/pass" = { };
+
   systemd.services.iwd-hidden-profile = {
     description = "Dynamically generate IWD profile for Work Network";
     wantedBy = [ "multi-user.target" ];
