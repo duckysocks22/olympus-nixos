@@ -25,6 +25,8 @@
     kernelParams = [
       "amd_iommu=on"
       "amd_pstate=active"
+      "rd.udev.log_level=3"
+      "rd.systemd.show_status=auto"
     ];
     loader = {
       limine = {
@@ -35,6 +37,19 @@
       efi = {
         canTouchEfiVariables = false;
       };
+    };
+    plymouth = {
+      enable = true;
+      theme = "deus_ex";
+      themePackages = with pkgs; [
+        (adi1090x-plymouth-themes.override {
+          selected_themes = [ "deus_ex" ];
+        })
+      ];
+      extraConfig = ''
+        [Daemon]
+        DeviceScale=1.0
+      '';
     };
   };
 
@@ -63,6 +78,7 @@
     pkgs.gsettings-desktop-schemas
     pkgs.gtk3
     pkgs.tpm2-tss
+    pkgs.sbctl
   ];
 
   environment.sessionVariables.XDG_DATA_DIRS = [
