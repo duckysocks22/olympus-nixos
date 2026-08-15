@@ -2,6 +2,7 @@
   config,
   pkgs,
   pkgs-unstable,
+  lib,
   ...
 }:
 let
@@ -98,5 +99,13 @@ in
     allowedUDPPorts = [
       4646
     ];
+  };
+
+  systemd = {
+    sockets.avahi-daemon = {
+      wantedBy = lib.mkForce [ ];
+      requiredBy = lib.mkForce [ ];
+    };
+    services.avahi-daemon.requires = lib.mkForce [ ];
   };
 }

@@ -18,4 +18,10 @@
     };
     nssmdns4 = true;
   };
+
+  systemd.sockets.avahi-daemon = {
+    wantedBy = lib.mkForce [ ];
+    requiredBy = lib.mkForce [ ];
+  };
+  systemd.services.avahi-daemon.requires = lib.mkForce [ ];
 }
