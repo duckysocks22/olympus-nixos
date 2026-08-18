@@ -39,6 +39,7 @@ in
     pkgs.ludusavi
     pkgs.r2modman
     (wrapNoHardened pkgs.heroic "heroic")
+    (wrapNoHardened pkgs.azahar "azahar")
   ];
 
   programs.mangohud = {
