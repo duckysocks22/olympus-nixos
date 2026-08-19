@@ -46,4 +46,29 @@
     }
   ];
 
+  systemd.services.cifs-watchdog = {
+    description = "Unmount dead Olympus SMB shares";
+    serviceConfig.Type = "oneshot";
+    script = ''
+      if ! ${pkgs.coreutils}/bin/timeout 2 ${pkgs.bash}/bin/bash -c '</dev/tcp/172.17.100.1/445' 2>/dev/null; then
+        for m in /media/olympus/shared /media/olympus/private; do
+          if ${pkgs.util-linux}/bin/mountpoint -q "$m"; then
+            ${pkgs.util-linux}/bin/umount -l "$m" || true
+            echo "NAS 172.17.100.1 unreachable: lazily unmounted $m"
+          fi
+        done
+      fi
+    '';
+  };
+
+  systemd.timers.cifs-watchdog = {
+    description = "Poll for dead Olympus SMB shares";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnBootSec = "30s";
+      OnUnitActiveSec = "2min";
+      AccuracySec = "10s";
+    };
+  };
+
 }
