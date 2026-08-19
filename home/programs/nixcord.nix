@@ -8,15 +8,6 @@
 {
   imports = [ inputs.nixcord.homeModules.nixcord ];
 
-  # Wrap the nixcord-built Discord package with mullvad-exclude so every launch
-  # bypasses the VPN tunnel.  symlinkJoin inherits all share/ data (desktop
-  # entry, icons) from the original package; we only replace the bin/ symlinks
-  # (discord and Discord, both of which point to the same underlying binary).
-  #
-  # writeShellScript is used rather than makeWrapper because makeWrapper checks
-  # that the TARGET binary exists inside the build sandbox, and
-  # /run/wrappers/bin/mullvad-exclude is only present at runtime (it is a
-  # setuid wrapper created by NixOS activation, not a store path).
   home.packages = [
     (
       let
@@ -37,29 +28,8 @@
         '';
       }
     )
-
-    # (let
-    #   vesktopWrapper = pkgs.writeShellScript "vesktop" ''
-    #     exec /run/wrappers/bin/mullvad-exclude \
-    #       ${config.programs.nixcord.finalPackage.vesktop}/bin/vesktop \
-    #       "$@"
-    #   '';
-    # in pkgs.symlinkJoin {
-    #   name = "vesktop-mullvad-excluded";
-    #   paths = [ config.programs.nixcord.finalPackage.vesktop ];
-    #   postBuild = ''
-    #     rm "$out/bin/vesktop"
-    #     ln -s ${vesktopWrapper} "$out/bin/vesktop"
-    #   '';
-    # })
   ];
 
-  # Vencord writes quickCss.css atomically (write-tmp + rename), which
-  # replaces home-manager's symlink with a regular file.  On the next rebuild
-  # checkLinkTargets sees the regular file and aborts the entire activation,
-  # so nixcord-vencord-settings never runs and plugins are never applied.
-  # force = true tells home-manager to overwrite the regular file with the
-  # managed symlink every switch, re-asserting the Nix-declared CSS content.
   home.file."${config.programs.nixcord.configDir}/settings/quickCss.css".force = true;
 
   programs.nixcord = {
@@ -70,11 +40,7 @@
       installPackage = false;
       krisp.enable = true;
       vencord.enable = true;
-      # Enable PipeWire-backed screen capture so the XDG portal window-picker
-      # dialog appears when screen-sharing on Wayland.  Without this flag,
-      # Electron's desktopCapturer.getSources() silently returns nothing on
-      # Wayland (no X11 window enumeration) and the share dialog never opens.
-      commandLineArgs = [ "--enable-features=WebRTCPipeWireCapturer" ];
+      commandLineArgs = [ "--enable-features=WebRTCPipeWireCapturer" "--disable-gpu" ];
       settings = {
         openasar = {
           setup = true;
