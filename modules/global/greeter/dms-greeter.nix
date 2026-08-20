@@ -2,6 +2,7 @@
   pkgs,
   config,
   inputs,
+  lib,
   ...
 }:
 {
@@ -52,6 +53,30 @@
 
     quickshell.package = pkgs.quickshell;
   };
+
+  services.greetd.greeterManagesPlymouth = true;
+
+  systemd.services.plymouth-quit = {
+    wantedBy = lib.mkForce [ "graphical.target" ];
+    after = lib.mkForce [
+      "plymouth-start.service"
+      "greetd.service"
+    ];
+    restartIfChanged = false;
+    serviceConfig = {
+      TimeoutSec = "60";
+      ExecStart = lib.mkForce "-${pkgs.writeShellScript "plymouth-quit-after-greeter" ''
+        for ((i = 0; i < 120; i++)); do
+          ${pkgs.procps}/bin/pgrep -u greeter >/dev/null 2>&1 && break
+          ${pkgs.coreutils}/bin/sleep 0.25
+        done
+        ${pkgs.coreutils}/bin/sleep 4
+        exec ${pkgs.plymouth}/bin/plymouth quit
+      ''}";
+    };
+  };
+
+  systemd.services.plymouth-quit-wait.wantedBy = lib.mkForce [ ];
 
   environment.systemPackages = [ pkgs.bibata-cursors ];
 }
