@@ -14,6 +14,7 @@
       directories = [
         "/var/lib/bluetooth"
         "/var/lib/libvirt"
+        "/var/lib/systemd/backlight"
         "/var/lib/systemd/coredump"
         "/var/lib/systemd/rfkill"
         "/var/lib/systemd/timers"
@@ -37,10 +38,6 @@
         "/var/log"
         {
           directory = "/var/lib/nixos";
-          inInitrd = true;
-        }
-        {
-          directory = "/sys/class/backlight";
           inInitrd = true;
         }
         "/var/cache/mullvad-vpn"
@@ -150,8 +147,6 @@
       };
     };
   };
-  # machine-id is preserved to /persistent (real fs), so the service that
-  # commits a transient tmpfs machine-id to disk will always fail. Disable it.
   systemd.services."systemd-machine-id-commit".enable = false;
 
   systemd.tmpfiles.settings.preservation = {
@@ -171,4 +166,6 @@
       mode = "0755";
     };
   };
+
+  systemd.services."systemd-backlight@.service".after = [ "preservation.target" ];
 }
