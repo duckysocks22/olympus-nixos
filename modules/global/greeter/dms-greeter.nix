@@ -1,6 +1,7 @@
 {
   pkgs,
   config,
+  lib,
   inputs,
   ...
 }:
@@ -54,4 +55,16 @@
   };
 
   environment.systemPackages = [ pkgs.bibata-cursors ];
+
+  services.accounts-daemon.enable = true;
+
+  system.activationScripts.dmsProfilePicture = lib.stringAfter [ "users" ] ''
+    mkdir -p /var/lib/AccountsService/icons /var/lib/AccountsService/users
+    ln -sfn ${../../../home/pfp/argyle_shaded.png} /var/lib/AccountsService/icons/foxtrot
+    cat > /var/lib/AccountsService/users/foxtrot <<'EOF'
+    [User]
+    SystemAccount=false
+    Icon=/var/lib/AccountsService/icons/foxtrot
+    EOF
+  '';
 }
