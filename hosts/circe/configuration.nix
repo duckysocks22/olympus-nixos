@@ -11,8 +11,8 @@
 
 {
   imports = [
-    # Include the results of the hardware scan.
     ./hardware-configuration.nix
+    ../../modules/global/functions.nix
     ../../modules/circe/disko.nix
     #../../modules/global/remote-builder.nix
     #../../modules/circe/syncthing.nix
@@ -21,6 +21,7 @@
     #../../modules/global/network/ssh-tunnel.nix
     #../../modules/circe/steam-proxy.nix
     ../../modules/global/harden.nix
+    ../../modules/global/power/hibernateOnLowBattery.nix
     ../../modules/global/greeter/dms-greeter.nix
     ../../modules/global/portals.nix
     ../../modules/global/system.nix

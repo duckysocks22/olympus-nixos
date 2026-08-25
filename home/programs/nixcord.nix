@@ -40,7 +40,10 @@
       installPackage = false;
       krisp.enable = true;
       vencord.enable = true;
-      commandLineArgs = [ "--enable-features=WebRTCPipeWireCapturer" "--disable-gpu" ];
+      commandLineArgs = [
+        "--enable-features=WebRTCPipeWireCapturer"
+        "--disable-gpu"
+      ];
       settings = {
         openasar = {
           setup = true;
