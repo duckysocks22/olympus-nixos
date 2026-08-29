@@ -79,7 +79,12 @@
     pkgs.gtk3
     pkgs.tpm2-tss
     pkgs.sbctl
+    pkgs.mesa.opencl
   ];
+
+  environment.variables = {
+    RUSTICL_ENABLE = "radeonsi";
+  };
 
   environment.sessionVariables.XDG_DATA_DIRS = [
     "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}"
@@ -149,5 +154,6 @@
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
+    extraPackages = [ pkgs.mesa.opencl ];
   };
 }
