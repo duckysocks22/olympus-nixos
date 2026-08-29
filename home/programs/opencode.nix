@@ -19,8 +19,8 @@ in
     package = pkgs-unstable.opencode;
 
     settings = {
-      model = "deepseek/deepseek-v4-flash";
-      small_model = "deepseek/deepseek-v4-flash";
+      model = "z-ai/glm-5.3-flash";
+      small_model = "z-ai/glm-5.3-flash";
       default_agent = "code-reviewer";
 
       permission = {
@@ -130,7 +130,7 @@ in
         ---
         description: Plan mode - think and propose a plan, then hand off to build for execution
         mode: primary
-        model: deepseek/deepseek-v4-flash
+        model: openrouter/z-ai/glm-5.3-flash
         permission:
           edit: deny
           read:
