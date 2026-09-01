@@ -19,8 +19,8 @@ in
     package = pkgs-unstable.opencode;
 
     settings = {
-      model = "z-ai/glm-5.3-flash";
-      small_model = "z-ai/glm-5.3-flash";
+      model = "openrouter/z-ai/glm-5.3-flash";
+      small_model = "openrouter/z-ai/glm-5.3-flash";
       default_agent = "code-reviewer";
 
       permission = {
