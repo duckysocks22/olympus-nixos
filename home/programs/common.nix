@@ -4,7 +4,6 @@
     enable = true;
     defaultApplications = {
       "x-scheme-handler/unityhub" = "unityhub.desktop";
-      "x-scheme-handler/claude-cli" = "claude-code-url-handler.desktop";
     };
   };
 

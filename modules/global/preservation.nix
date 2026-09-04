@@ -76,7 +76,6 @@
             ".claude"
             ".mozilla"
             ".thunderbird"
-            ".cache/noctalia"
             ".cache/DankMaterialShell"
             ".cache/nvim"
             ".cache/neovim"

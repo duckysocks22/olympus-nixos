@@ -27,10 +27,6 @@
     colors.enable = false;
   };
 
-  # Stylix's noctalia-shell target is disabled; colors are set manually in
-  # noctalia.nix to preserve the pre-26.05 neutral grey look (base05/base04)
-  # instead of the new accent-based mapping (base0D/0E).
-  stylix.targets.noctalia-shell.enable = false;
   stylix.targets.qt = {
     enable = true;
   };
