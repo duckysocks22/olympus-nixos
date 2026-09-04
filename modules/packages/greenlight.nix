@@ -1,155 +1,125 @@
-{
-  lib,
-  stdenv,
-  fetchurl,
-  fetchFromGitHub,
-  fetchYarnDeps,
-  yarnConfigHook,
-  yarnBuildHook,
-  yarnInstallHook,
-  nodejs,
-  nspr,
-  nss,
-  mesa,
-  libglvnd,
-  alsa-lib,
-  libpulseaudio,
-  flac,
-  libxslt,
-  yq,
-  atk,
-  at-spi2-atk,
-  at-spi2-core,
-  cairo,
-  cups,
-  gtk3,
-  pango,
-  libjpeg_original,
-  libxkbcommon,
-  unzip,
-  electron_42,
-  makeWrapper,
-  makeDesktopItem,
-  copyDesktopItems,
-  autoPatchelfHook,
-  nix-update-script,
-}:
-stdenv.mkDerivation (finalAttrs: {
-  pname = "greenlight";
-  version = "2.4.2";
+{ inputs, ... }:
 
-  src = fetchFromGitHub {
-    owner = "unknownskl";
-    repo = "greenlight";
-    tag = "v${finalAttrs.version}";
-    hash = "sha256-vrQtwziP+MkBseHtqego2y31UjWCJRtyf+UD35H+iSU=";
-  };
+perSystem = { lib, stdenv, fetchurl, fetchFromGitHub, fetchYarnDeps, yarnConfigHook, yarnBuildHook, yarnInstallHook, nodejs, nspr, nss, mesa, libglvnd, alsa-lib, libpulseaudio, flac, libxslt, yq, atk, at-spi2-atk, at-spi2-core, cairo, cups, gtk3, pango, libjpeg_original, libxkbcommon, unzip, electron_42k, makeWrapper, makeDesktopItem, copyDesktopItems, autoPatchelfHook, nix-update-script, }: {
+  packages.greenlight = stdenv.mkDerivation (finalAttrs: {
+    pname = "greenlight";
+    version = "2.4.2";
 
-  yarnOfflineCache = fetchYarnDeps {
-    yarnLock = "${finalAttrs.src}/yarn.lock";
-    hash = "sha256-ExLu7Psd1MMLyVEr3I7BQFVo0uggv+bw1KLYF50CzXk=";
-  };
+    src = fetchFromGitHub {
+      owner = "unknownskl";
+      repo = "greenlight";
+      tag = "v${finalAttrs.version}";
+      hash = "sha256-vrQtwziP+MkBseHtqego2y31UjWCJRtyf+UD35H+iSU=";
+    };
 
-  env.ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
+    yarnOfflineCache = fetchYarnDeps {
+      yarnLock = "${finalAttrs.src}/yarn.lock";
+      hash = "sha256-ExLu7Psd1MMLyVEr3I7BQFVo0uggy+bw1KLYF50CzXk=";
+    };
 
-  strictDeps = true;
-  __structuredAttrs = true;
+    env.ELECTRON_SKIP_BINARY_DOWNLOAD = "1";
 
-  nativeBuildInputs = [
-    yarnConfigHook
-    yarnBuildHook
-    yarnInstallHook
-    nodejs
-    yq
-    unzip
-    makeWrapper
-    autoPatchelfHook
-    copyDesktopItems
-  ];
+    strictDeps = true;
+    __structuredAttrs = true;
 
-  buildInputs = [
-    nspr
-    nss
-    mesa
-    libglvnd
-    alsa-lib
-    libpulseaudio
-    flac
-    libxslt
-    stdenv.cc.cc.lib
-    atk
-    at-spi2-atk
-    at-spi2-core
-    cairo
-    cups
-    gtk3
-    pango
-    libjpeg_original
-    libxkbcommon
-  ];
+    nativeBuildInputs = [
+      yarnConfigHook
+      yarnBuildHook
+      yarnInstallHook
+      nodejs
+      yq
+      unzip
+      makeWrapper
+      autoPatchelfHook
+      copyDesktopItems
+    ];
 
-  postPatch = ''
-    [ ... ]
-    cp -r ${electron_42.dist} electron-dist
-    chmod -R u+w electron-dist
-    yq -i -y ".electronDist = \"$PWD/electron-dist\" |
-         del(.linux.target) |
-         .linux.target = [\"dir\"]" $PWD/packages/desktop/electron-builder.yml
-  '';
+    buildInputs = [
+      nspr
+      nss
+      mesa
+      libglvnd
+      alsa-lib
+      libpulseaudio
+      flac
+      libxslt
+      stdenv.cc.cc.lib
+      atk
+      at-spi2-atk
+      at-spi2-core
+      cairo
+      cups
+      gtk3
+      pango
+      libjpeg_original
+      libxkbcommon
+    ];
 
-  buildPhase = ''
-    runHook preBuild
+    postPatch = ''
+      cp -r ${electron_42.dist} electron-dist
+      chmod -R u+w electron-dist
+      yq -i -y ".electronDist = \"$PWD/electron=-dist\" |
+        del(.linux.target) |
+        .linux.target = [\"dir\"]" $PWD/packages/desktop/electron-builder.yml
+    '';
 
-    yarn --offline desktop build
+    buildPhase = ''
+      runHook preBuild
 
-    runHook postBuild
-  '';
+      yarn --offline desktop build
 
-  installPhase = ''
-    runHook preInstall
+      runHook postBuild
+    '';
 
-    mkdir -p $out/lib/greenlight $out/bin
+    installPhase = ''
+      runHook preInstall
 
-    cp -r packages/desktop/dist/linux-unpacked/* $out/lib/greenlight/
+      mkdir -p $out/lib/greenlight $out/bin
 
-    makeWrapper $out/lib/greenlight/greenlight-desktop $out/bin/greenlight \
-      --add-flags "--no-sandbox" \
-      --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath finalAttrs.buildInputs}" \
-      --inherit-argv0
+      cp -r packages/desktop/dist/linux-unpacked/* $out/lib/greenlight/
 
-    runHook postInstall
-  '';
+      
+      makeWrapper $out/lib/greenlight/greenlight-desktop $out/bin/greenlight \
+        --add-flags "--no-sandbox" \
+        --prefix LD_LIBRARY_PATH : "${lib.makeLibraryPath finalAttrs.buildInputs}" \
+        --inherit-argv0
 
-  postInstall = ''
-    install -Dm644 packages/desktop/flatpak/io.github.unknownskl.greenlight.png \
-      $out/share/icons/hicolor/512x512/apps/greenlight.png
-  '';
+      runHook postInstall
+    '';
 
-  desktopItems = [
-    (makeDesktopItem {
-      name = "greenlight";
-      exec = "greenlight %U";
-      icon = "greenlight";
-      desktopName = "Greenlight";
-      genericName = "Desktop client for Greenlight-Desktop";
-      comment = finalAttrs.meta.description;
-      categories = [
-        "Game"
-        "Utility"
+      
+    postInstall = ''
+        install -Dm644 packages/desktop/flatpak/io.github.unknownskl.greenlight.png \
+          $out/share/icons/hicolor/512x512/apps/greenlight.png
+      '';
+
+      desktopItems = [
+        (makeDesktopItem {
+          name = "greenlight";
+          exec = "greenlight %U";
+          icon = "greenlight";
+          desktopName = "Greenlight";
+          genericName = "Desktop client for Greenlight-Desktop";
+          comment = finalAttrs.meta.description;
+          categories = [
+            "Game"
+            "Utility"
+          ];
+          startupWMClass = "Greenlight";
+        })
       ];
-      startupWMClass = "Greenlight";
-    })
-  ];
 
-  passthru.updateScript = nix-update-script { };
+      passthru.updateScript = nix-update-script { };
 
-  meta = {
-    description = "Open-source client for xCloud and Xbox home streaming made in Typescript";
-    homepage = "https://github.com/unknownskl/greenlight";
-    downloadPage = "https://github.com/unknownskl/greenlight/releases";
-    license = lib.licenses.mit;
-    maintainers = with lib.maintainers; [ duckysocks22 ];
-    platforms = [ "x86_64-linux" ];
-    mainProgram = "greenlight";
+      meta = {
+        description = "Open-source client for xCloud and Xbox home streaming made in Typescript";
+        homepage = "https://github.com/unknownskl/greenlight";
+        downloadPage = "https://github.com/unknownskl/greenlight/releases";
+        license = lib.licenses.mit;
+        maintainers = with lib.maintainers; [ duckysocks22 ];
+        platforms = [ "x86_64-linux" ];
+        mainProgram = "greenlight";
+      };
+    });
   };
-})
+}
