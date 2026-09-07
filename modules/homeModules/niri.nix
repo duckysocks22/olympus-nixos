@@ -8,6 +8,7 @@
     ];
 
     programs.niri = {
+      package = pkgs.niri;
       settings = {
         outputs = {
           "PNP(AOC) CU34G2XP 1Q1R9UA004091" = {
