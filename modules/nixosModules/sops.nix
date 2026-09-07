@@ -69,4 +69,22 @@
   flake.nixosModules.serverSops = { inputs, config, ... }: {
 
   };
+
+  flake.nixosModules.deckSops = { inputs, config, ... }: {
+    imports = [
+      inputs.sops-nix.nixosModules.sops
+    ];
+
+    sops.defaultSopsFile = ../../secrets/secrets.yaml;
+    sops.defaultSopsFormat = "yaml";
+    sops.useSystemdActivation = true;
+
+    sops.age.keyFile = "${config.users.users.deck.home}/.config/sops/age/keys.txt";
+
+    sops.secrets."samba/local".mode = "0440";
+    sops.secrets."samba/local".owner = config.users.users.deck.name;
+    sops.secrets."samba/local".group = config.users.users.deck.group;
+
+    sops.secrets."bazinga/pass" = { };
+  };
 }

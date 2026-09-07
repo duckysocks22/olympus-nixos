@@ -129,9 +129,7 @@
     };
   };
 
-  flake.nixosModules.common = { pkgs, inputs, ... }: {
-    imports = [ inputs.aagl.nixosModules.default ];
-
+  flake.nixosModules.common = { pkgs, pkgs-unstable, inputs, ... }: {
     programs.steam = {
       enable = true;
       package = pkgs.steam.override {
@@ -152,7 +150,6 @@
     programs = {
       gamescope.enable = true;
       gnupg.agent = { enable = true; };
-      honkers-railway-launcher.enable = true;
       localsend = {
         enable = true;
         openFirewall = true;
@@ -197,7 +194,6 @@
 
     environment.systemPackages =
         (with pkgs; [
-          python312Packages.yt-dlp
           unzip
           bubblewrap
           nixfmt-tree
@@ -232,12 +228,11 @@
               --bind /dev/null /etc/ld-nix.so.preload \
               -- "$@"
           '')
-        ]
-      ) ++ (with inputs.reshade.packages.${pkgs.system}; [
-          reshade
-          reshade-shaders-full
-      ]
-    );
+          ]
+        ) ++ (with inputs.reshade.packages.${pkgs.system}; [
+            reshade
+            reshade-shaders-full
+        ]);
 
     fonts.packages = with pkgs; [ noto-fonts noto-fonts-cjk-sans noto-fonts-color-emoji ] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
   };

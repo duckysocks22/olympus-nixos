@@ -209,6 +209,7 @@
         tuiMode = "fullscreen";
         hideThinkingBlock = true;
         terminal.images = "kitty";
+        customUI = true;
       };
       context = ''
         ${builtins.readFile claudeRules}

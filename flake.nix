@@ -38,6 +38,10 @@
     nixvim = {
       url = "github:nix-community/nixvim/nixos-26.05";
     };
+    nixvim-unstable = {
+      url = "github:nix-community/nixvim";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
+    };
     attic = {
       url = "github:zhaofengli/attic";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -59,6 +63,10 @@
     };
     reshade = {
       url = "github:LovingMelody/nix-reshade";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    jovian = {
+      url = "github:Jovian-Experiments/Jovian-NixOS";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

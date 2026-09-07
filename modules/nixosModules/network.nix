@@ -1,7 +1,7 @@
 { inputs, self, ... }: {
   flake.nixosModules.defaultNetwork = { config, pkgs, pkgs-unstable, lib, ... }: let
-    staticIp = { "athena-nixos" = "172.17.25.1/16"; "circe-nixos" = "172.17.25.2/16"; };
-    autoconnect = { "athena-nixos" = "false"; "circe-nixos" = "true"; };
+    staticIp = { "athena-nixos" = "172.17.25.1/16"; "circe-nixos" = "172.17.25.2/16"; "ariadne-nixos" = "172.17.25.3/16"; };
+    autoconnect = { "athena-nixos" = "false"; "circe-nixos" = "true"; "ariadne-nixos" = "false"; };
   in {
     imports = [ inputs.self.nixosModules.mullvad inputs.self.nixosModules.dnscrypt-proxy ];
 
