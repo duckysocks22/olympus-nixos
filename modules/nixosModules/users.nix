@@ -1,6 +1,8 @@
 { inputs, self, ... }: {
   flake.nixosModules.foxtrot = { inputs, pkgs, ... }: {
-    imports = [ inputs.home-manager.nixosModules.home-manager ];
+    imports = [ 
+      inputs.home-manager.nixosModules.home-manager 
+    ];
 
     users.users.foxtrot = {
       isNormalUser = true;
@@ -40,7 +42,7 @@
         inputs.self.homeModules.player
         inputs.self.homeModules.nixvim
         inputs.self.homeModules.nixcord
-        inputs.self.homeModules.opencode
+        inputs.self.homeModules.piAgent
         inputs.self.homeModules.easyeffects
         inputs.self.homeModules.stylix
         inputs.self.homeModules.niri

@@ -189,6 +189,92 @@
     };
   };
 
+  flake.homeModules.piAgent = { inputs, pkgs, pkgs-unstable, config, ... }: let
+    claudeRules = pkgs.fetchurl {
+      url = "https://raw.githubusercontent.com/sisyphusse1-ops/claude-code-pro-pack/refs/heads/main/CLAUDE.md";
+      hash = "sha256-wayXk5qtd+mmKNUPlqKRjyHQGml92kqbng+LTy26GJs=";
+    };
+  in {
+    imports = [ (inputs.home-manager-unstable + "/modules/programs/pi-coding-agent.nix" ) ];
+    programs.pi-coding-agent = {
+      enable = true;
+      package = pkgs-unstable.pi-coding-agent;
+      settings = {
+        defaultProvider = "openrouter";
+        defaultModel = "~z-ai/glm-flash-latest";
+        defaultThinkingLevel = "max";
+        packages = [ "pi-web-access" "pi-subagents" "pi-background-tasks" "rpiv-todo" "pi-simplify" "bigpowers" "pi-dynamic-workflows" ];
+        enableInstallTelemetry = false;
+        enableAnalytics = false;
+        tuiMode = "fullscreen";
+        hideThinkingBlock = true;
+        terminal.images = "kitty";
+      };
+      context = ''
+        ${builtins.readFile claudeRules}
+
+        # Memory / Persistent Context
+
+        ## Code Style Preferences
+
+        Do not add inline comments to code. Explain changes in commit messages instead.
+
+        ## Session Workflow
+
+        At the start of every session, before reading or modifying any files,
+        check that the current repository is up to date:
+
+            git pull
+
+        Do this for any repo being worked in, not just olympus-nixos.
+        This avoids working on stale code and prevents conflicts on push.
+
+        `git add` is allowed when required (e.g. staging a new file before a
+        rebuild). But `git commit`, `git commit --amend`, and `git push` must
+        NEVER be run unless the user has explicitly asked for it in that message.
+        When in doubt, stage the files and stop — describe what would be committed
+        and wait for the instruction.
+
+        ## User Context
+
+        Always use the **current user's** home directory — whoever is running
+        pi-coding-agent at the time. Do NOT hardcode /home/foxtrot.
+
+        - In Nix expressions: use `config.home.homeDirectory`
+        - In shell commands: use $HOME or ~
+        - In reasoning: infer from `whoami` / the active session
+
+        The current deploying user happens to be "foxtrot" (/home/foxtrot),
+        but this should be treated as an example, not a constant.
+
+        ## Nix / Flake Gotchas (olympus-nixos)
+
+        Any changes to pi-coding-agents's own permissions, context, agent definition,
+        or settings must be made in the pi-agent-coding module in:
+
+            ~/olympus-nixos/modules/homeModules/programs.nix 
+
+        Do NOT write to ~/.pi/ directly — those are nix store
+        symlinks and writes will fail or be lost on the next rebuild.
+
+        ALL .pi/ files managed by home-manager are symlinks into
+        the nix store and cannot be written to directly.
+
+        After any config change, rebuild:
+
+            sudo nixos-rebuild switch --flake ~/olympus-nixos
+
+        Brand-new files must be `git add`ed before rebuild can see them.
+        Nix flakes only evaluate files tracked by git.
+
+        When updating a flake input, only update that specific input:
+
+            nix flake update <input-name>   # correct
+            nix flake update                # wrong — updates everything
+      '';
+    };
+  };
+
   flake.homeModules.opencode = { lib, pkgs, pkgs-unstable, config, ... }: let
     claudeRules = pkgs.fetchurl {
       url = "https://raw.githubusercontent.com/sisyphusse1-ops/claude-code-pro-pack/refs/heads/main/CLAUDE.md";
