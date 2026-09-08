@@ -62,6 +62,7 @@
                 mode = "0700";
               }
               ".mozilla"
+              ".pi"
               ".cache/DankMaterialShell"
               ".cache/nvim"
               ".cache/neovim"
@@ -132,6 +133,7 @@
                 mode = "0700";
               }
               ".mozilla"
+              ".pi"
               ".cache/nvim"
               ".cache/neovim"
               ".cache/mesa_shader_cache"
