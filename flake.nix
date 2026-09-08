@@ -57,16 +57,20 @@
       url = "git+https://dawn.wine/foxtrottt/elysia-on-nix.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    aagl = {
-      url = "github:ezKEa/aagl-gtk-on-nix/release-26.05";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
     reshade = {
       url = "github:LovingMelody/nix-reshade";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     jovian = {
       url = "github:Jovian-Experiments/Jovian-NixOS";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    copyparty = {
+      url = "github:9001/copyparty";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    compose2nix = {
+      url = "github:aksiksi/compose2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

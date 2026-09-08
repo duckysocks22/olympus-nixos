@@ -74,7 +74,7 @@
             url = url;
           })
           [
-            "https://dawn.wine/foxtrottt/olympus-nixos/raw/branch/main/modules/nyx/services/networking/adguardhome/allowlist.txt"
+            "https://dawn.wine/foxtrottt/olympus-nixos/raw/branch/dendritic/assets/allowlist.txt"
           ];
 
       protection_enabled = false;

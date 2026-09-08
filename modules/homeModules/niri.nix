@@ -31,6 +31,10 @@
         prefer-no-csd = true;
         hotkey-overlay.skip-at-startup = true;
         input.focus-follows-mouse.enable = true;
+        input.mouse = {
+          accel-speed = 0.1;
+          accel-profile = "flat";
+        };
         layout = {
           gaps = 8;
           background-color = "transparent";

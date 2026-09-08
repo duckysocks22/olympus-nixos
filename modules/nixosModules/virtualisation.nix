@@ -1,13 +1,11 @@
 { inputs, self, ... }: {
-  flake.nixosModules.virtualisation = { config, pkgs, ... }: {
+  flake.nixosModules.virtualisation = { config, pkgs, lib, ... }: {
     programs.virt-manager.enable = true;
 
     users.groups.libvirtd.members = [
       "foxtrot"
       "server"
     ];
-
-    users.users.foxtrot.extraGroups = [ "libvirtd" ];
 
     virtualisation = {
       libvirtd.enable = true;

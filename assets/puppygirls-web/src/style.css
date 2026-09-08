@@ -1,0 +1,35 @@
+@layer base, util, components;
+
+@import 'xp.css/dist/XP.css';
+
+
+@layer base {
+  :root {
+    --font-size: 18px;
+    --font-weight-bold: 700;
+    --font-weight-normal: 400;
+    --font-family: 'JetBrainsMono', monospace;
+  }
+}
+
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+  }
+  #content {
+    padding: 0lh 1ch;
+    padding-top: 1lh;
+    display: flex;
+    flex-direction: column;
+    gap: 1lh;
+  }
+  #buttons {
+    display: flex;
+    justify-content: flex-end;
+  }
+  .ascii {
+    white-space: pre;
+    font-family: monospace;
+  }
+

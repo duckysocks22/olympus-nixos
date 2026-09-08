@@ -2,8 +2,6 @@
   flake.nixosModules.system = { pkgs, config, ... }: {
     imports = [ self.nixosModules.nixSettings self.nixosModules.portals self.nixosModules.finalMouseUdev ];
 
-    networking.networkmanager.enable = true;
-
     hardware.bluetooth = {
       enable = true;
       settings = {
@@ -142,8 +140,8 @@
       extraCompatPackages = (with pkgs; [
         proton-ge-bin
       ]) ++ [
-        self.packages.${pkgs.system}.dwproton
-        self.packages.${pkgs.system}.proton-em
+        inputs.self.packages.${pkgs.system}.dwproton
+        inputs.self.packages.${pkgs.system}.proton-em
       ];
     };
 
@@ -301,6 +299,25 @@
       clean.enable = true;
       clean.extraArgs = "--keep-since 7d --keep 3";
       flake = "/home/$(whoami)/olympus-nixos";
+    };
+  };
+
+  flake.nixosModules.nvidia = { config, pkgs, ... }: {
+    hardware.graphics = {
+      enable = true;
+      extraPackages = with pkgs; [
+        nvidia-vaapi-driver
+        libva-vdpau-driver
+        libvdpau-va-gl
+        libva-utils
+      ];
+    };
+
+    services.xserver.videoDrivers = [ "nvidia" ];
+    hardware.nvidia = {
+      open = true;
+      package = config.boot.kernelPackages.nvidiaPackages.bleeding_edge;
+      modesetting.enable = true;
     };
   };
 

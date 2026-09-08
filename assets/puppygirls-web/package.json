@@ -1,0 +1,15 @@
+{
+  "devDependencies": {
+    "vite": "^7.3.2"
+  },
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview --host"
+  },
+  "dependencies": {
+    "@webtui/css": "^0.1.6",
+    "@webtui/theme-catppuccin": "^0.0.3",
+    "xp.css": "^0.2.6"
+  }
+}
