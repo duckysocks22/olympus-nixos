@@ -19,6 +19,7 @@
       self.nixosModules.web
       self.nixosModules.automation
       self.nixosModules.gameServers
+      self.nixosModules.files
     ];
   };
 

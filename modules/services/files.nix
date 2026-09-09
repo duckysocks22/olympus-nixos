@@ -3,9 +3,10 @@
     imports = [ self.nixosModules.syncthing self.nixosModules.samba self.nixosModules.actual-budget self.nixosModules.immich ];
   };
 
-  flake.nixosModules.immich = { config, lib, ... }: {
+  flake.nixosModules.immich = { config, lib, pkgs-unstable, ... }: {
     services.immich = {
       enable = true;
+      package = pkgs-unstable.immich;
       host = "127.0.0.1";
       port = 2283;
       openFirewall = true;
@@ -76,7 +77,7 @@
     });
     exec = lib.getExe pkgs.actual-server;
   in {
-    systemd.service.actual-server = util.functions.mkSimpleService {
+    systemd.services.actual-server = util.functions.mkSimpleService {
       description = "Headless Actual Finance Server";
       ExecStart = "${exec} --config ${config}";
       user = "root";
@@ -150,21 +151,34 @@
       };
     };
 
-    users.users = {
-      socks = {
-        description = "Write-access to samba media shares";
-        extraGroups = [ "users" ];
-        hashedPasswordFile = config.sops.secrets."users/server".path;
+    users = {
+      users = {
+        socks = {
+          description = "Write-access to samba media shares";
+          group = "socks";
+          extraGroups = [ "users" ];
+          hashedPasswordFile = config.sops.secrets."users/server".path;
+          isSystemUser = true;
+        };
+        serena = {
+          description = "Write-access to samba media shares";
+          group = "serena";
+          extraGroups = [ "users" ];
+          hashedPasswordFile = config.sops.secrets."users/server".path;
+          isSystemUser = true;
+        };
+        zia = {
+          description = "Write-access to samba media shares";
+          group = "zia";
+          extraGroups = [ "users" ];
+          hashedPasswordFile = config.sops.secrets."users/server".path;
+          isSystemUser = true;
+        };
       };
-      serena = {
-        description = "Write-access to samba media shares";
-        extraGroups = [ "users" ];
-        hashedPasswordFile = config.sops.secrets."users/server".path;
-      };
-      zia = {
-        description = "Write-access to samba media shares";
-        extraGroups = [ "users" ];
-        hashedPasswordFile = config.sops.secrets."users/server".path;
+      groups = {
+        socks = { };
+        serena = { };
+        zia = { };
       };
     };
 
