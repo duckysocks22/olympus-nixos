@@ -34,7 +34,11 @@
     };
 
     boot.plymouth = {
-      enable = lib.mkForce false;
+      enable = true;
+      theme = lib.mkForce "steamos";
+      themePackages = [
+        inputs.self.packages.${pkgs.system}.steamos-plymouth
+      ];
     };
   };
 }
