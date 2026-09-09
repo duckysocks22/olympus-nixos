@@ -44,7 +44,7 @@
     disko.devices = {
       disk = {
         main = {
-          device = "/dev/disk/by-id/nvme-Phison_ESMP512GMB47C3_E13TS_22373M51232552";
+          device = "/dev/disk/by-id/nvme-Phison_ESMP512GMB47C3-E13TS_22373M51232552";
           type = "disk";
           content = {
             type = "gpt";
@@ -111,7 +111,7 @@
           };
         };
         SD512 = {
-          device = "/dev/disk/by-id/mmc-SD512_8x7e015778";
+          device = "/dev/disk/by-id/mmc-SD512_0x7e015778";
           type = "disk";
           content = {
             type = "gpt";
