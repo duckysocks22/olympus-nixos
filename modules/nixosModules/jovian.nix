@@ -37,13 +37,5 @@
     boot.plymouth = {
       enable = lib.mkForce false;
     };
-
-    preservation = {
-      preserveAt."/persistent" = {
-        directories = [
-          
-        ];
-      };
-    };
   };
 }

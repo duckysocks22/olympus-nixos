@@ -8,7 +8,6 @@
       self.nixosModules.ariadneHardware
       self.nixosModules.ariadneDisko
       self.nixosModules.functions
-      self.nixosModules.preservation
       self.nixosModules.system
       self.nixosModules.common
       self.nixosModules.systemHarden
@@ -45,16 +44,6 @@
   flake.nixosModules.ariadneDisko = { inputs, lib, ... }: {
     imports = [ inputs.disko.nixosModules.disko ];
     disko.devices = {
-      nodev = {
-        "/" = {
-          fsType = "tmpfs";
-          mountOptions = [
-            "size=25%"
-            "mode=755"
-          ];
-        };
-      };
-
       disk = {
         main = {
           device = "/dev/disk/by-id/nvme-CT500P1SSD8_2012E296277B";
@@ -89,17 +78,16 @@
                     allowDiscards = true;
                     crypttabExtraOpts = [ "tpm2-device=auto" ];
                   };
-                  extraFormatArgs = [ "tpm2-device=auto" ];
                   content = {
                     type = "btrfs";
                     extraArgs = [ "-f" ];
                     subvolumes = {
-                      "/persistent" = {
+                      "/root" = {
                         mountOptions = [
-                          "subvol=persistent"
+                          "subvol=root"
                           "noatime"
                         ];
-                        mountpoint = "/persistent";
+                        mountpoint = "/";
                       };
                       "/nix" = {
                         mountOptions = [
@@ -120,7 +108,6 @@
     };
     boot.initrd.systemd.enable = lib.mkForce true;
     fileSystems."/nix".neededForBoot = true;
-    fileSystems."/persistent".neededForBoot = true;
   };
 
   flake.nixosModules.ariadneHardware = { config, lib, pkgs, modulesPath, ... }: {
