@@ -13,6 +13,7 @@
           "/var/lib/systemd/rfkill"
           "/var/lib/systemd/timers"
           "/var/lib/waydroid"
+          "/var/lib/decky-loader"
           {
             directory = "/var/lib/iwd/";
             mode = "700";
