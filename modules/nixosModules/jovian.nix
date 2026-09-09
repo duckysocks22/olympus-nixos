@@ -11,7 +11,6 @@
       };
       decky-loader = {
         enable = true;
-        user = "deck";
       };
       devices.steamdeck = {
         enable = true;
