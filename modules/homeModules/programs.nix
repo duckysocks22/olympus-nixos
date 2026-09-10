@@ -124,6 +124,12 @@
         settings = {
           openasar = {
             setup = true;
+            # nixcord's patched moduleUpdater emits 'checked' synchronously before the
+            # splash window exists, so OpenAsar's launchMain() hits its win!=null guard
+            # and APP_SHOULD_LAUNCH never fires -> client hangs on "Starting".
+            # quickstart sidesteps the splash handoff by launching the main window
+            # 300ms after splash creation.
+            quickstart = true;
           };
         };
       };
