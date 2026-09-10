@@ -98,19 +98,23 @@
     services.mullvad-vpn.enable = true;
 
     systemd.services.mullvad-dns-config = {
-      description = "Pin Mullvad VPN DNS to local dnscrypt-proxy";
-      after = [ "mullvad-daemon.service" ];
+      description = "Pin Mullvad VPN DNS to local dnscrypt-proxy once dnscrypt answers queries";
+      after = [ "mullvad-daemon.service" "dnscrypt-proxy.service" ];
       wants = [ "mullvad-daemon.service" ];
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {
         Type = "oneshot";
         RemainAfterExit = true;
-        TimeoutStartSec = 60;
+        TimeoutStartSec = 330;
       };
       script = ''
-        until ${config.services.mullvad-vpn.package}/bin/mullvad dns set custom 127.0.0.1; do
-          sleep 1
+        until [ -n "$(${pkgs.dnsutils}/bin/dig @127.0.0.1 example.com +time=2 +tries=1 +short)" ]; do
+          sleep 2
         done
+        until ${config.services.mullvad-vpn.package}/bin/mullvad dns set custom 127.0.0.1; do
+          sleep 2
+        done
+        echo "Mullvad DNS pinned to local dnscrypt-proxy"
       '';
     };
   };
@@ -193,7 +197,6 @@
     { lib, ... }:
     let
       hasIPv6Internet = true;
-      StateDirectory = "dnscrypt-proxy";
     in
     {
       services.dnscrypt-proxy = {
@@ -237,12 +240,5 @@
         dhcpcd.extraConfig = "nohook resolv.conf";
       };
 
-      systemd.services.dnscypt-proxy = {
-        serviceConfig = {
-          StateDirectory = StateDirectory;
-          DynamicUser = lib.mkForce false;
-          User = "root";
-        };
-      };
     };
 }
