@@ -33,6 +33,10 @@
         alsa = { enable = true; support32Bit = true; };
       };
       libinput.enable = true;
+      openssh = {
+        enable = true;
+        openFirewall = true;
+      };
     };
     security.rtkit.enable = true;
     systemd.sleep.settings.Sleep = {
@@ -40,6 +44,7 @@
     };
     nixpkgs.config.allowUnfree = true;
     system.stateVersion = "26.05";
+
   };
 
   flake.nixosModules.ariadneDisko = { inputs, lib, ... }: {
