@@ -349,7 +349,15 @@
     services.xserver.videoDrivers = [ "nvidia" ];
     hardware.nvidia = {
       open = true;
-      package = config.boot.kernelPackages.nvidiaPackages.bleeding_edge;
+      package =
+        let
+          base = config.boot.kernelPackages.nvidiaPackages.bleeding_edge;
+        in
+        base // {
+          open = base.open.overrideAttrs (old: {
+            patches = (old.patches or [ ]) ++ [ ../../patches/nvidia-open-kernel-7.2.patch ];
+          });
+        };
       modesetting.enable = true;
     };
   };
