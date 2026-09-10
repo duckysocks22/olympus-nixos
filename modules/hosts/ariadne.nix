@@ -23,6 +23,7 @@
       self.packages.${pkgs.system}.greenlight
     ];
     networking.hostName = "ariadne-nixos";
+    networking.networkmanager.enable = true;
     time.timeZone = "America/New_York";
     services = {
       xserver.xkb = { layout = "us"; variant = ""; };
