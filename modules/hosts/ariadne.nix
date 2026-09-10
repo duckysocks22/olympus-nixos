@@ -46,7 +46,7 @@
     disko.devices = {
       disk = {
         main = {
-          device = "/dev/disk/by-id/nvme-CT500P1SSD8_2012E296277B";
+          device = "/dev/disk/by-id/nvme-Micron_2500_MTFDKBK2T0QGN_253953313CCE";
           type = "disk";
           content = {
             type = "gpt";
