@@ -18,6 +18,7 @@
       decky-loader = {
         enable = true;
         user = "deck";
+        package = pkgs.decky-loader-prerelease;
       };
     };
 
