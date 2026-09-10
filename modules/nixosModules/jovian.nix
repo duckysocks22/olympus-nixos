@@ -8,14 +8,16 @@
         autoStart = true;
         desktopSession = "plasmax11";
         user = "deck";
-      };
-      decky-loader = {
-        enable = true;
-        user = "deck";
+        environment.STEAM_EXTRA_COMPAT_TOOLS_PATHS =
+          lib.makeSearchPathOutput "steamcompattool" "" config.programs.steam.extraCompatPackages;
       };
       devices.steamdeck = {
         enable = true;
         autoUpdate = true;
+      };
+      decky-loader = {
+        enable = true;
+        user = "deck";
       };
     };
 
