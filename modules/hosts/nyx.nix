@@ -12,7 +12,6 @@
       self.nixosModules.nyxHardware
       self.nixosModules.serverNetwork
       self.nixosModules.functions
-      self.nixosModules.systemHarden
       self.nixosModules.system
       self.nixosModules.nvidia
       self.nixosModules.server
@@ -47,6 +46,12 @@
 
       networking.hostName = "nyx-nixos";
       networking.useDHCP = lib.mkForce false;
+
+      # Host runs AdGuardHome on :53; resolved's stub listeners (127.0.0.53/127.0.0.54)
+      # block its wildcard bind. Point host DNS at AdGuard instead.
+      services.resolved.enable = false;
+      networking.resolvconf.useLocalResolver = true;
+      networking.networkmanager.insertNameservers = [ "127.0.0.1" ];
 
       time.timeZone = "America/New_York";
       i18n = {

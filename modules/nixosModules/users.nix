@@ -75,7 +75,7 @@
     };
   };
 
-  flake.nixosModules.server = { inputs, pkgs, ... }: {
+  flake.nixosModules.server = { inputs, pkgs, config, ... }: {
     imports = [
       inputs.home-manager.nixosModules.home-manager
     ];
@@ -100,6 +100,16 @@
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDv/PuSaDn5Dg+1Bghk9OfR52iIFf5TvCucODDZKrCcx server@nixos"
       ];
     };
+
+    users.users.share = {
+      description = "Write-access to samba media shares";
+      group = "share";
+      extraGroups = [ "users" ];
+      hashedPasswordFile = config.sops.secrets."users/server".path;
+      isSystemUser = true;
+    };
+
+    users.groups.share = { };
 
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
