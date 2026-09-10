@@ -1,7 +1,7 @@
 { inputs, self, ... }: {
   flake.nixosModules.foxtrot = { inputs, pkgs, ... }: {
-    imports = [ 
-      inputs.home-manager.nixosModules.home-manager 
+    imports = [
+      inputs.home-manager.nixosModules.home-manager
     ];
 
     users.users.foxtrot = {
@@ -27,7 +27,7 @@
     home-manager.extraSpecialArgs = {
       inherit inputs;
       pkgs-unstable = import inputs.nixpkgs-unstable {
-        system = "x86_64-linux";
+        localSystem = "x86_64-linux";
         config.allowUnfree = true;
       };
     };
@@ -106,7 +106,7 @@
     home-manager.extraSpecialArgs = {
       inherit inputs;
       pkgs-unstable = import inputs.nixpkgs-unstable {
-        system = "x86_64-linux";
+        localSystem = "x86_64-linux";
         config.allowUnfree = true;
       };
     };
@@ -154,8 +154,8 @@
   };
 
   flake.nixosModules.deck = { inputs, pkgs, ... }: {
-    imports = [ 
-      inputs.home-manager-unstable.nixosModules.home-manager 
+    imports = [
+      inputs.home-manager-unstable.nixosModules.home-manager
     ];
 
     users.users.deck = {
@@ -179,7 +179,7 @@
         nixvim = inputs.nixvim-unstable;
       };
       pkgs-unstable = import inputs.nixpkgs-unstable {
-        system = "x86_64-linux";
+        localSystem = "x86_64-linux";
         config.allowUnfree = true;
       };
     };

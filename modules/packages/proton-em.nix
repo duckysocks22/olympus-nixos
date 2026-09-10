@@ -1,4 +1,4 @@
-{ inputs, ...}: {
+{ inputs, ... }: {
 
   perSystem = { pkgs, lib, ... }: {
     packages.proton-em = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {

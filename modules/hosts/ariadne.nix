@@ -1,7 +1,9 @@
 { inputs, self, ... }: {
   flake.nixosConfigurations.ariadne-nixos = inputs.nixpkgs-unstable.lib.nixosSystem {
     specialArgs = {
-      inputs = inputs // { nixpkgs = inputs.nixpkgs-unstable; };
+      inputs = inputs // {
+        nixpkgs = inputs.nixpkgs-unstable;
+      };
     };
     modules = [
       self.nixosModules.ariadne
@@ -18,34 +20,53 @@
     ];
   };
 
-  flake.nixosModules.ariadne = { config, pkgs, inputs, ... }: {
-    environment.systemPackages = (with pkgs; [ git wget vim]) ++ [
-      self.packages.${pkgs.system}.greenlight
-    ];
-    networking.hostName = "ariadne-nixos";
-    networking.networkmanager.enable = true;
-    time.timeZone = "America/New_York";
-    services = {
-      xserver.xkb = { layout = "us"; variant = ""; };
-      pulseaudio.enable = false;
-      pipewire = { 
-        enable = true;
-        alsa = { enable = true; support32Bit = true; };
+  flake.nixosModules.ariadne =
+    {
+      config,
+      pkgs,
+      inputs,
+      ...
+    }:
+    {
+      environment.systemPackages =
+        (with pkgs; [
+          git
+          wget
+          vim
+        ])
+        ++ [
+          self.packages.${pkgs.stdenv.hostPlatform.system}.greenlight
+        ];
+      networking.hostName = "ariadne-nixos";
+      networking.networkmanager.enable = true;
+      time.timeZone = "America/New_York";
+      services = {
+        xserver.xkb = {
+          layout = "us";
+          variant = "";
+        };
+        pulseaudio.enable = false;
+        pipewire = {
+          enable = true;
+          alsa = {
+            enable = true;
+            support32Bit = true;
+          };
+        };
+        libinput.enable = true;
+        openssh = {
+          enable = true;
+          openFirewall = true;
+        };
       };
-      libinput.enable = true;
-      openssh = {
-        enable = true;
-        openFirewall = true;
+      security.rtkit.enable = true;
+      systemd.sleep.settings.Sleep = {
+        HibernateDelaySec = "2h";
       };
-    };
-    security.rtkit.enable = true;
-    systemd.sleep.settings.Sleep = {
-      HibernateDelaySec = "2h";
-    };
-    nixpkgs.config.allowUnfree = true;
-    system.stateVersion = "26.05";
+      nixpkgs.config.allowUnfree = true;
+      system.stateVersion = "26.05";
 
-  };
+    };
 
   flake.nixosModules.ariadneDisko = { inputs, lib, ... }: {
     imports = [ inputs.disko.nixosModules.disko ];
@@ -116,20 +137,28 @@
     fileSystems."/nix".neededForBoot = true;
   };
 
-  flake.nixosModules.ariadneHardware = { config, lib, pkgs, modulesPath, ... }: {
-    imports = [(modulesPath + "/installer/scan/not-detected.nix")];
-    boot.initrd.availableKernelModules = [
-      "nvme"
-      "xhci_pci"
-      "usbhid"
-      "usb_storage"
-      "sd_mod"
-    ];
-    boot.initrd.kernelModules = [ ];
-    boot.kernelModules = [ "kvm-amd" ];
-    boot.extraModulePackages = [ ];
+  flake.nixosModules.ariadneHardware =
+    {
+      config,
+      lib,
+      pkgs,
+      modulesPath,
+      ...
+    }:
+    {
+      imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
+      boot.initrd.availableKernelModules = [
+        "nvme"
+        "xhci_pci"
+        "usbhid"
+        "usb_storage"
+        "sd_mod"
+      ];
+      boot.initrd.kernelModules = [ ];
+      boot.kernelModules = [ "kvm-amd" ];
+      boot.extraModulePackages = [ ];
 
-    nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-    hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-  };
+      nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+      hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+    };
 }

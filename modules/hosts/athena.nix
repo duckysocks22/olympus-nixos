@@ -2,7 +2,10 @@
   flake.nixosConfigurations.athena-nixos = inputs.nixpkgs.lib.nixosSystem {
     specialArgs = {
       inherit inputs;
-      pkgs-unstable = import inputs.nixpkgs-unstable { system = "x86_64-linux"; config.allowUnfree = true; };
+      pkgs-unstable = import inputs.nixpkgs-unstable {
+        localSystem = "x86_64-linux";
+        config.allowUnfree = true;
+      };
     };
     modules = [
       self.nixosModules.athena
@@ -23,29 +26,51 @@
     ];
   };
 
-  flake.nixosModules.athena = { config, pkgs, inputs, ... }: {
-    environment.systemPackages = (with pkgs; [ git wget vim]) ++ [
-      self.packages.${pkgs.system}.greenlight
-    ];
-    networking.hostName = "athena-nixos";
-    time.timeZone = "America/New_York";
-    services = {
-      xserver.xkb = { layout = "us"; variant = ""; };
-      pulseaudio.enable = false;
-      pipewire = { 
-        enable = true;
-        alsa = { enable = true; support32Bit = true; };
+  flake.nixosModules.athena =
+    {
+      config,
+      pkgs,
+      inputs,
+      ...
+    }:
+    {
+      environment.systemPackages =
+        (with pkgs; [
+          git
+          wget
+          vim
+        ])
+        ++ [
+          self.packages.${pkgs.stdenv.hostPlatform.system}.greenlight
+        ];
+      networking.hostName = "athena-nixos";
+      time.timeZone = "America/New_York";
+      services = {
+        xserver.xkb = {
+          layout = "us";
+          variant = "";
+        };
+        pulseaudio.enable = false;
+        pipewire = {
+          enable = true;
+          alsa = {
+            enable = true;
+            support32Bit = true;
+          };
+        };
+        libinput.enable = true;
+        logind.settings.Login = {
+          HandleLidSwitch = "suspend-then-hibernate";
+          HandleLidSwitchExternalPower = "suspend-then-hibernate";
+        };
       };
-      libinput.enable = true;
-      logind.settings.Login = { HandleLidSwitch = "suspend-then-hibernate"; HandleLidSwitchExternalPower = "suspend-then-hibernate"; };
+      security.rtkit.enable = true;
+      systemd.sleep.settings.Sleep = {
+        HibernateDelaySec = "2h";
+      };
+      nixpkgs.config.allowUnfree = true;
+      system.stateVersion = "26.05";
     };
-    security.rtkit.enable = true;
-    systemd.sleep.settings.Sleep = {
-      HibernateDelaySec = "2h";
-    };
-    nixpkgs.config.allowUnfree = true;
-    system.stateVersion = "26.05";
-  };
 
   flake.nixosModules.athenaDisko = { inputs, lib, ... }: {
     imports = [ inputs.disko.nixosModules.disko ];
@@ -146,19 +171,27 @@
     fileSystems."/persistent".neededForBoot = true;
   };
 
-  flake.nixosModules.athenaHardware = { config, lib, pkgs, modulesPath, ... }: {
-    imports = [(modulesPath + "/installer/scan/not-detected.nix")];
-    boot.initrd.availableKernelModules = [
-      "nvme"
-      "xhci_pci"
-      "ahci"
-      "usbhid"
-    ];
-    boot.initrd.kernelModules = [ ];
-    boot.kernelModules = [ "kvm-amd" ];
-    boot.extraModulePackages = [ ];
+  flake.nixosModules.athenaHardware =
+    {
+      config,
+      lib,
+      pkgs,
+      modulesPath,
+      ...
+    }:
+    {
+      imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
+      boot.initrd.availableKernelModules = [
+        "nvme"
+        "xhci_pci"
+        "ahci"
+        "usbhid"
+      ];
+      boot.initrd.kernelModules = [ ];
+      boot.kernelModules = [ "kvm-amd" ];
+      boot.extraModulePackages = [ ];
 
-    nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-    hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-  };
+      nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+      hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+    };
 }

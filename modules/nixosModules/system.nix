@@ -1,6 +1,10 @@
 { inputs, self, ... }: {
   flake.nixosModules.system = { pkgs, config, ... }: {
-    imports = [ self.nixosModules.nixSettings self.nixosModules.portals self.nixosModules.finalMouseUdev ];
+    imports = [
+      self.nixosModules.nixSettings
+      self.nixosModules.portals
+      self.nixosModules.finalMouseUdev
+    ];
 
     hardware.bluetooth = {
       enable = true;
@@ -63,7 +67,7 @@
       polkit.enable = true;
       pam.services.niri.enableGnomeKeyring = true;
       sudo = {
-        extraConfig = ''Defaults lecture = never'';
+        extraConfig = "Defaults lecture = never";
         extraRules = [
           {
             users = [ "foxtrot" ];
@@ -127,70 +131,81 @@
     };
   };
 
-  flake.nixosModules.common = { pkgs, pkgs-unstable, inputs, ... }: {
-    programs.steam = {
-      enable = true;
-      package = pkgs.steam.override {
-        extraBwrapArgs = [
-          "--bind"
-          "/dev/null"
-          "/etc/ld-nix.so.preload"
-        ];
-      };
-      extraCompatPackages = (with pkgs; [
-        proton-ge-bin
-      ]) ++ [
-        inputs.self.packages.${pkgs.system}.dwproton
-        inputs.self.packages.${pkgs.system}.proton-em
-      ];
-    };
-
-    programs = {
-      gamescope.enable = true;
-      gnupg.agent = { enable = true; };
-      localsend = {
+  flake.nixosModules.common =
+    {
+      pkgs,
+      pkgs-unstable,
+      inputs,
+      ...
+    }:
+    {
+      programs.steam = {
         enable = true;
-        openFirewall = true;
-      };
-      appimage = {
-        enable = true;
-        binfmt = true;
-        package = pkgs.appimage-run.override {
-          extraPkgs = pkgs: [
-            pkgs.icu
-            pkgs.libxcrypt-legacy
-            pkgs.python312
+        package = pkgs.steam.override {
+          extraBwrapArgs = [
+            "--bind"
+            "/dev/null"
+            "/etc/ld-nix.so.preload"
           ];
         };
+        extraCompatPackages =
+          (with pkgs; [
+            proton-ge-bin
+          ])
+          ++ [
+            inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.dwproton
+            inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.proton-em
+          ];
       };
-      gamemode = {
-        enable = true;
-        settings = {
-          general = {
-            reaper_freq = 5;
-            desiredgove = "powersave";
-            desiredprof = "performance";
-            igpu_desiredgov = -1;
-            igpu_power_threshold = 0.3;
-            softrealtime = "off";
-            renice = 0;
-            ioprio = 0;
-            inhibit_screensaver = 1;
-            disable_splitlock =1;
+
+      programs = {
+        gamescope.enable = true;
+        gnupg.agent = {
+          enable = true;
+        };
+        localsend = {
+          enable = true;
+          openFirewall = true;
+        };
+        appimage = {
+          enable = true;
+          binfmt = true;
+          package = pkgs.appimage-run.override {
+            extraPkgs = pkgs: [
+              pkgs.icu
+              pkgs.libxcrypt-legacy
+              pkgs.python312
+            ];
           };
-          gpu = {
-            apply_gpu_optimisations = 0;
-            amd_performance_leve = "high";
-          };
-          cpu = {
-            #park_cores = no;
-            #pin_cores = yes;
+        };
+        gamemode = {
+          enable = true;
+          settings = {
+            general = {
+              reaper_freq = 5;
+              desiredgove = "powersave";
+              desiredprof = "performance";
+              igpu_desiredgov = -1;
+              igpu_power_threshold = 0.3;
+              softrealtime = "off";
+              renice = 0;
+              ioprio = 0;
+              inhibit_screensaver = 1;
+              disable_splitlock = 1;
+            };
+            gpu = {
+              apply_gpu_optimisations = 0;
+              amd_performance_leve = "high";
+            };
+            cpu = {
+              #park_cores = no;
+              #pin_cores = yes;
+            };
           };
         };
       };
-    };
 
-    environment.systemPackages =
+      environment.systemPackages =
         (with pkgs; [
           unzip
           bubblewrap
@@ -226,14 +241,21 @@
               --bind /dev/null /etc/ld-nix.so.preload \
               -- "$@"
           '')
-          ]
-        ) ++ (with inputs.reshade.packages.${pkgs.system}; [
-            reshade
-            reshade-shaders-full
+        ])
+        ++ (with inputs.reshade.packages.${pkgs.stdenv.hostPlatform.system}; [
+          reshade
+          reshade-shaders-full
         ]);
 
-    fonts.packages = with pkgs; [ noto-fonts noto-fonts-cjk-sans noto-fonts-color-emoji ] ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
-  };
+      fonts.packages =
+        with pkgs;
+        [
+          noto-fonts
+          noto-fonts-cjk-sans
+          noto-fonts-color-emoji
+        ]
+        ++ builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
+    };
 
   flake.nixosModules.portals = { pkgs, config, ... }: {
     xdg.portal = {
@@ -255,52 +277,63 @@
     };
   };
 
-  flake.nixosModules.nixSettings = { inputs, pkgs, lib, config, ... }: {
-    nix = {
-      package = pkgs.lixPackageSets.stable.lix;
-      settings = {
-        experimental-features = [
-          "nix-command"
-          "flakes"
-          "pipe-operator"
-        ];
-        system-features = [
-          "benchmark"
-          "big-parallel"
-          "kvm"
-          "nixos-test"
-        ];
+  flake.nixosModules.nixSettings =
+    {
+      inputs,
+      pkgs,
+      lib,
+      config,
+      ...
+    }:
+    {
+      nix = {
+        package = pkgs.lixPackageSets.stable.lix;
+        settings = {
+          experimental-features = [
+            "nix-command"
+            "flakes"
+            "pipe-operator"
+          ];
+          system-features = [
+            "benchmark"
+            "big-parallel"
+            "kvm"
+            "nixos-test"
+          ];
 
-        auto-optimise-store = true;
-        keep-derivations = true;
-        keep-outputs = true;
+          auto-optimise-store = true;
+          keep-derivations = true;
+          keep-outputs = true;
 
-        substituters = [
-          "https://cache.puppygirls.net/main"
-        ];
-        trusted-public-keys = [
-          "main:8CPTNnHIH/5Bte4K50QWVlPi2nZR2Q6H1BY75cgst80="
-        ];
+          substituters = [
+            "https://cache.puppygirls.net/main"
+          ];
+          trusted-public-keys = [
+            "main:8CPTNnHIH/5Bte4K50QWVlPi2nZR2Q6H1BY75cgst80="
+          ];
+        };
+        nixPath = lib.mapAttrsToList (n: v: "${n}=flake:${n}") inputs;
+        registry = lib.mapAttrs (n: v: { flake = v; }) inputs;
       };
-      nixPath = lib.mapAttrsToList (n: v: "${n}=flake:${n}") inputs;
-      registry = lib.mapAttrs (n: v: { flake = v; }) inputs;
-    };
 
-    nixpkgs.overlays = [ (final: prev: {
-      inherit (prev.lixPackageSets.stable)
-        nixpkgs-review
-        nix-eval-jobs
-        nix-fast-build
-        colmena;
-    }) ];
+      nixpkgs.overlays = [
+        (final: prev: {
+          inherit (prev.lixPackageSets.stable)
+            nixpkgs-review
+            nix-eval-jobs
+            nix-fast-build
+            colmena
+            ;
+        })
+      ];
 
-    programs.nh = {
-      enable = true;
-      clean.enable = true;
-      clean.extraArgs = "--keep-since 7d --keep 3";
-      flake = "/home/$(whoami)/olympus-nixos";
+      programs.nh = {
+        enable = true;
+        clean.enable = true;
+        clean.extraArgs = "--keep-since 7d --keep 3";
+        flake = "/home/$(whoami)/olympus-nixos";
+      };
     };
-  };
 
   flake.nixosModules.nvidia = { config, pkgs, ... }: {
     hardware.graphics = {

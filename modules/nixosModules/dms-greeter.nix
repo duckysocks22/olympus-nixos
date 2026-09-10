@@ -1,65 +1,73 @@
 { inputs, ... }: {
-  flake.nixosModules.dms-greeter = { pkgs, config, inputs, lib, ... }: {
-    imports = [ inputs.dank-greeter.nixosModules.default ];
-    programs.dms-greeter = {
-      enable = true;
-      compositor = {
-        name = "niri";
-        customConfig = ''
-          cursor {
-            xcursor-theme "Bibata-Modern-Ice"
-            xcursor-size 18
+  flake.nixosModules.dms-greeter =
+    {
+      pkgs,
+      config,
+      inputs,
+      lib,
+      ...
+    }:
+    {
+      imports = [ inputs.dank-greeter.nixosModules.default ];
+      programs.dms-greeter = {
+        enable = true;
+        compositor = {
+          name = "niri";
+          customConfig = ''
+            cursor {
+              xcursor-theme "Bibata-Modern-Ice"
+              xcursor-size 18
 
-            hide-when-typing
-            hide-after-inactive-ms 1000
-          }
-
-          hotkey-overlay {
-            skip-at-startup
-          }
-
-          gestures {
-            hot-corners {
-              off
+              hide-when-typing
+              hide-after-inactive-ms 1000
             }
-          }
 
-          layout {
-            background-color "#000000"
-          }
+            hotkey-overlay {
+              skip-at-startup
+            }
 
-          environment {
-            DMS_RUN_GREETER "1"
-          }
-        '';
+            gestures {
+              hot-corners {
+                off
+              }
+            }
+
+            layout {
+              background-color "#000000"
+            }
+
+            environment {
+              DMS_RUN_GREETER "1"
+            }
+          '';
+        };
+
+        configHome = "${config.users.users.foxtrot.home}";
+
+        configFiles = [
+          "${config.users.users.foxtrot.home}/.config/DankMaterialShell/settings.json"
+        ];
+
+        logs = {
+          save = true;
+          path = "/tmp/dms-greeter.log";
+        };
+
+        quickshell.package = pkgs.quickshell;
       };
 
-      configHome = "${config.users.users.foxtrot.home}";
+      environment.systemPackages = [ pkgs.bibata-cursors ];
 
-      configFiles = [
-        "${config.users.users.foxtrot.home}/.config/DankMaterialShell/settings.json"
-      ];
+      services.accounts-daemon.enable = true;
 
-      logs = {
-        save = true;
-        path = "/tmp/dms-greeter.log";
-      };
-
-      quickshell.package = pkgs.quickshell;
+      system.activationScripts.dmsProfilePicture = lib.stringAfter [ "users" ] ''
+        mkdir -p /var/lib/AccountsService/icons /var/lib/AccountsService/users
+        ln -sfn ${../../assets/pfp/argyle_shaded.png} /var/lib/AccountsService/icons/foxtrot
+        cat > /var/lib/AccountsService/users/foxtrot <<'EOF'
+        [User]
+        SystemAccount=false
+        Icon=/var/lib/AccountsService/icons/foxtrot
+        EOF
+      '';
     };
-
-    environment.systemPackages = [ pkgs.bibata-cursors ];
-
-    services.accounts-daemon.enable = true;
-
-    system.activationScripts.dmsProfilePicture = lib.stringAfter [ "users" ] ''
-      mkdir -p /var/lib/AccountsService/icons /var/lib/AccountsService/users
-      ln -sfn ${../../assets/pfp/argyle_shaded.png} /var/lib/AccountsService/icons/foxtrot
-      cat > /var/lib/AccountsService/users/foxtrot <<'EOF'
-      [User]
-      SystemAccount=false
-      Icon=/var/lib/AccountsService/icons/foxtrot
-      EOF
-    '';
-  };
 }

@@ -3,7 +3,7 @@
     specialArgs = {
       inherit inputs;
       pkgs-unstable = import inputs.nixpkgs-unstable {
-        system = "x86_64-linux";
+        localSystem = "x86_64-linux";
         config.allowUnfree = true;
       };
     };
@@ -26,34 +26,53 @@
     ];
   };
 
-  flake.nixosModules.circe = { config, pkgs, inputs, ... }: {
+  flake.nixosModules.circe =
+    {
+      config,
+      pkgs,
+      inputs,
+      ...
+    }:
+    {
 
-    environment.systemPackages = (with pkgs; [ git wget vim ]) ++ [
-      self.packages.${pkgs.system}.greenlight
-    ];
-    networking.hostName = "circe-nixos";
-    time.timeZone = "America/New_York";
-    services = {
-      xserver.xkb = {
-        layout = "us";
-        variant = "";
+      environment.systemPackages =
+        (with pkgs; [
+          git
+          wget
+          vim
+        ])
+        ++ [
+          self.packages.${pkgs.stdenv.hostPlatform.system}.greenlight
+        ];
+      networking.hostName = "circe-nixos";
+      time.timeZone = "America/New_York";
+      services = {
+        xserver.xkb = {
+          layout = "us";
+          variant = "";
+        };
+        pulseaudio.enable = false;
+        pipewire = {
+          enable = true;
+          alsa = {
+            enable = true;
+            support32Bit = true;
+          };
+          pulse.enable = true;
+        };
+        libinput.enable = true;
+        logind.settings.Login = {
+          HandleLidSwitch = "suspend-then-hibernate";
+          HandleLidSwitchExternalPower = "suspend-then-hibernate";
+        };
       };
-      pulseaudio.enable = false;
-      pipewire = {
-        enable = true;
-        alsa = { enable = true; support32Bit = true; };
-        pulse.enable = true;
+      security.rtkit.enable = true;
+      systemd.sleep.settings.Sleep = {
+        HibernateDelaySec = "2h";
       };
-      libinput.enable = true;
-      logind.settings.Login = { HandleLidSwitch = "suspend-then-hibernate"; HandleLidSwitchExternalPower = "suspend-then-hibernate"; };
+      nixpkgs.config.allowUnfree = true;
+      system.stateVersion = "26.05";
     };
-    security.rtkit.enable = true;
-    systemd.sleep.settings.Sleep = {
-      HibernateDelaySec = "2h";
-    };
-    nixpkgs.config.allowUnfree = true;
-    system.stateVersion = "26.05";
-  };
 
   flake.nixosModules.circeDisko = { inputs, lib, ... }: {
     imports = [ inputs.disko.nixosModules.disko ];
@@ -142,25 +161,33 @@
     fileSystems."/persistent".neededForBoot = true;
   };
 
-  flake.nixosModules.circeHardware = { config, lib, pkgs, modulesPath, ... }: {
-    imports = [
-      (modulesPath + "/installer/scan/not-detected.nix")
-    ];
+  flake.nixosModules.circeHardware =
+    {
+      config,
+      lib,
+      pkgs,
+      modulesPath,
+      ...
+    }:
+    {
+      imports = [
+        (modulesPath + "/installer/scan/not-detected.nix")
+      ];
 
-    boot = {
-      kernelModules = [ "kvm-amd" ];
-      extraModulePackages = [ ];
-      initrd = {
-        kernelModules = [ ];
-        availableKernelModules = [
-          "nvme"
-          "xhci_pci"
-          "thunderbolt"
-        ];
+      boot = {
+        kernelModules = [ "kvm-amd" ];
+        extraModulePackages = [ ];
+        initrd = {
+          kernelModules = [ ];
+          availableKernelModules = [
+            "nvme"
+            "xhci_pci"
+            "thunderbolt"
+          ];
+        };
       };
-    };
 
-    nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-    hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-  };
+      nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+      hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+    };
 }

@@ -1,4 +1,4 @@
-{ inputs, ...}: {
+{ inputs, ... }: {
 
   perSystem = { pkgs, lib, ... }: {
     packages.dwproton = pkgs.stdenvNoCC.mkDerivation (finalAttrs: {

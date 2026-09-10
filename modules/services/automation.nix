@@ -42,7 +42,10 @@
   };
 
   flake.nixosModules.homeAssistant = { config, ... }: {
-    imports = [ inputs.self.nixosModules.govee2mqtt inputs.self.nixosModules.mosquitto ];
+    imports = [
+      inputs.self.nixosModules.govee2mqtt
+      inputs.self.nixosModules.mosquitto
+    ];
 
     services.home-assistant = {
       enable = true;

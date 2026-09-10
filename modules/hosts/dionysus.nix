@@ -1,7 +1,9 @@
 { inputs, self, ... }: {
   flake.nixosConfigurations.dionysus-nixos = inputs.nixpkgs-unstable.lib.nixosSystem {
     specialArgs = {
-      inputs = inputs // { nixpkgs = inputs.nixpkgs-unstable; };
+      inputs = inputs // {
+        nixpkgs = inputs.nixpkgs-unstable;
+      };
     };
     modules = [
       self.nixosModules.dionysus
@@ -18,26 +20,39 @@
     ];
   };
 
-  flake.nixosModules.dionysus = { config, pkgs, inputs, ... }: {
-    networking.hostName = "dionysus-nixos";
-    time.timeZone = "America/New_York";
-    networking.networkmanager.enable = true;
-    services = {
-      xserver.xkb = { layout = "us"; variant = ""; };
-      pulseaudio.enable = false;
-      pipewire = { 
-        enable = true;
-        alsa = { enable = true; support32Bit = true; };
+  flake.nixosModules.dionysus =
+    {
+      config,
+      pkgs,
+      inputs,
+      ...
+    }:
+    {
+      networking.hostName = "dionysus-nixos";
+      time.timeZone = "America/New_York";
+      networking.networkmanager.enable = true;
+      services = {
+        xserver.xkb = {
+          layout = "us";
+          variant = "";
+        };
+        pulseaudio.enable = false;
+        pipewire = {
+          enable = true;
+          alsa = {
+            enable = true;
+            support32Bit = true;
+          };
+        };
+        libinput.enable = true;
       };
-      libinput.enable = true;
+      security.rtkit.enable = true;
+      systemd.sleep.settings.Sleep = {
+        HibernateDelaySec = "2h";
+      };
+      nixpkgs.config.allowUnfree = true;
+      system.stateVersion = "26.05";
     };
-    security.rtkit.enable = true;
-    systemd.sleep.settings.Sleep = {
-      HibernateDelaySec = "2h";
-    };
-    nixpkgs.config.allowUnfree = true;
-    system.stateVersion = "26.05";
-  };
 
   flake.nixosModules.dionysusDisko = { inputs, lib, ... }: {
     imports = [ inputs.disko.nixosModules.disko ];
@@ -134,20 +149,28 @@
     fileSystems."/nix".neededForBoot = true;
   };
 
-  flake.nixosModules.dionysusHardware = { config, lib, pkgs, modulesPath, ... }: {
-    imports = [(modulesPath + "/installer/scan/not-detected.nix")];
-    boot.initrd.availableKernelModules = [
-      "nvme"
-      "xhci_pci"
-      "usbhid"
-      "usb_storage"
-      "sd_mod"
-    ];
-    boot.initrd.kernelModules = [ ];
-    boot.kernelModules = [ "kvm-amd" ];
-    boot.extraModulePackages = [ ];
+  flake.nixosModules.dionysusHardware =
+    {
+      config,
+      lib,
+      pkgs,
+      modulesPath,
+      ...
+    }:
+    {
+      imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
+      boot.initrd.availableKernelModules = [
+        "nvme"
+        "xhci_pci"
+        "usbhid"
+        "usb_storage"
+        "sd_mod"
+      ];
+      boot.initrd.kernelModules = [ ];
+      boot.kernelModules = [ "kvm-amd" ];
+      boot.extraModulePackages = [ ];
 
-    nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-    hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
-  };
+      nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+      hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+    };
 }
