@@ -72,6 +72,19 @@
       };
       nixpkgs.config.allowUnfree = true;
       system.stateVersion = "26.05";
+
+      virtualisation.vmVariantWithDisko = {
+        virtualisation.qemu.options = [
+          "-vga none"
+          "-device virtio-gpu-gl-pci"
+          "-display gtk,gl=on"
+        ];
+        boot.initrd.availableKernelModules = [ "virtio_gpu" ];
+        boot.initrd.secrets."/tmp/luks-vm.key" = builtins.toFile "luks-vm.key" "disko";
+        boot.initrd.luks.devices."crypted".keyFile = "/tmp/luks-vm.key";
+        boot.initrd.luks.devices."crypted-swap".keyFile = "/tmp/luks-vm.key";
+        users.users.root.initialPassword = "root";
+      };
     };
 
   flake.nixosModules.circeDisko = { inputs, lib, ... }: {
@@ -91,6 +104,7 @@
         main = {
           device = "/dev/disk/by-id/nvme-SAMSUNG_MZVL81T0HFLB-00BH1_S7T8NF0Y375930";
           type = "disk";
+          imageSize = "40G";
           content = {
             type = "gpt";
             partitions = {

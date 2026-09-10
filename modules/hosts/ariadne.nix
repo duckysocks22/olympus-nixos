@@ -66,6 +66,18 @@
       nixpkgs.config.allowUnfree = true;
       system.stateVersion = "26.05";
 
+      virtualisation.vmVariantWithDisko = {
+        virtualisation.qemu.options = [
+          "-vga none"
+          "-device virtio-gpu-gl-pci"
+          "-display gtk,gl=on"
+        ];
+        boot.initrd.availableKernelModules = [ "virtio_gpu" ];
+        boot.initrd.secrets."/tmp/luks-vm.key" = builtins.toFile "luks-vm.key" "disko";
+        boot.initrd.luks.devices."crypted".keyFile = "/tmp/luks-vm.key";
+        users.users.root.initialPassword = "root";
+      };
+
     };
 
   flake.nixosModules.ariadneDisko = { inputs, lib, ... }: {
@@ -75,6 +87,7 @@
         main = {
           device = "/dev/disk/by-id/nvme-Micron_2500_MTFDKBK2T0QGN_253953313CCE";
           type = "disk";
+          imageSize = "40G";
           content = {
             type = "gpt";
             partitions = {

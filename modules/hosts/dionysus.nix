@@ -52,6 +52,18 @@
       };
       nixpkgs.config.allowUnfree = true;
       system.stateVersion = "26.05";
+
+      virtualisation.vmVariantWithDisko = {
+        virtualisation.qemu.options = [
+          "-vga none"
+          "-device virtio-gpu-gl-pci"
+          "-display gtk,gl=on"
+        ];
+        boot.initrd.availableKernelModules = [ "virtio_gpu" ];
+        boot.initrd.secrets."/tmp/luks-vm.key" = builtins.toFile "luks-vm.key" "disko";
+        boot.initrd.luks.devices."crypted".keyFile = "/tmp/luks-vm.key";
+        users.users.root.initialPassword = "root";
+      };
     };
 
   flake.nixosModules.dionysusDisko = { inputs, lib, ... }: {
@@ -61,6 +73,7 @@
         main = {
           device = "/dev/disk/by-id/nvme-Phison_ESMP512GMB47C3-E13TS_22373M51232552";
           type = "disk";
+          imageSize = "40G";
           content = {
             type = "gpt";
             partitions = {
@@ -128,6 +141,7 @@
         SD512 = {
           device = "/dev/disk/by-id/mmc-SD512_0x7e015778";
           type = "disk";
+          imageSize = "40G";
           content = {
             type = "gpt";
             partitions = {

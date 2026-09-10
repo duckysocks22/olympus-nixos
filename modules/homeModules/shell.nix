@@ -131,6 +131,16 @@
               cdrdao read-cd --read-raw --read-subchan rw_raw --datafile $1.bin --device /dev/sr0 --driver generic-mmc-raw $1.toc
             }
 
+            function vm() {
+              if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+                echo "Usage: vm [HOST_NAME]"
+                echo "Builds and then launches a Virtual Machine using the configuration of the specified host"
+              fi
+
+              cd ~/olympus-nixos
+              nix run .#nixosConfigurations.$1.config.system.build.vmWithDisko
+            };
+
             export FZF_DEFAULT_OPS="${config.home.sessionVariables.FZF_DEFAULT_OPTS}"
             zstyle ':fzf-tab:*' use-fzf-default-opts yes
           '';
