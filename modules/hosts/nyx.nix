@@ -31,6 +31,7 @@
       config,
       pkgs,
       inputs,
+      lib,
       ...
     }:
     {
@@ -45,6 +46,7 @@
       };
 
       networking.hostName = "nyx-nixos";
+      networking.useDHCP = lib.mkForce false;
 
       time.timeZone = "America/New_York";
       i18n = {
