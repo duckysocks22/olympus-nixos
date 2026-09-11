@@ -1,5 +1,5 @@
 { inputs, self, ... }: {
-  flake.nixosModules.system = { pkgs, config, ... }: {
+  flake.nixosModules.system = { pkgs, config, lib, ... }: {
     imports = [
       self.nixosModules.nixSettings
       self.nixosModules.portals
@@ -93,7 +93,7 @@
     };
 
     boot = {
-      kernelPackages = pkgs.linuxPackages_zen;
+      kernelPackages = lib.mkIf (!builtins.elem config.networking.hostName [ "dionysus-nixos" "ariadne-nixos" ]) pkgs.linuxPackages_zen;
       kernelModules = [
         "sg"
         "hid-tmff-new"
