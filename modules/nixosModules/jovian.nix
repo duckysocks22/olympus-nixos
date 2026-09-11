@@ -19,9 +19,12 @@
             lib.makeSearchPathOutput "steamcompattool" ""
               config.programs.steam.extraCompatPackages;
         };
-        devices.steamdeck = {
+        devices.steamdeck = lib.mkIf (config.networking.hostName == "dionysus-nixos") {
           enable = true;
           autoUpdate = true;
+        };
+        devices.steammachine = lib.mkIf (config.networking.hostName == "ariadne-nixos") {
+          enable = true;
         };
         decky-loader = {
           enable = true;
