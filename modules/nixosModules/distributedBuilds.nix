@@ -7,6 +7,7 @@
       extraGroups = [ "nixbld" ];
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMFCqhCYgJNuZ0+3oJFFmEjmUNSBPhLSzZfuHWjY2ivc root@ariadne-nixos"
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAVF7dMsquwXmzdfKtFuD5KJ7SLeftFhl5Ezh1Rf0Aej root@dionysus-nixos"
       ];
     };
     users.groups.remotebuild = { };
