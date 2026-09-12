@@ -22,6 +22,7 @@
       self.nixosModules.automation
       self.nixosModules.gameServers
       self.nixosModules.files
+      self.nixosModules.buildHost
     ];
   };
 

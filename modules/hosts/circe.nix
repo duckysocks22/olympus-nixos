@@ -23,6 +23,7 @@
       self.nixosModules.virtualisation
       self.nixosModules.localPrinting
       self.nixosModules.localSamba
+      self.nixosModules.buildClient
     ];
   };
 
