@@ -389,6 +389,10 @@
 
               nix flake update <input-name>   # correct
               nix flake update                # wrong — updates everything
+
+
+          After making changes within the olympus-nixos repo to another system that is not the current host system,
+          run a dry-build for those configurations to make sure they all evaluate properly.
         '';
       };
     };
