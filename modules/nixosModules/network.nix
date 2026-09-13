@@ -12,11 +12,13 @@
         "athena-nixos" = "172.17.25.1/16";
         "circe-nixos" = "172.17.25.2/16";
         "ariadne-nixos" = "172.17.25.3/16";
+        "dionysus-nixos" = "172.17.25.4/16";
       };
       autoconnect = {
         "athena-nixos" = "false";
         "circe-nixos" = "true";
         "ariadne-nixos" = "false";
+        "dionysus-nixos" = "true";
       };
     in
     {

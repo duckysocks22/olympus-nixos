@@ -4,6 +4,7 @@ keys:
   - &server_nyx age1upa07ee3tlz5saqlfl5qhzjjrxeq28yprpuw2qjs4v6xrc890gtq56xkr5
   - &laptop_circe age147r3y7lukp6set6f8kpsf50x28gusx8qtutl7jezvnwwk2hwqgrqa723lv
   - &console_ariadne age1ca5yn470vhs7rseluvpfv7z9l2dzsmc9wqwqzfupu4h5mh8zdsaq7d07ns
+  - &console_dionysus age1f7nennyqde2kqnq0l9dg05gqauavej36j22x66raul9xmypg7ffshukz2y
 creation_rules:
   - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
@@ -13,3 +14,4 @@ creation_rules:
       - *server_nyx
       - *laptop_circe
       - *console_ariadne
+      - *console_dionysus

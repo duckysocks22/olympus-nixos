@@ -13,9 +13,9 @@
       self.nixosModules.system
       self.nixosModules.common
       self.nixosModules.systemHarden
-      #self.nixosModules.defaultNetwork
+      self.nixosModules.defaultNetwork
       self.nixosModules.deck
-      #self.nixosModules.deckSops
+      self.nixosModules.deckSops
       self.nixosModules.jovian
     ];
   };
