@@ -20,6 +20,12 @@
         "ariadne-nixos" = "false";
         "dionysus-nixos" = "true";
       };
+      ethDevice = {
+        "athena-nixos" = "";
+        "circe-nixos" = "null";
+        "dionysus-nixos" = "null";
+        "ariadne-nixos" = "enp5s0";
+      };
     in
     {
       imports = [
@@ -62,10 +68,25 @@
               };
             };
           };
+          unmanaged = [ ethDevice.${config.networking.hostName} ];
         };
         firewall = {
           allowedTCPPorts = [ 4646 ];
           allowedUDPPorts = [ 4646 ];
+        };
+      };
+
+      systemd.network = {
+        enable = true;
+        networks."30-wired" = {
+          matchConfig.Name = ethDevice.${config.networking.hostName};
+          address = [ staticIp.${config.networking.hostName} ];
+          gateway = [ "172.17.0.254" ];
+          dns = [ "127.0.0.1" ];
+          networkConfig = {
+            DHCP = "no";
+          };
+          linkConfig.RequiredForOnline = "yes";
         };
       };
 
