@@ -1047,4 +1047,52 @@
 
       };
     };
+
+  flake.homeModules.pi-agent-comma =
+    { pkgs, config, lib, ... }:
+    let
+      cfg = config.programs.pi-coding-agent;
+
+      nixCommaFile = pkgs.fetchurl {
+        url = "https://raw.githubusercontent.com/reedrw/nix-config/main/home-modules/extra/pi/plugins/nix-comma.ts";
+        hash = "sha256-/OSMjoMgRslGlwe1a8meHyOkK0KmsSbu3MqoRGwku5k=";
+      };
+
+      bashSpawnHookFile = pkgs.writeText "pi-bash-spawn-hook-extension.ts" ''
+        import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+        import { createBashToolDefinition } from "@earendil-works/pi-coding-agent";
+
+        interface SpawnContext {
+        	command: string;
+        	cwd: string;
+        	env: Record<string, string | undefined>;
+        }
+
+        export default function (pi: ExtensionAPI) {
+        	pi.registerTool(
+        		createBashToolDefinition(process.cwd(), {
+        			spawnHook: ({ command, cwd, env }) => {
+        				const hook = (globalThis as Record<string, unknown>).__nixCommaSpawnHook as
+        					| ((ctx: SpawnContext) => { env: Record<string, string | undefined> } | undefined)
+        					| undefined;
+        				const patched = hook?.({ command, cwd, env });
+        				return { command, cwd, env: { ...env, ...(patched?.env ?? {}) } };
+        			},
+        		}),
+        	);
+        }
+      '';
+    in
+    {
+      options.programs.pi-coding-agent.comma = {
+        enable = lib.mkEnableOption "pi nix-comma extension (auto-provisions missing commands from nixpkgs onto the session PATH)";
+      };
+
+      config = lib.mkIf cfg.comma.enable {
+        home.file = {
+          "${cfg.configDir}/extensions/nix-comma/index.ts".source = nixCommaFile;
+          "${cfg.configDir}/extensions/bash-spawn-hook.ts".source = bashSpawnHookFile;
+        };
+      };
+    };
 }

@@ -225,7 +225,7 @@
       };
     in
     {
-      imports = [ (inputs.home-manager-unstable + "/modules/programs/pi-coding-agent.nix") inputs.self.homeModules.piDSH-Pet inputs.self.homeModules.pi-status-line];
+      imports = [ (inputs.home-manager-unstable + "/modules/programs/pi-coding-agent.nix") inputs.self.homeModules.piDSH-Pet inputs.self.homeModules.pi-status-line inputs.self.homeModules.pi-agent-comma];
       programs.pi-coding-agent = {
         enable = true;
         package = pkgs-unstable.pi-coding-agent;
@@ -261,6 +261,8 @@
             monthly = 60.0;
           };
         };
+
+        comma.enable = true;
 
         pet = {
           enable = true;
