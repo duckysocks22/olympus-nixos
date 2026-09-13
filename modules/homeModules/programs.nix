@@ -225,13 +225,13 @@
       };
     in
     {
-      imports = [ (inputs.home-manager-unstable + "/modules/programs/pi-coding-agent.nix") ];
+      imports = [ (inputs.home-manager-unstable + "/modules/programs/pi-coding-agent.nix") inputs.self.homeModules.piDSH-Pet];
       programs.pi-coding-agent = {
         enable = true;
         package = pkgs-unstable.pi-coding-agent;
         settings = {
           defaultProvider = "openrouter";
-          defaultModel = "~z-ai/glm-flash-latest";
+          defaultModel = "z-ai/glm-5.3-flash";
           defaultThinkingLevel = "max";
           packages = [
             "pi-web-access"
@@ -248,6 +248,46 @@
           hideThinkingBlock = true;
           terminal.images = "kitty";
           customUI = true;
+        };
+        pet = {
+          enable = true;
+          name = "Blue";
+          emoji = "🐕️";
+
+          whispers = {
+            enable = true;
+            interval = 120;
+            messages = [
+              "Don't forget to commit~!"
+              "You're doing a great job :D"
+              "Remember to stay hydrated!"
+            ];
+          };
+
+          workStatus = {
+            enable = true;
+            texts = {
+              thinking = [ "is thinking deeply..." "is organizing thoughts~" ];
+              working = [ "is working hard!" "is busy with tools~" ];
+              waiting = [ "is waiting for you~" "needs your input!" ];
+              success = [ "is celebrating!" "did a great job!" ];
+              error = [ "is worried..." "ran into a problem!" ];
+            };
+          };
+
+          sprite = {
+            size = 18;
+            fps = 12;
+            speed = 1.6;
+            position = {
+              horizontal = "right";
+              vertical = "above";
+              offsetX = 0;
+            };
+          };
+
+          idleTexts = [ "is waiting patiently..." "is breathing calmly..." "is dozing off..." ];
+          notifications.enable = false;
         };
         context = ''
           ${builtins.readFile claudeRules}
