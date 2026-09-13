@@ -1,6 +1,406 @@
 { inputs, self, ... }:
 
 {
+  flake.homeModules.pi-status-line =
+    {
+      pkgs,
+      config,
+      lib,
+      ...
+    }:
+    let
+      cfg = config.programs.pi-coding-agent;
+      boolStr = b: if b then "true" else "false";
+
+      statusLineFile = pkgs.writeText "pi-status-line-extension.ts" ''
+        import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+        import { truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
+        import { appendFileSync, readdirSync, readFileSync, statSync } from "node:fs";
+        import { join } from "node:path";
+
+        const SHOW_MODEL = ${boolStr cfg.statusLine.showModel};
+        const SHOW_CONTEXT = ${boolStr cfg.statusLine.showContext};
+        const SHOW_TOKENS = ${boolStr cfg.statusLine.showTokens};
+        const SHOW_COST = ${boolStr cfg.statusLine.showCost};
+        const SHOW_BRANCH = ${boolStr cfg.statusLine.showBranch};
+        const SESSION_DIR = "${cfg.configDir}/sessions";
+        const USAGE_FIVE_HOUR = ${toString cfg.statusLine.usage.fiveHour};
+        const USAGE_WEEKLY = ${toString cfg.statusLine.usage.weekly};
+        const USAGE_MONTHLY = ${toString cfg.statusLine.usage.monthly};
+        const USAGE_LIVE = ${boolStr cfg.statusLine.usage.live};
+        const USAGE_PROVIDER = ${builtins.toJSON cfg.statusLine.usage.provider};
+        const USAGE_ACCOUNT_BASE = ${builtins.toJSON cfg.statusLine.usage.accountBaseUrl};
+
+        interface LiveWindow {
+          percent: number;
+          resetTs: number;
+        }
+        let liveUsage: { rolling: LiveWindow; weekly: LiveWindow; monthly: LiveWindow; fetchedAt: number } | null =
+          null;
+
+        async function fetchUsage(ctx: any): Promise<void> {
+          try {
+            const registry = ctx.modelRegistry;
+            if (!registry || typeof registry.getProviderAuth !== "function") return;
+            const resolved = await registry.getProviderAuth(USAGE_PROVIDER);
+            const a = resolved?.auth;
+            const apiKey = a?.apiKey ?? "";
+            const base = String(a?.baseUrl ?? USAGE_ACCOUNT_BASE).replace(/\/$/, "");
+            if (!apiKey || !base) return;
+            const res = await fetch(base + "/usage", {
+              headers: { Authorization: "Bearer " + apiKey },
+              signal: AbortSignal.timeout(8000),
+            });
+            if (!res.ok) return;
+            const data: any = await res.json();
+            const u = data && data.usage;
+            if (!u) return;
+            const win = (w: any): LiveWindow => ({
+              percent: typeof w?.percent === "number" ? w.percent : 0,
+              resetTs: Date.parse(w?.resetsAt ?? "") || 0,
+            });
+            liveUsage = {
+              rolling: win(u.rolling),
+              weekly: win(u.weekly),
+              monthly: win(u.monthly),
+              fetchedAt: Date.now(),
+            };
+          } catch {
+            /* keep the last successful snapshot */
+          }
+        }
+
+        const usage = { d: 0, wk: 0, mo: 0 };
+
+        function scanUsage(): void {
+          const now = Date.now();
+          const fiveStart = now - 5 * 3600000;
+          const dayStart = fiveStart;
+          const weekStart = now - 7 * 86400000;
+          const monthDate = new Date(now);
+          const monthStart = now - 30 * 86400000;
+          const floor = Math.min(dayStart, weekStart, monthStart) - 3600000;
+          let files: string[] = [];
+          try {
+            files = readdirSync(SESSION_DIR, { recursive: true }).filter((f) => f.endsWith(".jsonl"));
+          } catch {
+            return;
+          }
+          let d = 0;
+          let wk = 0;
+          let mo = 0;
+          for (const rel of files) {
+            const p = join(SESSION_DIR, rel);
+            try {
+              if (statSync(p).mtimeMs < floor) continue;
+              const lines = readFileSync(p, "utf8").split("\n");
+              for (const line of lines) {
+                if (!line.trim()) continue;
+                let e: any;
+                try {
+                  e = JSON.parse(line);
+                } catch {
+                  continue;
+                }
+                if (e.type !== "message" || !e.message || e.message.role !== "assistant") continue;
+                const u = e.message.usage;
+                const raw = e.message.timestamp ?? e.timestamp ?? "";
+                const ts = typeof raw === "number" ? raw : Date.parse(String(raw));
+                if (!u || !Number.isFinite(ts)) continue;
+                const c = u.cost ? u.cost.total || 0 : 0;
+                if (ts >= dayStart) d += c;
+                if (ts >= weekStart) wk += c;
+                if (ts >= monthStart) mo += c;
+              }
+            } catch {
+              continue;
+            }
+          }
+          usage.d = d;
+          usage.wk = wk;
+          usage.mo = mo;
+        }
+
+        function nextMidnight(now: number): number {
+          const d = new Date(now);
+          d.setHours(24, 0, 0, 0);
+          return d.getTime();
+        }
+
+        function nextMonday(now: number): number {
+          const d = new Date(now);
+          const dow = (d.getDay() + 6) % 7;
+          const days = dow === 0 ? 7 : 7 - dow;
+          d.setDate(d.getDate() + days);
+          d.setHours(0, 0, 0, 0);
+          return d.getTime();
+        }
+
+        function nextMonthStart(now: number): number {
+          const d = new Date(now);
+          d.setDate(1);
+          d.setHours(0, 0, 0, 0);
+          d.setMonth(d.getMonth() + 1);
+          return d.getTime();
+        }
+
+        function meterLive(label: string, win: LiveWindow, now: number, theme: { fg: (color: string, text: string) => string }): string {
+          const pct = Math.min(100, Math.max(0, Math.round(win.percent)));
+          const color = pct < 50 ? "success" : pct < 75 ? "warning" : "error";
+          const filled = Math.min(10, Math.floor((pct + 5) / 10));
+          const bar = theme.fg(color, "█".repeat(filled)) + theme.fg("dim", "░".repeat(10 - filled));
+          const diff = win.resetTs > now ? win.resetTs - now : 0;
+          const days = Math.floor(diff / 86400000);
+          const hh = Math.floor((diff % 86400000) / 3600000);
+          const mm = Math.floor((diff % 3600000) / 60000);
+          let resetLabel = mm + "m";
+          if (days > 0) resetLabel = days + "d" + hh + "h";
+          else if (diff >= 3600000) resetLabel = hh + "h" + String(mm).padStart(2, "0") + "m";
+          return (
+            theme.fg("dim", label + " ") +
+            bar +
+            " " +
+            theme.fg(color, String(pct) + "%") +
+            theme.fg("dim", " ↺" + resetLabel)
+          );
+        }
+
+        function meterStr(label: string, cost: number, cap: number, resetTs: number, now: number, theme: { fg: (color: string, text: string) => string }): string {
+          const pct = Math.min(100, Math.round((cost / cap) * 100));
+          const color = pct < 50 ? "success" : pct < 75 ? "warning" : "error";
+          const filled = Math.min(10, Math.floor((pct + 5) / 10));
+          const bar = theme.fg(color, "█".repeat(filled)) + theme.fg("dim", "░".repeat(10 - filled));
+          const diff = Math.max(0, resetTs - now);
+          const hh = Math.floor(diff / 3600000);
+          const mm = Math.floor((diff % 3600000) / 60000);
+          const resetLabel = diff >= 3600000 ? hh + "h" + String(mm).padStart(2, "0") + "m" : mm + "m";
+          return (
+            theme.fg("dim", label + " ") +
+            bar +
+            " " +
+            theme.fg(color, String(pct) + "%") +
+            theme.fg("dim", " ↺" + resetLabel)
+          );
+        }
+
+        export default function (pi: ExtensionAPI) {
+          let footerTui: { requestRender(force?: boolean): void } | undefined;
+          let usageTimer: ReturnType<typeof setInterval> | null = null;
+          let lastCtx: any = null;
+
+          pi.on("model_select", async () => {
+            footerTui?.requestRender();
+          });
+
+          pi.on("thinking_level_select", async () => {
+            footerTui?.requestRender();
+          });
+
+          pi.on("turn_end", async () => {
+            if (USAGE_LIVE) {
+              void fetchUsage(lastCtx).then(() => footerTui?.requestRender());
+            } else {
+              scanUsage();
+            }
+            footerTui?.requestRender();
+          });
+
+          pi.on("session_shutdown", async () => {
+            if (usageTimer) {
+              clearInterval(usageTimer);
+              usageTimer = null;
+            }
+            footerTui = undefined;
+            lastCtx = null;
+          });
+
+          pi.on("session_start", async (_event, ctx) => {
+            try {
+            if (!ctx.hasUI) return;
+
+            if (USAGE_LIVE) {
+              void fetchUsage(ctx).then(() => footerTui?.requestRender());
+              lastCtx = ctx;
+            } else {
+              scanUsage();
+            }
+            ctx.ui.setFooter((tui, theme, footerData) => {
+              footerTui = tui;
+              const unsub = footerData.onBranchChange(() => tui.requestRender());
+
+              return {
+                dispose: unsub,
+                invalidate() {},
+                render(width: number): string[] {
+                  try {
+                  const parts: string[] = [];
+
+                  if (SHOW_MODEL) {
+                    const model = ctx.model ? ctx.model.id : "no-model";
+                    const level = String(ctx.thinkingLevel ?? "off");
+                    let levelColor = "dim";
+                    if (level === "low" || level === "medium") levelColor = "success";
+                    else if (level === "high" || level === "xhigh" || level === "max") levelColor = "accent";
+                    parts.push(theme.fg("accent", "◆ " + model) + " " + theme.fg(levelColor, level));
+                  }
+
+                  if (SHOW_CONTEXT) {
+                    const usage = ctx.getContextUsage();
+                    const pct =
+                      usage && usage.percent !== null && usage.percent !== undefined
+                        ? Math.round(usage.percent)
+                        : null;
+                    if (pct === null) {
+                      parts.push(theme.fg("dim", "ctx --"));
+                    } else {
+                      const color = pct < 50 ? "success" : pct < 75 ? "warning" : "error";
+                      const filled = Math.min(10, Math.floor((pct + 5) / 10));
+                      const bar = theme.fg(color, "█".repeat(filled)) + theme.fg("dim", "░".repeat(10 - filled));
+                      parts.push(theme.fg("dim", "ctx ") + bar + " " + theme.fg(color, String(pct) + "%"));
+                    }
+                  }
+
+                  if (SHOW_TOKENS || SHOW_COST) {
+                    let input = 0;
+                    let output = 0;
+                    let cost = 0;
+                    for (const e of ctx.sessionManager.getBranch()) {
+                      if (e.type === "message" && e.message.role === "assistant") {
+                        const m: any = e.message;
+                        if (m.usage) {
+                          input += m.usage.input || 0;
+                          output += m.usage.output || 0;
+                          if (m.usage.cost) cost += m.usage.cost.total || 0;
+                        }
+                      }
+                    }
+                    const fmt = (n: number) => (n < 1000 ? String(n) : (n / 1000).toFixed(1) + "k");
+                    const bits: string[] = [];
+                    if (SHOW_TOKENS) bits.push("↑" + fmt(input) + " ↓" + fmt(output));
+                    if (SHOW_COST) bits.push("$" + cost.toFixed(2));
+                    if (bits.length > 0) parts.push(theme.fg("dim", bits.join(" ")));
+                  }
+
+                  if (SHOW_BRANCH) {
+                    const branch = footerData.getGitBranch();
+                    if (branch) parts.push(theme.fg("warning", branch));
+                  }
+
+                  if (USAGE_LIVE && liveUsage) {
+                    const now = Date.now();
+                    parts.push(
+                      [
+                        meterLive("5h", liveUsage.rolling, now, theme),
+                        meterLive("wk", liveUsage.weekly, now, theme),
+                        meterLive("mo", liveUsage.monthly, now, theme),
+                      ].join(" "),
+                    );
+                  } else if (USAGE_FIVE_HOUR > 0 || USAGE_WEEKLY > 0 || USAGE_MONTHLY > 0) {
+                    const now = Date.now();
+                    const meters: string[] = [];
+                    if (USAGE_FIVE_HOUR > 0) meters.push(meterStr("5h", usage.d, USAGE_FIVE_HOUR, now, now, theme));
+                    if (USAGE_WEEKLY > 0) meters.push(meterStr("wk", usage.wk, USAGE_WEEKLY, now, now, theme));
+                    if (USAGE_MONTHLY > 0) meters.push(meterStr("mo", usage.mo, USAGE_MONTHLY, now, now, theme));
+                    if (meters.length > 0) parts.push(meters.join(" "));
+                  }
+
+                  return [truncateToWidth(parts.join(theme.fg("dim", " | ")), width)];
+                  } catch (e: any) {
+                    return [truncateToWidth("statusline-err: " + String(e), width)];
+                  }
+                },
+              };
+            });
+
+            if (usageTimer) {
+              clearInterval(usageTimer);
+              usageTimer = null;
+            }
+            usageTimer = setInterval(() => {
+              if (!footerTui || !lastCtx) return;
+              if (USAGE_LIVE) {
+                void fetchUsage(lastCtx).then(() => footerTui?.requestRender());
+              } else {
+                scanUsage();
+              }
+              footerTui.requestRender();
+            }, 60000);
+          } catch (e: any) {
+            console.error("[pi-status-line] session_start failed: " + String(e));
+          }
+          });
+        }
+      '';
+    in
+    {
+      options.programs.pi-coding-agent.statusLine = {
+        enable = lib.mkEnableOption "pi custom status line (ported from claude-statusline)";
+
+        showModel = lib.mkOption {
+          type = lib.types.bool;
+          default = true;
+          description = "Show the active model and thinking level.";
+        };
+        showContext = lib.mkOption {
+          type = lib.types.bool;
+          default = true;
+          description = "Show the context-window meter (green under 50%, yellow under 75%, red above).";
+        };
+        showTokens = lib.mkOption {
+          type = lib.types.bool;
+          default = true;
+          description = "Show session input/output token totals.";
+        };
+        showCost = lib.mkOption {
+          type = lib.types.bool;
+          default = true;
+          description = "Show the accumulated session cost.";
+        };
+        showBranch = lib.mkOption {
+          type = lib.types.bool;
+          default = true;
+          description = "Show the current git branch.";
+        };
+
+        usage = {
+          fiveHour = lib.mkOption {
+            type = lib.types.float;
+            default = 12.0;
+            description = "5-hour rolling spend cap in USD (OpenCode Go GLM-5.3-Flash quota: $12 / 5 hr).";
+          };
+          weekly = lib.mkOption {
+            type = lib.types.float;
+            default = 30.0;
+            description = "Rolling 7-day spend cap in USD (OpenCode Go GLM-5.3-Flash quota: $30 / week).";
+          };
+          monthly = lib.mkOption {
+            type = lib.types.float;
+            default = 60.0;
+            description = "Rolling 30-day spend cap in USD (OpenCode Go GLM-5.3-Flash quota: $60 / month).";
+          };
+          live = lib.mkOption {
+            type = lib.types.bool;
+            default = true;
+            description = "Fetch live usage percentages from the provider's account API (falls back to local session aggregation).";
+          };
+          provider = lib.mkOption {
+            type = lib.types.str;
+            default = "opencode-go";
+            description = "Provider id used to resolve the API credential for live usage fetching.";
+          };
+          accountBaseUrl = lib.mkOption {
+            type = lib.types.str;
+            default = "https://opencode.ai/zen/go/v1";
+            description = "Account API base the /usage endpoint is fetched from (provider auth often omits it).";
+          };
+        };
+      };
+
+      config = lib.mkIf cfg.statusLine.enable {
+        home.file."${cfg.configDir}/extensions/pi-status-line/index.ts".source = statusLineFile;
+      };
+    };
+
   flake.homeModules.piDSH-Pet =
     {
       pkgs,
@@ -478,337 +878,10 @@
         }
       '';
 
-      desktopPetConfig = pkgs.writeText "dsh-pet-config.json" (builtins.toJSON {
-        main = {
-          chatMemoryRounds = 5;
-          notificationsEnabled = false;
-          workStatusTexts = [
-            [
-              "Thinking about the next step..."
-              "Let me organize my thoughts~"
-              "Figuring out what comes next..."
-            ]
-            [
-              "Working on the task..."
-              "This step is in progress~"
-              "Busy working, don't mind me~"
-            ]
-            [
-              "Step done, moving on to the next"
-              "One step down, let's keep going~"
-            ]
-            [
-              "Could you confirm this part?"
-              "Waiting for you to take a look~"
-              "Your call — I'll wait right here~"
-            ]
-            [
-              "All done, great job!"
-              "Task complete, time to relax~"
-            ]
-            [
-              "This step didn't work out"
-              "Ran into a problem just now"
-              "Hit a snag, hang tight~"
-            ]
-          ];
-          physics = {
-            gravity = 1400;
-            restitution = 0.78;
-            groundFriction = 2.5;
-            ceilingBounce = true;
-            throwPower = 1.0;
-            petCollision = false;
-          };
-          pets = [
-            {
-              name = cfg.pet.name;
-              id = "main";
-              size = cfg.pet.desktop.size;
-              balanceEnabled = false;
-              whisperEnabled = true;
-              workStatusEnabled = false;
-              display = "desktop";
-              position = {
-                corner = cfg.pet.desktop.corner;
-                marginX = cfg.pet.desktop.marginX;
-                marginY = cfg.pet.desktop.marginY;
-              };
-            }
-          ];
-          animations = {
-            idle = [ "待机呼吸休闲" ];
-            turn = [ "东张西望" ];
-            drag = [ "被鼠标拖拽悬空反馈" ];
-            clicks = [
-              "点击回应-开心跃动"
-              "点击回应-害羞惊讶"
-              "点击回应-傲娇生气"
-              "点击回应-挠痒咯咯笑"
-              "点击回应-元气挥手"
-            ];
-            moves = {
-              default = {
-                minDist = 60;
-                maxDist = 240;
-                margin = 20;
-                leadSec = 2;
-                tailSec = 2;
-              };
-              actions = [
-                { name = "螃蟹走路"; }
-                {
-                  name = "原地漂浮踏步";
-                  params = {
-                    minDist = 40;
-                    maxDist = 120;
-                  };
-                }
-                {
-                  name = "原地左转奔跑";
-                  params = {
-                    minDist = 120;
-                    maxDist = 320;
-                    leadSec = 1.75;
-                    tailSec = 4.8;
-                  };
-                }
-              ];
-            };
-            categories = [
-              {
-                id = "Fidgets";
-                weight = 20;
-                actions = [
-                  "悠闲哼歌"
-                  "超大伸懒腰"
-                  "原地敲击桌面互动"
-                  "原地重力下蹲压缩"
-                  "哈欠连天"
-                  "原地小憩沉眠"
-                  "女仆屈膝礼仪"
-                  "被吓一跳"
-                  "小幅度原地360度旋转展示"
-                  "偷吃零食被抓住"
-                  "用鲸鱼尾巴拍打地面"
-                  "打瞌睡被惊醒"
-                  "照镜子"
-                  "整体换装试色"
-                  "轻快记录"
-                  "写代码"
-                  "摇扇纳凉"
-                  "晨间刷牙"
-                ];
-              }
-              {
-                id = "Play";
-                weight = 20;
-                actions = [
-                  "原地专心玩魔方"
-                  "原地蹲下玩玩具汽车"
-                  "鲸鱼吐泡泡特效"
-                  "原地跳跃抓碎头顶物品"
-                  "玩游戏气急败坏"
-                  "玩水枪"
-                  "小提琴演奏"
-                  "蓝鲸现世"
-                  "优雅女仆舞"
-                  "轻快摇摆舞"
-                  "可爱宅舞"
-                  "吹气球"
-                  "动物环绕"
-                  "放风筝"
-                  "拆礼物"
-                  "变鸽子"
-                  "扑克魔术"
-                  "抽陀螺"
-                  "吹笛子"
-                  "蝴蝶蜜蜂环绕头顶开花"
-                  "撸猫"
-                  "凭空生花"
-                  "骑木马"
-                  "三球抛接"
-                  "踢毽子"
-                  "下五子棋"
-                  "荡秋千"
-                ];
-              }
-              {
-                id = "Snacks";
-                weight = 16;
-                actions = [
-                  "吃白饭"
-                  "大口吃零食"
-                  "吃Token"
-                  "吃早餐"
-                  "吃午餐"
-                  "吃晚餐"
-                  "吃冰淇淋融化"
-                  "吃大闸蟹"
-                  "吃糖葫芦"
-                  "吃长寿面"
-                  "吃西瓜"
-                  "涮火锅"
-                ];
-              }
-              {
-                id = "Seasonal";
-                weight = 14;
-                actions = [
-                  "被落叶淹没"
-                  "中秋赏月吃月饼"
-                  "堆雪人"
-                  "放烟花"
-                  "吃粽子"
-                  "吃年糕"
-                  "吃青团"
-                  "吃腊八粥"
-                  "吃重阳糕"
-                  "收红包"
-                  "写福字"
-                  "穿针乞巧"
-                  "舞狮头"
-                  "讨糖南瓜灯"
-                  "插茱萸赏菊"
-                  "放河灯"
-                  "萌化小幽灵"
-                  "装点圣诞树"
-                  "放孔明灯"
-                  "吃汤圆"
-                  "吃饺子"
-                ];
-              }
-              {
-                id = "Words";
-                weight = 10;
-                noMirror = true;
-                actions = [
-                  "是啊，吃什么"
-                  "深度思考碎碎念"
-                ];
-              }
-            ];
-            events = {
-              balance = [
-                "余额-钱袋满溢"
-                "余额-金袋叮当"
-                "余额-钱袋如常"
-                "余额-数金皱眉"
-                "余额-袋空如洗"
-                "余额-分文不剩"
-              ];
-              whisper = [
-                "碎碎念-擦桌碎碎念"
-                "碎碎念-发呆碎碎念"
-                "碎碎念-对屏碎碎念"
-              ];
-              workStatus = [
-                "工作状态-思考冒泡"
-                "工作状态-忙碌点按"
-                "工作状态-清点归档"
-                "工作状态-原地踱步张望"
-                "工作状态-雀跃庆祝"
-                "工作状态-垂头叹气冒汗"
-              ];
-            };
-          };
-          eventsRefreshSec = {
-            balance = 1800;
-            whisper = 300;
-          };
-          animationWeights = {
-            idle = 10;
-            turn = 5;
-            move = 5;
-          };
-        };
-      });
-
-      desktopPetList = pkgs.writeText "pi-pet-pets.json" (
-        builtins.toJSON [
-          {
-            id = "main";
-            size = cfg.pet.desktop.size;
-          }
-        ]
-      );
-
-      desktopWhispers = pkgs.writeText "pi-pet-whispers.json" (builtins.toJSON cfg.pet.whispers.messages);
-
-      piPetDesktop =
-        let
-          appConfig = desktopPetConfig;
-          appPets = desktopPetList;
-          appWhispers = desktopWhispers;
-        in
-        pkgs.stdenvNoCC.mkDerivation {
-          pname = "pi-pet-desktop";
-          version = "0.2.8";
-
-          src = ../../assets/pi-pet-desktop;
-          dontBuild = true;
-
-          nativeBuildInputs = [ pkgs.makeWrapper ];
-
-          installPhase = ''
-            runHook preInstall
-
-            mkdir -p $out/lib/dsh-pet $out/lib/pi-pet $out/bin
-            tar -xzf ${dshPetTarball}
-            cp -r package/assets package/runtime $out/lib/dsh-pet/
-            cp host.mjs $out/lib/pi-pet/host.mjs
-            cp ${appConfig} $out/lib/pi-pet/config.json
-            cp ${appPets} $out/lib/pi-pet/pets.json
-            cp ${appWhispers} $out/lib/pi-pet/whispers.json
-
-            sed -i \
-              -e 's/"动作"/"Actions"/g' \
-              -e 's/"待机"/"Idle"/g' \
-              -e 's/"转向"/"Turn"/g' \
-              -e 's/"拖拽"/"Drag"/g' \
-              -e 's/"点击回应"/"Click"/g' \
-              -e 's/"移动"/"Move"/g' \
-              $out/lib/dsh-pet/runtime/electron-helper/shared-core.js
-
-            cat > $out/bin/pi-pet <<'WRAP'
-            #!/usr/bin/env bash
-            PORT=$(( 30000 + $$ % 20000 ))
-            export DSH_PET_CONFIG_URL="http://127.0.0.1:$PORT/dsh-pet-7340/config"
-            export DSH_PET_PETS="$(cat @out@/lib/pi-pet/pets.json)"
-            @node@/bin/node @out@/lib/pi-pet/host.mjs \
-              --port "$PORT" \
-              --root @out@/lib/dsh-pet \
-              --config @out@/lib/pi-pet/config.json \
-              --whispers @out@/lib/pi-pet/whispers.json &
-            SRV=$!
-            trap 'kill $SRV 2>/dev/null' EXIT INT TERM
-            @electron@/bin/electron @out@/lib/dsh-pet/runtime/electron-helper/main.js --no-sandbox "$@"
-            RC=$?
-            kill $SRV 2>/dev/null
-            exit $RC
-            WRAP
-            substituteInPlace $out/bin/pi-pet \
-              --replace @out@ "$out" \
-              --replace @node@ "${pkgs.nodejs}" \
-              --replace @electron@ "${pkgs.electron}"
-            chmod +x $out/bin/pi-pet
-            wrapProgram $out/bin/pi-pet \
-              --prefix PATH : ${lib.makeBinPath [ pkgs.nodejs pkgs.electron ]}
-
-            runHook postInstall
-          '';
-
-          meta = {
-            description = "Standalone desktop pet (dsh-pet assets, English whispers), launched via pi-pet";
-            license = lib.licenses.mit;
-            mainProgram = "pi-pet";
-            platforms = [ "x86_64-linux" ];
-          };
-        };
     in
     {
       options.programs.pi-coding-agent.pet = {
-        enable = lib.mkEnableOption "pi-coding-agent desktop pet companion (ported from dsh-pet)";
+        enable = lib.mkEnableOption "pi-coding-agent terminal pet companion (ported from dsh-pet)";
 
         name = lib.mkOption {
           type = lib.types.str;
@@ -826,7 +899,7 @@
           enable = lib.mkOption {
             type = lib.types.bool;
             default = false;
-            description = "Periodic whispers: TUI bubble/notifications and desktop speech bubbles.";
+            description = "Periodic whispers shown in the TUI speech bubble and notifications.";
           };
           interval = lib.mkOption {
             type = lib.types.int;
@@ -842,7 +915,7 @@
               "Maybe take a little break?"
               "Time for a coffee refill~"
             ];
-            description = "Pool of whisper lines (TUI bubble and desktop speech bubbles).";
+            description = "Pool of whisper lines shown in the TUI speech bubble.";
           };
         };
 
@@ -965,43 +1038,6 @@
           };
         };
 
-        desktop = {
-          enable = lib.mkOption {
-            type = lib.types.bool;
-            default = false;
-            description = "Also install the standalone desktop overlay pet (separate always-on-top window).";
-          };
-          size = lib.mkOption {
-            type = lib.types.int;
-            default = 462;
-            description = "Pet width in pixels (height is width x 9/16).";
-          };
-          corner = lib.mkOption {
-            type = lib.types.enum [
-              "top-left"
-              "top-right"
-              "bottom-left"
-              "bottom-right"
-            ];
-            default = "top-right";
-            description = "Screen corner the pet lives in.";
-          };
-          marginX = lib.mkOption {
-            type = lib.types.int;
-            default = 24;
-            description = "Horizontal offset from the corner, in pixels.";
-          };
-          marginY = lib.mkOption {
-            type = lib.types.int;
-            default = 100;
-            description = "Vertical offset from the corner, in pixels.";
-          };
-          autostart = lib.mkOption {
-            type = lib.types.bool;
-            default = false;
-            description = "Start the overlay pet automatically with the graphical session (systemd user service pi-pet).";
-          };
-        };
       };
 
       config = lib.mkIf cfg.pet.enable {
@@ -1009,22 +1045,6 @@
           "${cfg.configDir}/extensions/pi-pet/index.ts".source = extensionFile;
         };
 
-        home.packages = lib.mkIf cfg.pet.desktop.enable [ piPetDesktop ];
-
-        systemd.user.services.pi-pet = lib.mkIf (cfg.pet.desktop.enable && cfg.pet.desktop.autostart) {
-          Unit = {
-            Description = "Pi desktop pet (dsh-pet standalone)";
-            PartOf = [ "graphical-session.target" ];
-          };
-          Service = {
-            ExecStart = "${piPetDesktop}/bin/pi-pet";
-            Restart = "on-failure";
-            RestartSec = 5;
-          };
-          Install = {
-            WantedBy = [ "graphical-session.target" ];
-          };
-        };
       };
     };
 }

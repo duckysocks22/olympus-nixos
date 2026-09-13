@@ -225,13 +225,16 @@
       };
     in
     {
-      imports = [ (inputs.home-manager-unstable + "/modules/programs/pi-coding-agent.nix") inputs.self.homeModules.piDSH-Pet];
+      imports = [ (inputs.home-manager-unstable + "/modules/programs/pi-coding-agent.nix") inputs.self.homeModules.piDSH-Pet inputs.self.homeModules.pi-status-line];
       programs.pi-coding-agent = {
         enable = true;
         package = pkgs-unstable.pi-coding-agent;
         settings = {
-          defaultProvider = "openrouter";
-          defaultModel = "z-ai/glm-5.3-flash";
+          defaultProvider = "opencode-go";
+          defaultModel = "glm-5.3-flash";
+          enabledModels = [
+            "opencode-go/glm-*"
+          ];
           defaultThinkingLevel = "max";
           packages = [
             "pi-web-access"
@@ -249,6 +252,16 @@
           terminal.images = "kitty";
           customUI = true;
         };
+
+        statusLine = {
+          enable = true;
+          usage = {
+            fiveHour = 12.0;
+            weekly = 30.0;
+            monthly = 60.0;
+          };
+        };
+
         pet = {
           enable = true;
           name = "Blue";
