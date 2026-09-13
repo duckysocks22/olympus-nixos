@@ -92,6 +92,13 @@
 
       networking.wireless.iwd.enable = true;
 
+      networking.wireless.iwd.settings = {
+        Rank = {
+          BandModifier2_4GHz = 0.1;
+          BandModifier5GHz = 10.0;
+        };
+      };
+
       services = {
         avahi = {
           enable = true;
