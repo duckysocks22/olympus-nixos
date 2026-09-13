@@ -75,7 +75,11 @@
           layout = "us";
           variant = "";
         };
-        openssh.enable = true;
+        openssh = {
+          enable = true;
+          openFirewall = true;
+          ports = [ 22 2222 ];
+        };
       };
 
       nixpkgs.config.allowUnfree = true;
