@@ -2,9 +2,10 @@
   flake.nixosModules.localPrinting = { pkgs, ... }: {
     services.printing = {
       enable = true;
+      startWhenNeeded = true;
+      browsed.enable = false;
       drivers = with pkgs; [
         cups-filters
-        cups-browsed
         canon-cups-ufr2
       ];
     };

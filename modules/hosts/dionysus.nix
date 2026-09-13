@@ -57,6 +57,8 @@
       nixpkgs.config.allowUnfree = true;
       system.stateVersion = "26.05";
 
+      security.protectKernelImage = false;
+
       virtualisation.vmVariantWithDisko = {
         virtualisation.qemu.options = [
           "-vga none"

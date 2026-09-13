@@ -30,7 +30,7 @@
           enable = true;
           wifi = {
             backend = "iwd";
-            powersave = false;
+            powersave = true;
             scanRandMacAddress = false;
           };
           ensureProfiles = {

@@ -30,6 +30,7 @@
   flake.nixosModules.circe =
     {
       config,
+      lib,
       pkgs,
       inputs,
       ...
@@ -71,8 +72,35 @@
       systemd.sleep.settings.Sleep = {
         HibernateDelaySec = "2h";
       };
+      boot.kernelParams = [
+        "pcie_aspm.policy=powersave"
+      ];
+
       nixpkgs.config.allowUnfree = true;
       system.stateVersion = "26.05";
+
+      security.protectKernelImage = false;
+      hardware.bluetooth.settings.Policy.AutoEnable = lib.mkForce false;
+      systemd.services.waydroid-container.wantedBy = lib.mkForce [ ];
+      systemd.services.libvirtd.wantedBy = lib.mkForce [ ];
+
+      services.udev.extraRules = ''
+        ACTION=="add", SUBSYSTEM=="pci", ATTR{power/control}="auto"
+      '';
+
+      services.tuned = {
+        profiles.circe-balanced-battery = {
+          main.include = "balanced-battery";
+          sysfs = {
+            "/sys/class/platform-profile/platform-profile-0/profile" = "low-power";
+          };
+          sysctl = {
+            "kernel.nmi_watchdog" = "0";
+            "vm.dirty_writeback_centisecs" = "1500";
+          };
+        };
+        ppdSettings.battery.balanced = "circe-balanced-battery";
+      };
 
       virtualisation.vmVariantWithDisko = {
         virtualisation.qemu.options = [

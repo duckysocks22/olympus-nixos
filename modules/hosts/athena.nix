@@ -59,10 +59,6 @@
           };
         };
         libinput.enable = true;
-        logind.settings.Login = {
-          HandleLidSwitch = "suspend-then-hibernate";
-          HandleLidSwitchExternalPower = "suspend-then-hibernate";
-        };
       };
       security.rtkit.enable = true;
       systemd.sleep.settings.Sleep = {
@@ -70,6 +66,8 @@
       };
       nixpkgs.config.allowUnfree = true;
       system.stateVersion = "26.05";
+
+      security.protectKernelImage = false;
 
       virtualisation.vmVariantWithDisko = {
         virtualisation.qemu.options = [
