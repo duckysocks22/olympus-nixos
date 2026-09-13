@@ -112,10 +112,14 @@
           "hid-tminit-new"
         ];
         kernelParams = [
-          "amd_iommu=on"
           "amd_pstate=active"
           "quiet"
           "splash"
+        ] ++ lib.optionals (!(builtins.elem config.networking.hostName [
+          "dionysus-nixos"
+          "ariadne-nixos"
+        ])) [
+          "amd_iommu=on"
         ];
         loader = {
           limine = {

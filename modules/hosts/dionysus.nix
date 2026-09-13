@@ -59,6 +59,24 @@
 
       security.protectKernelImage = false;
 
+      boot = {
+        kernelParams = [
+          "pcie_aspm.policy=powersave"
+        ];
+        extraModprobeConfig = ''
+          options snd_hda_intel power_save=10
+        '';
+      };
+
+      services.udev.extraRules = ''
+        ACTION=="add", SUBSYSTEM=="pci", ATTR{power/control}="auto"
+      '';
+
+      boot.kernel.sysctl = {
+        "kernel.nmi_watchdog" = 0;
+        "vm.dirty_writeback_centisecs" = 1500;
+      };
+
       virtualisation.vmVariantWithDisko = {
         virtualisation.qemu.options = [
           "-vga none"
