@@ -26,6 +26,7 @@
         "dionysus-nixos" = "null";
         "ariadne-nixos" = "enp5s0";
       };
+      hasEthernet = host: let eth = ethDevice.${host}; in eth != "" && eth != "null";
     in
     {
       imports = [
@@ -88,6 +89,7 @@
           };
           linkConfig.RequiredForOnline = "yes";
         };
+        wait-online.enable = hasEthernet config.networking.hostName;
       };
 
       networking.wireless.iwd.enable = true;
