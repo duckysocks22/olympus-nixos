@@ -225,7 +225,12 @@
       };
     in
     {
-      imports = [ (inputs.home-manager-unstable + "/modules/programs/pi-coding-agent.nix") inputs.self.homeModules.piDSH-Pet inputs.self.homeModules.pi-status-line inputs.self.homeModules.pi-agent-comma];
+      imports = [
+        (inputs.home-manager-unstable + "/modules/programs/pi-coding-agent.nix")
+        inputs.self.homeModules.piDSH-Pet
+        inputs.self.homeModules.pi-status-line
+        inputs.self.homeModules.pi-agent-comma
+      ];
       programs.pi-coding-agent = {
         enable = true;
         package = pkgs-unstable.pi-coding-agent;
@@ -235,7 +240,7 @@
           enabledModels = [
             "opencode-go/glm-*"
           ];
-          defaultThinkingLevel = "max";
+          defaultThinkingLevel = "high";
           packages = [
             "pi-web-access"
             "pi-subagents"
@@ -282,11 +287,26 @@
           workStatus = {
             enable = true;
             texts = {
-              thinking = [ "is thinking deeply..." "is organizing thoughts~" ];
-              working = [ "is working hard!" "is busy with tools~" ];
-              waiting = [ "is waiting for you~" "needs your input!" ];
-              success = [ "is celebrating!" "did a great job!" ];
-              error = [ "is worried..." "ran into a problem!" ];
+              thinking = [
+                "is thinking deeply..."
+                "is organizing thoughts~"
+              ];
+              working = [
+                "is working hard!"
+                "is busy with tools~"
+              ];
+              waiting = [
+                "is waiting for you~"
+                "needs your input!"
+              ];
+              success = [
+                "is celebrating!"
+                "did a great job!"
+              ];
+              error = [
+                "is worried..."
+                "ran into a problem!"
+              ];
             };
           };
 
@@ -301,7 +321,11 @@
             };
           };
 
-          idleTexts = [ "is waiting patiently..." "is breathing calmly..." "is dozing off..." ];
+          idleTexts = [
+            "is waiting patiently..."
+            "is breathing calmly..."
+            "is dozing off..."
+          ];
           notifications.enable = false;
         };
         context = ''

@@ -99,7 +99,10 @@
 
     systemd.services.mullvad-dns-config = {
       description = "Pin Mullvad VPN DNS to local dnscrypt-proxy once dnscrypt answers queries";
-      after = [ "mullvad-daemon.service" "dnscrypt-proxy.service" ];
+      after = [
+        "mullvad-daemon.service"
+        "dnscrypt-proxy.service"
+      ];
       wants = [ "mullvad-daemon.service" ];
       wantedBy = [ "multi-user.target" ];
       serviceConfig = {

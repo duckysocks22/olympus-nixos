@@ -1,135 +1,147 @@
 { inputs, self, ... }: {
-  flake.nixosModules.system = { pkgs, config, lib, ... }: {
-    imports = [
-      self.nixosModules.nixSettings
-      self.nixosModules.portals
-      self.nixosModules.finalMouseUdev
-    ];
-
-    hardware.bluetooth = {
-      enable = true;
-      settings = {
-        General = {
-          FastConnectable = true;
-        };
-        Policy = {
-          AutoEnable = true;
-        };
-      };
-    };
-
-    services = {
-      tuned.enable = true;
-      upower.enable = true;
-      gnome.gnome-keyring.enable = true;
-    };
-
-    programs = {
-      zsh.enable = true;
-      gpu-screen-recorder.enable = true;
-      dconf.enable = true;
-    };
-
-    environment.systemPackages = with pkgs; [
-      gptfdisk
-      gparted
-      xfsprogs
-      cifs-utils
-      nix-prefetch-git
-      curl
-      p7zip
-      python3
-      mktorrent
-      bashmount
-      qt6.qtbase
-      qt6.qtwayland
-      qt6.qttools
-      glibc
-      fontconfig
-      dbus
-      gsettings-desktop-schemas
-      gtk3
-      tpm2-tss
-      sbctl
-      mesa.opencl
-    ];
-
-    environment.variables = {
-      RUSTICL_ENABLE = "radeonsi";
-    };
-
-    environment.sessionVariables.XDG_DATA_DIRS = [
-      "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}"
-      "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}"
-    ];
-
-    security = {
-      polkit.enable = true;
-      pam.services.niri.enableGnomeKeyring = true;
-      sudo = {
-        extraConfig = "Defaults lecture = never";
-        extraRules = [
-          {
-            users = [ "foxtrot" ];
-            commands = [
-              {
-                command = "/run/current-system/sw/bin/nixos-rebuild";
-                options = [ "NOPASSWD" ];
-              }
-              {
-                command = "${pkgs.nh}/bin/nh os switch";
-                options = [ "NOPASSWD" ];
-              }
-            ];
-          }
-        ];
-      };
-    };
-
-    hardware.graphics = {
-      enable = true;
-      enable32Bit = true;
-      extraPackages = [ pkgs.mesa.opencl ];
-    };
-
-    boot = {
-      kernelPackages = lib.mkIf (!builtins.elem config.networking.hostName [ "dionysus-nixos" "ariadne-nixos" ]) pkgs.linuxPackages_zen;
-      kernelModules = [
-        "sg"
-        "hid-tmff-new"
-        "hid-tminit-new"
+  flake.nixosModules.system =
+    {
+      pkgs,
+      config,
+      lib,
+      ...
+    }:
+    {
+      imports = [
+        self.nixosModules.nixSettings
+        self.nixosModules.portals
+        self.nixosModules.finalMouseUdev
       ];
-      kernelParams = [
-        "amd_iommu=on"
-        "amd_pstate=active"
-        "quiet"
-        "splash"
-      ];
-      loader = {
-        limine = {
-          enable = true;
-          secureBoot.enable = false;
-          efiInstallAsRemovable = true;
-        };
-        efi = {
-          canTouchEfiVariables = false;
-        };
-      };
-      plymouth = {
+
+      hardware.bluetooth = {
         enable = true;
-        theme = "deus_ex";
-        themePackages = with pkgs; [
-          (adi1090x-plymouth-themes.override {
-            selected_themes = [ "deus_ex" ];
-          })
+        settings = {
+          General = {
+            FastConnectable = true;
+          };
+          Policy = {
+            AutoEnable = true;
+          };
+        };
+      };
+
+      services = {
+        tuned.enable = true;
+        upower.enable = true;
+        gnome.gnome-keyring.enable = true;
+      };
+
+      programs = {
+        zsh.enable = true;
+        gpu-screen-recorder.enable = true;
+        dconf.enable = true;
+      };
+
+      environment.systemPackages = with pkgs; [
+        gptfdisk
+        gparted
+        xfsprogs
+        cifs-utils
+        nix-prefetch-git
+        curl
+        p7zip
+        python3
+        mktorrent
+        bashmount
+        qt6.qtbase
+        qt6.qtwayland
+        qt6.qttools
+        glibc
+        fontconfig
+        dbus
+        gsettings-desktop-schemas
+        gtk3
+        tpm2-tss
+        sbctl
+        mesa.opencl
+      ];
+
+      environment.variables = {
+        RUSTICL_ENABLE = "radeonsi";
+      };
+
+      environment.sessionVariables.XDG_DATA_DIRS = [
+        "${pkgs.gsettings-desktop-schemas}/share/gsettings-schemas/${pkgs.gsettings-desktop-schemas.name}"
+        "${pkgs.gtk3}/share/gsettings-schemas/${pkgs.gtk3.name}"
+      ];
+
+      security = {
+        polkit.enable = true;
+        pam.services.niri.enableGnomeKeyring = true;
+        sudo = {
+          extraConfig = "Defaults lecture = never";
+          extraRules = [
+            {
+              users = [ "foxtrot" ];
+              commands = [
+                {
+                  command = "/run/current-system/sw/bin/nixos-rebuild";
+                  options = [ "NOPASSWD" ];
+                }
+                {
+                  command = "${pkgs.nh}/bin/nh os switch";
+                  options = [ "NOPASSWD" ];
+                }
+              ];
+            }
+          ];
+        };
+      };
+
+      hardware.graphics = {
+        enable = true;
+        enable32Bit = true;
+        extraPackages = [ pkgs.mesa.opencl ];
+      };
+
+      boot = {
+        kernelPackages = lib.mkIf (
+          !builtins.elem config.networking.hostName [
+            "dionysus-nixos"
+            "ariadne-nixos"
+          ]
+        ) pkgs.linuxPackages_zen;
+        kernelModules = [
+          "sg"
+          "hid-tmff-new"
+          "hid-tminit-new"
         ];
-        extraConfig = ''
-          [Daemon]
-          DeviceScale=1.0
-        '';
+        kernelParams = [
+          "amd_iommu=on"
+          "amd_pstate=active"
+          "quiet"
+          "splash"
+        ];
+        loader = {
+          limine = {
+            enable = true;
+            secureBoot.enable = false;
+            efiInstallAsRemovable = true;
+          };
+          efi = {
+            canTouchEfiVariables = false;
+          };
+        };
+        plymouth = {
+          enable = true;
+          theme = "deus_ex";
+          themePackages = with pkgs; [
+            (adi1090x-plymouth-themes.override {
+              selected_themes = [ "deus_ex" ];
+            })
+          ];
+          extraConfig = ''
+            [Daemon]
+            DeviceScale=1.0
+          '';
+        };
       };
     };
-  };
 
   flake.nixosModules.common =
     {
@@ -353,7 +365,8 @@
         let
           base = config.boot.kernelPackages.nvidiaPackages.bleeding_edge;
         in
-        base // {
+        base
+        // {
           open = base.open.overrideAttrs (old: {
             patches = (old.patches or [ ]) ++ [ ../../patches/nvidia-open-kernel-7.2.patch ];
           });

@@ -27,12 +27,21 @@
         systems = [ "x86_64-linux" ];
         maxJobs = 8;
         speedFactor = 2;
-        supportedFeatures = [ "kvm" "big-parallel" "benchmark" "nixos-test" "pipe-operators" ];
+        supportedFeatures = [
+          "kvm"
+          "big-parallel"
+          "benchmark"
+          "nixos-test"
+          "pipe-operators"
+        ];
       }
     ];
 
     programs.ssh.knownHosts.nyx-nixos = {
-      hostNames = [ "172.17.100.1" "nyx-nixos" ];
+      hostNames = [
+        "172.17.100.1"
+        "nyx-nixos"
+      ];
       publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEeEqqcPRubu6LqVhSZQY63rv0ALqn8OY1UuLCXB2wfd";
     };
   };

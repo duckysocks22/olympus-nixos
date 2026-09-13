@@ -424,7 +424,7 @@
           raw = (frameStride * 1000.0) / 24.0 / cfg.pet.sprite.speed;
           rounded = builtins.floor (raw + 0.5);
         in
-          if rounded < 30 then 30 else rounded;
+        if rounded < 30 then 30 else rounded;
 
       petBboxScript = pkgs.writeText "pet-bbox.py" ''
         import json, sys
@@ -480,57 +480,67 @@
         version = "0.2.8";
 
         dontUnpack = true;
-        nativeBuildInputs = [ pkgs.ffmpeg pkgs.python3 ];
+        nativeBuildInputs = [
+          pkgs.ffmpeg
+          pkgs.python3
+        ];
 
-        buildPhase = let
-          stateName = e: builtins.elemAt (builtins.split ":" e) 2;
-          spriteSources = [
-            # The sources are in Chinese since the plugin was translated to english from it's source
-            "待机呼吸休闲:idle"
-            "工作状态-思考冒泡:thinking"
-            "工作状态-忙碌点按:working"
-            "工作状态-原地踱步张望:waiting"
-            "工作状态-雀跃庆祝:success"
-            "工作状态-垂头叹气冒汗:error"
-            "点击回应-开心跃动:click"
-            "碎碎念-发呆碎碎念:whisper"
-          ];
-        in
+        buildPhase =
+          let
+            stateName = e: builtins.elemAt (builtins.split ":" e) 2;
+            spriteSources = [
+              # The sources are in Chinese since the plugin was translated to english from it's source
+              "待机呼吸休闲:idle"
+              "工作状态-思考冒泡:thinking"
+              "工作状态-忙碌点按:working"
+              "工作状态-原地踱步张望:waiting"
+              "工作状态-雀跃庆祝:success"
+              "工作状态-垂头叹气冒汗:error"
+              "点击回应-开心跃动:click"
+              "碎碎念-发呆碎碎念:whisper"
+            ];
+          in
           ''
             mkdir src
             tar -xzf ${dshPetTarball} -C src
             mkdir -p $out
           ''
-          + lib.concatMapStrings (entry:
+          + lib.concatMapStrings (
+            entry:
             let
               src = builtins.head (builtins.split ":" entry);
               name = builtins.elemAt (builtins.split ":" entry) 2;
             in
-              ''
-                mkdir -p "$out/${name}"
-                ffmpeg -v error \
-                  -c:v libvpx-vp9 \
-                  -i "src/package/assets/webm/${src}.webm" \
-                  -vf "extractplanes=a" -f rawvideo "alpha-${name}.raw"
-              ''
+            ''
+              mkdir -p "$out/${name}"
+              ffmpeg -v error \
+                -c:v libvpx-vp9 \
+                -i "src/package/assets/webm/${src}.webm" \
+                -vf "extractplanes=a" -f rawvideo "alpha-${name}.raw"
+            ''
           ) spriteSources
           + ''
-            CROP="$(python3 ${petBboxScript} 640 360 "$out" ${lib.concatStringsSep " " (map (e: "alpha-${stateName e}.raw:${stateName e}") spriteSources)})"
+            CROP="$(python3 ${petBboxScript} 640 360 "$out" ${
+              lib.concatStringsSep " " (map (e: "alpha-${stateName e}.raw:${stateName e}") spriteSources)
+            })"
           ''
-          + lib.concatMapStrings (entry:
+          + lib.concatMapStrings (
+            entry:
             let
               src = builtins.head (builtins.split ":" entry);
               name = builtins.elemAt (builtins.split ":" entry) 2;
             in
-              ''
-                CROP="$(cat "$out/${name}/crop.txt")"
-                ffmpeg -v error \
-                  -c:v libvpx-vp9 \
-                  -i "src/package/assets/webm/${src}.webm" \
-                  -vf "select='not(mod(n\,${toString frameStride}))',crop=$CROP,scale=${toString (cfg.pet.sprite.size * 8)}:-1:flags=lanczos,format=rgba" \
-                  -pix_fmt rgba -fps_mode passthrough -vsync 0 \
-                  "$out/${name}/f_%03d.png"
-              ''
+            ''
+              CROP="$(cat "$out/${name}/crop.txt")"
+              ffmpeg -v error \
+                -c:v libvpx-vp9 \
+                -i "src/package/assets/webm/${src}.webm" \
+                -vf "select='not(mod(n\,${toString frameStride}))',crop=$CROP,scale=${
+                  toString (cfg.pet.sprite.size * 8)
+                }:-1:flags=lanczos,format=rgba" \
+                -pix_fmt rgba -fps_mode passthrough -vsync 0 \
+                "$out/${name}/f_%03d.png"
+            ''
           ) spriteSources;
 
         installPhase = ''
@@ -1049,7 +1059,12 @@
     };
 
   flake.homeModules.pi-agent-comma =
-    { pkgs, config, lib, ... }:
+    {
+      pkgs,
+      config,
+      lib,
+      ...
+    }:
     let
       cfg = config.programs.pi-coding-agent;
 
