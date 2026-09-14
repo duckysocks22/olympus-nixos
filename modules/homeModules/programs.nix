@@ -49,7 +49,7 @@
       imports = [ inputs.nixvim.homeModules.nixvim ];
       programs.nixvim = {
         enable = true;
-        enableMan = true;
+        enableMan = false;
         nixpkgs.source = inputs.nixpkgs;
         plugins = {
           lazy = {
