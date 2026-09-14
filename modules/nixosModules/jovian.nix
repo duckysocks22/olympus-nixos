@@ -44,6 +44,11 @@
         wantedBy = [ "multi-user.target" ];
       };
 
+      systemd.tmpfiles.rules = lib.mkIf config.jovian.decky-loader.enable [
+        "d ${config.jovian.decky-loader.stateDir}/plugins 0755 ${config.jovian.decky-loader.user} - - -"
+        "L+ ${config.jovian.decky-loader.stateDir}/plugins/decky-lsfg-vk - ${config.jovian.decky-loader.user} - - ${inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.decky-lsfg-vk}/Decky LSFG-VK"
+      ];
+
       services = {
         desktopManager.plasma6.enable = true;
         xserver.enable = true;
