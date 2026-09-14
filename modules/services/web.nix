@@ -12,7 +12,7 @@
     ];
   };
 
-  flake.nixosModules.wireGuardHost = { config, lib, ... }: let
+  flake.nixosModules.wireguardHost = { config, lib, ... }: let
     IPv4Address = {
       "nyx-nixos" = "192.168.10.254/32";
       "hermera-nixos" = "192.168.10.253/32";
@@ -36,7 +36,7 @@
 
     networking = {
       useNetworkd = true;
-      firewall.allowedUDPPorts = [ 51820 ];
+      firewall.allowedUDPPorts = [ 4500 ];
     };
 
     systemd.network = {
@@ -62,7 +62,7 @@
         };
 
         wireguardConfig = {
-          ListenPort = 51820;
+          ListenPort = 4500;
           PrivateKeyFile = config.sops.secrets."wireguard/${config.networking.hostName}/privateKey".path;
           RouteTable = "main";
           FirewallMark = 42;
@@ -79,10 +79,10 @@
           }*/
           {
             # circe-nixos
-            PublicKey = "gE+HZmvdK/3X3F3FieCZM14YFr1X05ZuvycJFdO/g1M=";
+            PublicKey = "lBu6K0aoE95f9h/t1jB9Rgr9BTM8X9X0SYVE7hh6sxs=";
             AllowedIPs = [
-              "fd31:bf08:57cb::1/128"
-              "192.168.10.1/32"
+              "fd31:bf08:57cb::2/128"
+              "192.168.10.2/32"
             ];
           }
         ];
