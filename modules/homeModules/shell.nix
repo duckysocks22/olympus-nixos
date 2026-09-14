@@ -58,6 +58,8 @@
           enable = true;
           syntaxHighlighting.enable = true;
 
+          history.path = "${config.home.homeDirectory}/.local/share/zsh_history";
+
           shellAliases = {
             vi = "nvim";
             #rebuild = "sudo nixos-rebuild switch -L --flake ${config.home.homeDirectory}/olympus-nixos";

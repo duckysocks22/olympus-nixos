@@ -120,7 +120,6 @@
               ];
               files = [
                 ".histfile"
-                ".zsh_history"
               ];
             };
             root = {
@@ -183,7 +182,6 @@
               ];
               files = [
                 ".histfile"
-                ".zsh_history"
               ];
             };
           };
