@@ -27,6 +27,7 @@
       protontricks
       filezilla
       feather
+      lunatask
     ];
 
     programs.kitty = {
