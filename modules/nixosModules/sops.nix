@@ -98,7 +98,9 @@
     sops.secrets."remotebuilder/circe" = { };
     sops.secrets."admin/user" = { };
     sops.secrets."admin/pass" = { };
-    sops.secrets."copyparty/foxtrot" = { };
+    sops.secrets."copyparty/foxtrot" = { 
+      owner = "copyparty";
+    };
 
     sops.secrets."mollysocket/vapid_privkey" = {
       owner = "mollysocket";
