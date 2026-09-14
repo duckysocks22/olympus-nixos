@@ -12,6 +12,84 @@
     ];
   };
 
+  flake.nixosModules.wireGuardHost = { config, lib, ... }: let
+    IPv4Address = {
+      "nyx-nixos" = "192.168.10.254/32";
+      "hermera-nixos" = "192.168.10.253/32";
+    };
+    IPv6Address = {
+      "nyx-nixos" = "fd31:bf08:57cb::254/128";
+      "hermera-nixos" = "fd31:bf08:57cb::253/128";
+    };
+    publicKey = {
+      "nyx-nixos" = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
+    };
+  in {
+    sops.secrets."wireguard/${config.networking.hostName}/privateKey" = { mode = "640"; owner = "systemd-network"; group = "systemd-network"; };
+
+    networking.nat = {
+      enable = true;
+      enableIPv6 = true;
+      externalInterface = "enp34s0";
+      internalInterfaces = [ "wg0" ];
+    };
+
+    networking = {
+      useNetworkd = true;
+      firewall.allowedUDPPorts = [ 51820 ];
+    };
+
+    systemd.network = {
+      enable = true;
+      networks."50-wg0" = {
+        matchConfig.Name = "wg0";
+
+        address = [
+          IPv4Address.${config.networking.hostName}
+          IPv6Address.${config.networking.hostName}
+        ];
+
+        networkConfig = {
+          IPv4Forwarding = true;
+          IPv6Forwarding = true;
+        };
+      };
+
+      netdevs."50-wg0" = {
+        netdevConfig = {
+          Kind = "wireguard";
+          Name = "wg0";
+        };
+
+        wireguardConfig = {
+          ListenPort = 51820;
+          PrivateKeyFile = config.sops.secrets."wireguard/${config.networking.hostName}/privateKey".path;
+          RouteTable = "main";
+          FirewallMark = 42;
+        };
+        
+        wireguardPeers = [
+          /*{
+            # athena-nixos
+            PublicKey = "";
+            AllowedIPs = [
+              "fd31:bf08:57cb::1/128"
+              "192.168.10.1/32"
+            ];
+          }*/
+          {
+            # circe-nixos
+            PublicKey = "gE+HZmvdK/3X3F3FieCZM14YFr1X05ZuvycJFdO/g1M=";
+            AllowedIPs = [
+              "fd31:bf08:57cb::1/128"
+              "192.168.10.1/32"
+            ];
+          }
+        ];
+      };
+    };
+  };
+
   flake.nixosModules.forgejo-runner =
     {
       pkgs,

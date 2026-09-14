@@ -154,7 +154,8 @@
     };
   };
 
-  flake.nixosModules.serverNetwork = { config, ... }: {
+  flake.nixosModules.serverNetwork = { inputs, config, ... }: {
+    imports = [ inputs.self.nixosModules.wireGuardHost ];
     systemd.network = {
       enable = true;
       networks."enp34s0" = {
