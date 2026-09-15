@@ -2,6 +2,7 @@ keys:
   - &desktop_athena age1m06jh82c5sy64v3s60s6rfxxcfva0am9wahnkk5m9k4pqvsl64rs845vud
   - &desktop_athena_host age1fmxm8550lcm2jthe65kj307rfjdchncg5hm4qv2ayazn4v5x9gcs0w9klg
   - &server_nyx age1upa07ee3tlz5saqlfl5qhzjjrxeq28yprpuw2qjs4v6xrc890gtq56xkr5
+  - &server_aether age1d8rw5mqdknf28ww5khrvxk755sm0pwqw9alc5csyc64xe5ktrdnsua8s5f
   - &laptop_circe age147r3y7lukp6set6f8kpsf50x28gusx8qtutl7jezvnwwk2hwqgrqa723lv
   - &console_ariadne age1ca5yn470vhs7rseluvpfv7z9l2dzsmc9wqwqzfupu4h5mh8zdsaq7d07ns
   - &console_dionysus age1f7nennyqde2kqnq0l9dg05gqauavej36j22x66raul9xmypg7ffshukz2y
@@ -12,6 +13,7 @@ creation_rules:
       - *desktop_athena
       - *desktop_athena_host
       - *server_nyx
+      - *server_aether
       - *laptop_circe
       - *console_ariadne
       - *console_dionysus
