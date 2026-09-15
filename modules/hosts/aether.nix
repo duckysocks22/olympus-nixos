@@ -101,53 +101,39 @@
               swap = {
                 size = "2G";
                 content = {
-                  type = "luks";
-                  name = "crypted-swap";
-                  settings = {
-                    allowDiscards = true;
-                  };
-                  content = {
-                    type = "swap";
-                    resumeDevice = true;
-                  };
+                  type = "swap";
+                  resumeDevice = true;
                 };
               };
-              luks = {
+              root = {
                 size = "100%";
                 content = {
-                  type = "luks";
-                  name = "crypted";
-                  settings = {
-                    allowDiscards = true;
-                  };
-                  content = {
-                    type = "btrfs";
-                    extraArgs = [ "-f" ];
-                    subvolumes = {
-                      "/root" = {
-                        mountOptions = [
-                          "compress=zstd"
-                          "subvol=root"
-                          "noatime"
-                        ];
-                        mountpoint = "/";
-                      };
-                      "/home" = {
-                        mountOptions = [
-                          "compress=zstd"
-                          "subvol=home"
-                          "noatime"
-                        ];
-                        mountpoint = "/home";
-                      };
-                      "/nix" = {
-                        mountOptions = [
-                          "compress=zstd"
-                          "subvol=nix"
-                          "noatime"
-                        ];
-                        mountpoint = "/nix";
-                      };
+                  type = "btrfs";
+                  extraArgs = [ "-f" ];
+                  subvolumes = {
+                    "/root" = {
+                      mountOptions = [
+                        "compress=zstd"
+                        "subvol=root"
+                        "noatime"
+                      ];
+                      mountpoint = "/";
+                    };
+                    "/home" = {
+                      mountOptions = [
+                        "compress=zstd"
+                        "subvol=home"
+                        "noatime"
+                      ];
+                      mountpoint = "/home";
+                    };
+                    "/nix" = {
+                      mountOptions = [
+                        "compress=zstd"
+                        "subvol=nix"
+                        "noatime"
+                      ];
+                      mountpoint = "/nix";
                     };
                   };
                 };
