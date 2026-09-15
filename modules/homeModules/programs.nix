@@ -561,9 +561,9 @@
 
       ])
       ++ (with inputs.luxxy-pkgs.packages.${pkgs.stdenv.hostPlatform.system}; [
-        (jdownloader.override {
+        /*(jdownloader.override {
           darkTheme = true;
-        })
+        })*/
       ]);
   };
 

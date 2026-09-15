@@ -33,8 +33,8 @@
           cdrdao
         ])
         ++ (with inputs.luxxy-pkgs.packages.${pkgs.stdenv.hostPlatform.system}; [
-          unscene
-          mountiso
+          #unscene
+          #mountiso
         ]);
 
       programs = {
