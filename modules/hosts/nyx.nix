@@ -13,6 +13,7 @@
       self.nixosModules.serverNetwork
       self.nixosModules.functions
       self.nixosModules.system
+      self.nixosModules.powerLogging
       self.nixosModules.nvidia
       self.nixosModules.server
       self.nixosModules.serverSops
