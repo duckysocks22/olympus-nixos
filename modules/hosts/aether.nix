@@ -14,6 +14,7 @@
       self.nixosModules.serverNetwork
       self.nixosModules.server
       self.nixosModules.aetherSops
+      self.nixosModules.buildClient
     ];
   };
 
