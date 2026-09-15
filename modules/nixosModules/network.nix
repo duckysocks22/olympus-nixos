@@ -238,22 +238,35 @@
     };
   };
 
-  flake.nixosModules.serverNetwork = { inputs, config, ... }: {
+  flake.nixosModules.serverNetwork = { inputs, config, ... }: let
+    IPv4Address = {
+      "nyx-nixos" = "172.17.100.1/16";
+      "aether-nixos" = "107.174.36.56/24";
+    };
+    adapter = {
+      "nyx-nixos" = "enp34s0";
+      "aether-nixos" "ens3";
+    };
+    gateway = {
+      "nyx-nixos" = "172.17.0.254";
+      "aether-nixos" = "107.174.36.127";
+    };
+  in {
     imports = [ inputs.self.nixosModules.wireguardHost ];
     systemd.network = {
       enable = true;
-      networks."enp34s0" = {
-        matchConfig.Name = "enp34s0";
+      networks."${adapter.${config.networking.hostName}}" = {
+        matchConfig.Name = adapter.${config.networking.hostName};
         networkConfig.DHCP = "no";
-        networkConfig.Address = "172.17.100.1/16";
-        networkConfig.Gateway = "172.17.0.254";
+        networkConfig.Address = IPv4Address.${config.networking.hostName};
+        networkConfig.Gateway = gateway.${config.networking.hostName};
         networkConfig.DNS = "9.9.9.9";
         linkConfig.RequiredForOnline = "yes";
       };
     };
 
     networking.firewall = {
-      trustedInterfaces = [ "enp34s0" ];
+      trustedInterfaces = [ adapter.${config.networking.hostName} ];
       checkReversePath = "loose";
       allowedTCPPorts = [
         80
@@ -298,7 +311,7 @@
       enable = true;
       maxretry = 5;
       ignoreIP = [
-        "172.17.0.0/16"
+        IPv4Address.${config.networking.hostName}
       ];
       bantime = "24h";
       bantime-increment = {
