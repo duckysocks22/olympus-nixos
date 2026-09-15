@@ -1,5 +1,13 @@
 { inputs, self, ... }: {
-  flake.nixosModules.defaultSops = { inputs, config, ... }: {
+  flake.nixosModules.defaultSops = { inputs, config, pkgs, ... }: let
+    # iwd (via ell) cannot parse the p11-kit-format CA bundle NixOS installs:
+    # any "-----BEGIN TRUSTED CERTIFICATE-----" block aborts the whole load.
+    # Extract only the plain X.509 certificates into a standalone PEM file.
+    iwdCaBundle = pkgs.runCommand "iwd-ca-certificates.pem" { } ''
+      awk '/^-----BEGIN CERTIFICATE-----$/,/^-----END CERTIFICATE-----$/' \
+        ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt > $out
+    '';
+  in {
     imports = [
       inputs.sops-nix.nixosModules.sops
     ];
@@ -24,6 +32,7 @@
     sops.secrets."work/network" = { };
     sops.secrets."work/user" = { };
     sops.secrets."work/pass" = { };
+    sops.secrets."work/domain" = { };
 
     sops.secrets."bazinga/pass" = { };
 
@@ -44,6 +53,7 @@
               SSID=$(cat ${config.sops.secrets."work/network".path})
               USER=$(cat ${config.sops.secrets."work/user".path})
               PASS=$(cat ${config.sops.secrets."work/pass".path})
+              DOMAIN=$(cat ${config.sops.secrets."work/domain".path})
 
               TARGET_FILE="/var/lib/iwd/$SSID.8021x"
 
@@ -51,6 +61,8 @@
         [Security]
         EAP-Method=PEAP
         EAP-Identity=$USER
+        EAP-PEAP-CACert=${iwdCaBundle}
+        EAP-PEAP-ServerDomainMask=*.$DOMAIN
         EAP-PEAP-Phase2-Method=MSCHAPV2
         EAP-PEAP-Phase2-Identity=$USER
         EAP-PEAP-Phase2-Password=$PASS
