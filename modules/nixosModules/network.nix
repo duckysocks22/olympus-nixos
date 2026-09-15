@@ -249,7 +249,10 @@
     };
     gateway = {
       "nyx-nixos" = "172.17.0.254";
-      "aether-nixos" = "107.174.36.127";
+    };
+    useDhcp = {
+      "nyx-nixos" = false;
+      "aether-nixos" = true;
     };
   in {
     imports = [ inputs.self.nixosModules.wireguardHost ];
@@ -257,10 +260,13 @@
       enable = true;
       networks."${adapter.${config.networking.hostName}}" = {
         matchConfig.Name = adapter.${config.networking.hostName};
-        networkConfig.DHCP = "no";
-        networkConfig.Address = IPv4Address.${config.networking.hostName};
-        networkConfig.Gateway = gateway.${config.networking.hostName};
-        networkConfig.DNS = "9.9.9.9";
+        networkConfig = {
+          DHCP = if useDhcp.${config.networking.hostName} then "yes" else "no";
+          DNS = "9.9.9.9";
+        } // lib.optionalAttrs (!useDhcp.${config.networking.hostName}) {
+          Address = IPv4Address.${config.networking.hostName};
+          Gateway = gateway.${config.networking.hostName};
+        };
         linkConfig.RequiredForOnline = "yes";
       };
     };
@@ -312,7 +318,7 @@
     services.fail2ban = {
       enable = true;
       maxretry = 5;
-      ignoreIP = [
+      ignoreIP = lib.optionals (IPv4Address ? ${config.networking.hostName}) [
         IPv4Address.${config.networking.hostName}
       ];
       bantime = "24h";
