@@ -29,6 +29,8 @@
       AllowSuspendThenHibernation = false;
     };
 
+    nix.settings.trusted-users = [ "root" "server" ];
+
     networking.hostName = "aether-nixos";
     networking.useDHCP = lib.mkForce false;
     networking.nameservers = [ "9.9.9.9" ];
