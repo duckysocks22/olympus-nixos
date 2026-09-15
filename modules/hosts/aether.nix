@@ -33,7 +33,7 @@
     networking.useDHCP = lib.mkForce false;
 
     services.resolved.enable = false;
-    networking.resolvconf.useLocalResolver = true;
+    networking.resolvconf.useLocalResolver = false;
     networking.networkmanager.insertNameservers = [ "127.0.0.1" ];
 
     time.timeZone = "America/New_York";
