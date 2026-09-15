@@ -127,7 +127,7 @@
       systemd.services.avahi-daemon.requires = lib.mkForce [ ];
     };
   
-  flake.nixosModules.wireguardPeer = { config, ... }: let
+  flake.nixosModules.wireguardPeer = { config, lib, ... }: let
     IPv4Address = {
       "athena-nixos" = "192.168.10.1/32";
       "circe-nixos" = "192.168.10.2/32";
@@ -141,66 +141,68 @@
       "circe-nixos" = "lBu6K0aoE95f9h/t1jB9Rgr9BTM8X9X0SYVE7hh6sxs=";
     };
   in {
-    sops.secrets."wireguard/${config.networking.hostName}/privateKey" = { mode = "640"; owner = "systemd-network"; group = "systemd-network"; };
+    config = lib.mkIf (builtins.elem config.networking.hostName (builtins.attrNames IPv4Address)) {
+      sops.secrets."wireguard/${config.networking.hostName}/privateKey" = { mode = "640"; owner = "systemd-network"; group = "systemd-network"; };
 
-    networking = {
-      firewall.allowedUDPPorts = [ 4500 ];
-      networkmanager.unmanaged = [ "interface-name:wg0" ];
-    };
-
-    systemd.network = {
-      enable = true;
-      networks."50-wg0" = {
-        matchConfig.Name = "wg0";
-
-        address = [
-          IPv4Address.${config.networking.hostName}
-          IPv6Address.${config.networking.hostName}
-        ];
-
-        networkConfig = {
-          IPv4Forwarding = true;
-          IPv6Forwarding = true;
-        };
-
-        routingPolicyRules = [
-          {
-            routingPolicyRuleConfig = {
-              Priority = 100;
-              FirewallMark = 42;
-              Table = "main";
-            };
-          }
-        ];
+      networking = {
+        firewall.allowedUDPPorts = [ 4500 ];
+        networkmanager.unmanaged = [ "interface-name:wg0" ];
       };
 
-      netdevs."50-wg0" = {
-        netdevConfig = {
-          Kind = "wireguard";
-          Name = "wg0";
+      systemd.network = {
+        enable = true;
+        networks."50-wg0" = {
+          matchConfig.Name = "wg0";
+
+          address = [
+            IPv4Address.${config.networking.hostName}
+            IPv6Address.${config.networking.hostName}
+          ];
+
+          networkConfig = {
+            IPv4Forwarding = true;
+            IPv6Forwarding = true;
+          };
+
+          routingPolicyRules = [
+            {
+              routingPolicyRuleConfig = {
+                Priority = 100;
+                FirewallMark = 42;
+                Table = "main";
+              };
+            }
+          ];
         };
 
-        wireguardConfig = {
-          ListenPort = 4500;
-          PrivateKeyFile = config.sops.secrets."wireguard/${config.networking.hostName}/privateKey".path;
-          RouteTable = "main";
-          FirewallMark = 42;
+        netdevs."50-wg0" = {
+          netdevConfig = {
+            Kind = "wireguard";
+            Name = "wg0";
+          };
+
+          wireguardConfig = {
+            ListenPort = 4500;
+            PrivateKeyFile = config.sops.secrets."wireguard/${config.networking.hostName}/privateKey".path;
+            RouteTable = "main";
+            FirewallMark = 42;
+          };
+          
+          wireguardPeers = [
+            {
+              #nyx-nixos
+              PublicKey = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
+              AllowedIPs = [
+                "192.168.10.0/24"
+                "fd31:bf08:57cb::/64"
+              ];
+              Endpoint = "olympus.moe:4500";
+            }
+            /*{
+              # hermera-nixos
+            }*/
+          ];
         };
-        
-        wireguardPeers = [
-          {
-            #nyx-nixos
-            PublicKey = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
-            AllowedIPs = [
-              "192.168.10.0/24"
-              "fd31:bf08:57cb::/64"
-            ];
-            Endpoint = "olympus.moe:4500";
-          }
-          /*{
-            # hermera-nixos
-          }*/
-        ];
       };
     };
   };
