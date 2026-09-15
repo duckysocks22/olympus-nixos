@@ -71,5 +71,11 @@
           inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.steamos-plymouth
         ];
       };
+
+      boot.loader.timeout = 1;
+
+      boot.loader.limine.extraConfig = ''
+        quiet: yes
+      '';
     };
 }
