@@ -31,10 +31,7 @@
 
     networking.hostName = "aether-nixos";
     networking.useDHCP = lib.mkForce false;
-
-    services.resolved.enable = false;
-    networking.resolvconf.useLocalResolver = false;
-    networking.networkmanager.insertNameservers = [ "127.0.0.1" ];
+    networking.nameservers = [ "9.9.9.9" ];
 
     time.timeZone = "America/New_York";
     i18n = {
