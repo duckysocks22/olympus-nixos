@@ -29,12 +29,11 @@
       AllowSuspendThenHibernation = false;
     };
 
+    nix.settings.trusted-users = [ "root" "server" ];
+
     networking.hostName = "aether-nixos";
     networking.useDHCP = lib.mkForce false;
-
-    services.resolved.enable = false;
-    networking.resolvconf.useLocalResolver = true;
-    networking.networkmanager.insertNameservers = [ "127.0.0.1" ];
+    networking.nameservers = [ "9.9.9.9" ];
 
     time.timeZone = "America/New_York";
     i18n = {
@@ -87,6 +86,11 @@
           content = {
             type = "gpt";
             partitions = {
+              boot = {
+                size = "1M";
+                type = "EF02";
+                priority = 1;
+              };
               ESP = {
                 name = "ESP";
                 size = "1G";
@@ -145,8 +149,12 @@
     };
 
     boot.initrd.systemd.enable = lib.mkForce true;
-    boot.loader.systemd-boot.enable = true;
-    boot.loader.efi.canTouchEfiVariables = true;
+    boot.loader.grub = {
+      enable = true;
+      device = "/dev/vda";
+      efiSupport = true;
+      efiInstallAsRemovable = true;
+    };
     fileSystems."/nix".neededForBoot = true;
   };
 
