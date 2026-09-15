@@ -190,8 +190,8 @@
           
           wireguardPeers = [
             {
-              #nyx-nixos
-              PublicKey = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
+              #aether-nixos
+              PublicKey = "73mtIREvRqhfiUhfG47ITB3q+nMIO5M5+eVfIj9CslI=";
               AllowedIPs = [
                 "192.168.10.0/24"
                 "fd31:bf08:57cb::/64"
@@ -238,14 +238,14 @@
     };
   };
 
-  flake.nixosModules.serverNetwork = { inputs, config, ... }: let
+  flake.nixosModules.serverNetwork = { inputs, config, lib, ... }: let
     IPv4Address = {
       "nyx-nixos" = "172.17.100.1/16";
       "aether-nixos" = "107.174.36.56/24";
     };
     adapter = {
       "nyx-nixos" = "enp34s0";
-      "aether-nixos" "ens3";
+      "aether-nixos" = "ens3";
     };
     gateway = {
       "nyx-nixos" = "172.17.0.254";
@@ -286,7 +286,9 @@
         68
         3210
         3211
+      ] ++ lib.optionals config.services.home-assistant.enable [
         config.services.home-assistant.config.http.server_port
+      ] ++ [
         25665
         25666
         25765

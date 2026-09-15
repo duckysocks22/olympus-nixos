@@ -12,6 +12,8 @@
       self.nixosModules.aetherHardware
       self.nixosModules.aetherDisko
       self.nixosModules.serverNetwork
+      self.nixosModules.server
+      self.nixosModules.aetherSops
     ];
   };
 
@@ -30,7 +32,7 @@
     networking.useDHCP = lib.mkForce false;
 
     services.resolved.enable = false;
-    networking.resolveconf.useLocalResolver = true;
+    networking.resolvconf.useLocalResolver = true;
     networking.networkmanager.insertNameservers = [ "127.0.0.1" ];
 
     time.timeZone = "America/New_York";
@@ -62,6 +64,7 @@
     };
 
     nixpkgs.config.allowUnfree = true;
+    programs.zsh.enable = true;
     environment.systemPackages = with pkgs; [
       vim
       wget
@@ -120,6 +123,14 @@
                     type = "btrfs";
                     extraArgs = [ "-f" ];
                     subvolumes = {
+                      "/root" = {
+                        mountOptions = [
+                          "compress=zstd"
+                          "subvol=root"
+                          "noatime"
+                        ];
+                        mountpoint = "/";
+                      };
                       "/home" = {
                         mountOptions = [
                           "compress=zstd"
@@ -147,10 +158,12 @@
     };
 
     boot.initrd.systemd.enable = lib.mkForce true;
+    boot.loader.systemd-boot.enable = true;
+    boot.loader.efi.canTouchEfiVariables = true;
     fileSystems."/nix".neededForBoot = true;
   };
 
-  flake.nixosModules.aetherHardware = { config, lib, pkgs, modulesPath, ... }; {
+  flake.nixosModules.aetherHardware = { config, lib, pkgs, modulesPath, ... }: {
     imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
 
     boot = {
@@ -158,10 +171,10 @@
         availableKernelModules = [ "ata_piix" "uhci_hcd" "virtio_pci" "sr_mod" "virtio_blk" ];
         kernelModules = [ ];
       };
-      kernelModuless = [ ];
-      extraModulesPackages = [ ];
-
-      nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+      kernelModules = [ ];
+      extraModulePackages = [ ];
     };
+
+    nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   };
 }

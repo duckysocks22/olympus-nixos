@@ -14,15 +14,18 @@
 
   flake.nixosModules.wireguardHost = { config, lib, ... }: let
     IPv4Address = {
-      "nyx-nixos" = "192.168.10.254/32";
-      "hermera-nixos" = "192.168.10.253/32";
+      "nyx-nixos" = "192.168.10.253/32";
+      "hermera-nixos" = "192.168.10.252/32";
+      "aether-nixos" = "192.168.10.254/32";
     };
     IPv6Address = {
-      "nyx-nixos" = "fd31:bf08:57cb::254/128";
-      "hermera-nixos" = "fd31:bf08:57cb::253/128";
+      "nyx-nixos" = "fd31:bf08:57cb::253/128";
+      "hermera-nixos" = "fd31:bf08:57cb::252/128";
+      "aether-nixos" = "fd31:bf08:57cb::254/128";
     };
     publicKey = {
       "nyx-nixos" = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
+      "aether-nixos" = "asdf";
     };
   in {
     sops.secrets."wireguard/${config.networking.hostName}/privateKey" = { mode = "640"; owner = "systemd-network"; group = "systemd-network"; };
