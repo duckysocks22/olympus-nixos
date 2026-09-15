@@ -87,6 +87,11 @@
           content = {
             type = "gpt";
             partitions = {
+              boot = {
+                size = "1M";
+                type = "EF02";
+                priority = 1;
+              };
               ESP = {
                 name = "ESP";
                 size = "1G";
@@ -145,8 +150,12 @@
     };
 
     boot.initrd.systemd.enable = lib.mkForce true;
-    boot.loader.systemd-boot.enable = true;
-    boot.loader.efi.canTouchEfiVariables = true;
+    boot.loader.grub = {
+      enable = true;
+      device = "/dev/vda";
+      efiSupport = true;
+      efiInstallAsRemovable = true;
+    };
     fileSystems."/nix".neededForBoot = true;
   };
 
