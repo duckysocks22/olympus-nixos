@@ -23,6 +23,10 @@
       "hermera-nixos" = "fd31:bf08:57cb::252/128";
       "aether-nixos" = "fd31:bf08:57cb::254/128";
     };
+    adapter = {
+      "aether-nixos" = "ens3";
+      "nyx-nixos" = "enp34s0";
+    };
     publicKey = {
       "nyx-nixos" = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
       "aether-nixos" = "I0bbm5zxn4+zj2vtW7/aT1asyUCpTi9h6G4Z6itq03g=";
@@ -33,7 +37,7 @@
     networking.nat = {
       enable = true;
       enableIPv6 = true;
-      externalInterface = "enp34s0";
+      externalInterface = adapter.${config.networking.hostName};
       internalInterfaces = [ "wg0" ];
     };
 
@@ -603,11 +607,16 @@
       ...
     }:
     {
-      services.avahi = {
+      services.avahi = let
+        adapter = {
+          "aether-nixos" = "ens3";
+          "nyx-nixos" = "enp34s0";
+        };
+      in {
         enable = true;
         openFirewall = true;
         allowInterfaces = [
-          "enp34s0"
+          adapter.${config.networking.hostName}
         ];
         publish = {
           enable = true;
@@ -624,7 +633,12 @@
       systemd.services.avahi-daemon.requires = lib.mkForce [ ];
     };
 
-  flake.nixosModules.adguardhome = { lib, config, ... }: {
+  flake.nixosModules.adguardhome = { lib, config, ... }: let
+    adapter = {
+      "aether-nixos" = "ens3";
+      "nyx-nixos" = "enp34s0";
+    };
+  in {
     services.adguardhome = {
       enable = true;
       host = "0.0.0.0";
@@ -655,7 +669,7 @@
         };
         dhcp = {
           enabled = false;
-          interface_name = "enp34s0";
+          interface_name = adapter.${config.networking.hostName};
           dhcpv4 = {
             gateway_ip = "172.17.0.254";
             subnet_mask = "255.255.0.0";
