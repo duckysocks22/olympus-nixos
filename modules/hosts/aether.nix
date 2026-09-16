@@ -21,63 +21,77 @@
     ];
   };
 
-  flake.nixosModules.aether = { config, pkgs, inputs, lib, ... }: {
-    users.mutableUsers = false;
-    users.users.root.hashedPasswordFile = config.sops.secrets."users/server".path;
+  flake.nixosModules.aether =
+    {
+      config,
+      pkgs,
+      inputs,
+      lib,
+      ...
+    }:
+    {
+      users.mutableUsers = false;
+      users.users.root.hashedPasswordFile = config.sops.secrets."users/server".path;
 
-    systemd.sleep.settings.Sleep = {
-      AllowSuspend = false;
-      AllowHiberntion = false;
-      AllowHybridSleep = false;
-      AllowSuspendThenHibernation = false;
-    };
-
-    programs.dconf.enable = true;
-
-    nix.settings.trusted-users = [ "root" "server" ];
-
-    networking.hostName = "aether-nixos";
-    networking.useDHCP = lib.mkForce false;
-    networking.nameservers = [ "9.9.9.9" ];
-
-    time.timeZone = "America/New_York";
-    i18n = {
-      defaultLocale = "en_US.UTF-8";
-      extraLocaleSettings = {
-        LC_ADDRESS = "en_US.UTF-8";
-        LC_IDENTIFICATION = "en_US.UTF-8";
-        LC_MEASUREMENT = "en_US.UTF-8";
-        LC_MONETARY = "en_US.UTF-8";
-        LC_NAME = "en_US.UTF-8";
-        LC_NUMERIC = "en_US.UTF-8";
-        LC_PAPER = "en_US.UTF-8";
-        LC_TELEPHONE = "en_US.UTF-8";
-        LC_TIME = "en_US.UTF-8";
+      systemd.sleep.settings.Sleep = {
+        AllowSuspend = false;
+        AllowHiberntion = false;
+        AllowHybridSleep = false;
+        AllowSuspendThenHibernation = false;
       };
-    };
 
-    services = {
-      xserver.xkb = {
-        layout = "us";
-        variant = "";
+      programs.dconf.enable = true;
+
+      nix.settings.trusted-users = [
+        "root"
+        "server"
+      ];
+
+      networking.hostName = "aether-nixos";
+      networking.useDHCP = lib.mkForce false;
+      networking.nameservers = [ "9.9.9.9" ];
+
+      time.timeZone = "America/New_York";
+      i18n = {
+        defaultLocale = "en_US.UTF-8";
+        extraLocaleSettings = {
+          LC_ADDRESS = "en_US.UTF-8";
+          LC_IDENTIFICATION = "en_US.UTF-8";
+          LC_MEASUREMENT = "en_US.UTF-8";
+          LC_MONETARY = "en_US.UTF-8";
+          LC_NAME = "en_US.UTF-8";
+          LC_NUMERIC = "en_US.UTF-8";
+          LC_PAPER = "en_US.UTF-8";
+          LC_TELEPHONE = "en_US.UTF-8";
+          LC_TIME = "en_US.UTF-8";
+        };
       };
-      openssh = {
-        enable = true;
-        openFirewall = true;
-        ports = [ 22 2222 ];
+
+      services = {
+        xserver.xkb = {
+          layout = "us";
+          variant = "";
+        };
+        openssh = {
+          enable = true;
+          openFirewall = true;
+          ports = [
+            22
+            2222
+          ];
+        };
       };
+
+      nixpkgs.config.allowUnfree = true;
+      programs.zsh.enable = true;
+      environment.systemPackages = with pkgs; [
+        vim
+        wget
+        git
+      ];
+
+      system.stateVersion = "26.05";
     };
-
-    nixpkgs.config.allowUnfree = true;
-    programs.zsh.enable = true;
-    environment.systemPackages = with pkgs; [
-      vim
-      wget
-      git
-    ];
-
-    system.stateVersion = "26.05";
-  };
 
   flake.nixosModules.aetherDisko = { inputs, lib, ... }: {
     imports = [ inputs.disko.nixosModules.disko ];
@@ -164,18 +178,32 @@
     fileSystems."/nix".neededForBoot = true;
   };
 
-  flake.nixosModules.aetherHardware = { config, lib, pkgs, modulesPath, ... }: {
-    imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
+  flake.nixosModules.aetherHardware =
+    {
+      config,
+      lib,
+      pkgs,
+      modulesPath,
+      ...
+    }:
+    {
+      imports = [ (modulesPath + "/profiles/qemu-guest.nix") ];
 
-    boot = {
-      initrd = {
-        availableKernelModules = [ "ata_piix" "uhci_hcd" "virtio_pci" "sr_mod" "virtio_blk" ];
+      boot = {
+        initrd = {
+          availableKernelModules = [
+            "ata_piix"
+            "uhci_hcd"
+            "virtio_pci"
+            "sr_mod"
+            "virtio_blk"
+          ];
+          kernelModules = [ ];
+        };
         kernelModules = [ ];
+        extraModulePackages = [ ];
       };
-      kernelModules = [ ];
-      extraModulePackages = [ ];
-    };
 
-    nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  };
+      nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+    };
 }

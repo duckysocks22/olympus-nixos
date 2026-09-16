@@ -23,7 +23,8 @@
       payloadLibs = [
         gcc.cc.lib
         libglvnd
-      ] ++ qtLibs;
+      ]
+      ++ qtLibs;
     in
     {
       packages.decky-lsfg-vk = stdenvNoCC.mkDerivation (finalAttrs: {

@@ -1,82 +1,90 @@
 { inputs, self, ... }: {
-  flake.nixosModules.defaultSops = { inputs, config, pkgs, ... }: let
-    # iwd (via ell) cannot parse the p11-kit-format CA bundle NixOS installs:
-    # any "-----BEGIN TRUSTED CERTIFICATE-----" block aborts the whole load.
-    # Extract only the plain X.509 certificates into a standalone PEM file.
-    iwdCaBundle = pkgs.runCommand "iwd-ca-certificates.pem" { } ''
-      awk '/^-----BEGIN CERTIFICATE-----$/,/^-----END CERTIFICATE-----$/' \
-        ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt > $out
-    '';
-  in {
-    imports = [
-      inputs.sops-nix.nixosModules.sops
-    ];
-
-    sops.defaultSopsFile = ../../secrets/secrets.yaml;
-    sops.defaultSopsFormat = "yaml";
-    sops.useSystemdActivation = true;
-
-    sops.age.keyFile = "${config.users.users.foxtrot.home}/.config/sops/age/keys.txt";
-
-    sops.secrets."samba/local".mode = "0440";
-    sops.secrets."samba/local".owner = config.users.users.foxtrot.name;
-    sops.secrets."samba/local".group = config.users.users.foxtrot.group;
-
-    #sops.secrets."syncthing/circe/cert" = { owner = "syncthing"; path = "/run/secrets/syncthing/circe/cert.pem"; };
-    #sops.secrets."syncthing/circe/key" = { owner = "syncthing"; path = "/run/secrets/syncthing/circe/key.pem"; };
-
-    sops.secrets."netbird/client-key" = {
-      owner = "foxtrot";
-    };
-
-    sops.secrets."work/network" = { };
-    sops.secrets."work/user" = { };
-    sops.secrets."work/pass" = { };
-    sops.secrets."work/domain" = { };
-
-    sops.secrets."bazinga/pass" = { };
-
-    systemd.services.iwd-hidden-profile = {
-      description = "Dynamically generate IWD profile for Work Network";
-      wantedBy = [ "multi-user.target" ];
-      before = [
-        "iwd.service"
-        "NetworkManager.service"
+  flake.nixosModules.defaultSops =
+    {
+      inputs,
+      config,
+      pkgs,
+      ...
+    }:
+    let
+      # iwd (via ell) cannot parse the p11-kit-format CA bundle NixOS installs:
+      # any "-----BEGIN TRUSTED CERTIFICATE-----" block aborts the whole load.
+      # Extract only the plain X.509 certificates into a standalone PEM file.
+      iwdCaBundle = pkgs.runCommand "iwd-ca-certificates.pem" { } ''
+        awk '/^-----BEGIN CERTIFICATE-----$/,/^-----END CERTIFICATE-----$/' \
+          ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt > $out
+      '';
+    in
+    {
+      imports = [
+        inputs.sops-nix.nixosModules.sops
       ];
 
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
+      sops.defaultSopsFile = ../../secrets/secrets.yaml;
+      sops.defaultSopsFormat = "yaml";
+      sops.useSystemdActivation = true;
+
+      sops.age.keyFile = "${config.users.users.foxtrot.home}/.config/sops/age/keys.txt";
+
+      sops.secrets."samba/local".mode = "0440";
+      sops.secrets."samba/local".owner = config.users.users.foxtrot.name;
+      sops.secrets."samba/local".group = config.users.users.foxtrot.group;
+
+      #sops.secrets."syncthing/circe/cert" = { owner = "syncthing"; path = "/run/secrets/syncthing/circe/cert.pem"; };
+      #sops.secrets."syncthing/circe/key" = { owner = "syncthing"; path = "/run/secrets/syncthing/circe/key.pem"; };
+
+      sops.secrets."netbird/client-key" = {
+        owner = "foxtrot";
       };
 
-      script = ''
-              SSID=$(cat ${config.sops.secrets."work/network".path})
-              USER=$(cat ${config.sops.secrets."work/user".path})
-              PASS=$(cat ${config.sops.secrets."work/pass".path})
-              DOMAIN=$(cat ${config.sops.secrets."work/domain".path})
+      sops.secrets."work/network" = { };
+      sops.secrets."work/user" = { };
+      sops.secrets."work/pass" = { };
+      sops.secrets."work/domain" = { };
 
-              TARGET_FILE="/var/lib/iwd/$SSID.8021x"
+      sops.secrets."bazinga/pass" = { };
 
-              cat <<EOF > "$TARGET_FILE"
-        [Security]
-        EAP-Method=PEAP
-        EAP-Identity=$USER
-        EAP-PEAP-CACert=${iwdCaBundle}
-        EAP-PEAP-ServerDomainMask=*.$DOMAIN
-        EAP-PEAP-Phase2-Method=MSCHAPV2
-        EAP-PEAP-Phase2-Identity=$USER
-        EAP-PEAP-Phase2-Password=$PASS
+      systemd.services.iwd-hidden-profile = {
+        description = "Dynamically generate IWD profile for Work Network";
+        wantedBy = [ "multi-user.target" ];
+        before = [
+          "iwd.service"
+          "NetworkManager.service"
+        ];
 
-        [Settings]
-        AutoConnect=true
-        ScanForHiddenNetwork=true
-        EOF
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+        };
 
-              chown root:root "$TARGET_FILE"
-              chmod 0600 "$TARGET_FILE"
-      '';
+        script = ''
+                SSID=$(cat ${config.sops.secrets."work/network".path})
+                USER=$(cat ${config.sops.secrets."work/user".path})
+                PASS=$(cat ${config.sops.secrets."work/pass".path})
+                DOMAIN=$(cat ${config.sops.secrets."work/domain".path})
+
+                TARGET_FILE="/var/lib/iwd/$SSID.8021x"
+
+                cat <<EOF > "$TARGET_FILE"
+          [Security]
+          EAP-Method=PEAP
+          EAP-Identity=$USER
+          EAP-PEAP-CACert=${iwdCaBundle}
+          EAP-PEAP-ServerDomainMask=*.$DOMAIN
+          EAP-PEAP-Phase2-Method=MSCHAPV2
+          EAP-PEAP-Phase2-Identity=$USER
+          EAP-PEAP-Phase2-Password=$PASS
+
+          [Settings]
+          AutoConnect=true
+          ScanForHiddenNetwork=true
+          EOF
+
+                chown root:root "$TARGET_FILE"
+                chmod 0600 "$TARGET_FILE"
+        '';
+      };
     };
-  };
 
   flake.nixosModules.aetherSops = { inputs, config, ... }: {
     imports = [
@@ -88,7 +96,9 @@
 
     sops.age.keyFile = "${config.users.users.server.home}/.config/sops/age/keys.txt";
 
-    sops.secrets."users/server" = { neededForUsers = true; };
+    sops.secrets."users/server" = {
+      neededForUsers = true;
+    };
   };
 
   flake.nixosModules.serverSops = { inputs, config, ... }: {
@@ -123,7 +133,7 @@
     sops.secrets."remotebuilder/circe" = { };
     sops.secrets."admin/user" = { };
     sops.secrets."admin/pass" = { };
-    sops.secrets."copyparty/foxtrot" = { 
+    sops.secrets."copyparty/foxtrot" = {
       owner = "copyparty";
     };
 

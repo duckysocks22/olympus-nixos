@@ -100,24 +100,28 @@
       };
 
       boot = {
-        kernelPackages = let
-          kernel = {
-            "nyx-nixos" = pkgs.linuxPackages_latest;
-            "aether-nixos" = pkgs.linuxPackages_latest;
-            "athena-nixos" = rcKernel;
-            "circe-nixos" = rcKernel;
-          };
-          rcKernel = pkgs.linuxPackagesFor (pkgs.linuxKernel.kernels.linux_7_2.override {
-            argsOverride = rec {
-              src = pkgs.fetchurl {
-                url = "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-7.3-rc3.tar.gz";
-                sha256 = "sha256-SbJBGde5Ladbug2vXaT3c1yMuUh1eiguhJCS3MaB2N0=";
-              };
-              version = "7.3.0-rc3";
-              modDirVersion = "7.3.0-rc3";
+        kernelPackages =
+          let
+            kernel = {
+              "nyx-nixos" = pkgs.linuxPackages_latest;
+              "aether-nixos" = pkgs.linuxPackages_latest;
+              "athena-nixos" = rcKernel;
+              "circe-nixos" = rcKernel;
             };
-          });
-        in kernel.${config.networking.hostName};
+            rcKernel = pkgs.linuxPackagesFor (
+              pkgs.linuxKernel.kernels.linux_7_2.override {
+                argsOverride = rec {
+                  src = pkgs.fetchurl {
+                    url = "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-7.3-rc3.tar.gz";
+                    sha256 = "sha256-SbJBGde5Ladbug2vXaT3c1yMuUh1eiguhJCS3MaB2N0=";
+                  };
+                  version = "7.3.0-rc3";
+                  modDirVersion = "7.3.0-rc3";
+                };
+              }
+            );
+          in
+          kernel.${config.networking.hostName};
         kernelModules = [
           "sg"
           "hid-tmff-new"
@@ -127,12 +131,18 @@
           "amd_pstate=active"
           "quiet"
           "splash"
-        ] ++ lib.optionals (!(builtins.elem config.networking.hostName [
-          "dionysus-nixos"
-          "ariadne-nixos"
-        ])) [
-          "amd_iommu=on"
-        ];
+        ]
+        ++
+          lib.optionals
+            (
+              !(builtins.elem config.networking.hostName [
+                "dionysus-nixos"
+                "ariadne-nixos"
+              ])
+            )
+            [
+              "amd_iommu=on"
+            ];
         loader = {
           limine = {
             enable = true;
@@ -369,43 +379,41 @@
       wantedBy = [ "multi-user.target" ];
       after = [ "systemd-modules-load.service" ];
       serviceConfig = {
-        ExecStart = "${
-          pkgs.writeShellScriptBin "power-logging" ''
-            INTERVAL=60
-            RAPL=/sys/class/powercap/intel-rapl:0/energy_uj
-            STATE_DIR="''${STATE_DIRECTORY:-/var/lib/power-logging}"
-            OUT="$STATE_DIR/power.csv"
+        ExecStart = "${pkgs.writeShellScriptBin "power-logging" ''
+          INTERVAL=60
+          RAPL=/sys/class/powercap/intel-rapl:0/energy_uj
+          STATE_DIR="''${STATE_DIRECTORY:-/var/lib/power-logging}"
+          OUT="$STATE_DIR/power.csv"
 
-            if [ ! -e "$RAPL" ]; then
-              echo "power-logging: no RAPL energy counter found, not logging"
-              exit 0
+          if [ ! -e "$RAPL" ]; then
+            echo "power-logging: no RAPL energy counter found, not logging"
+            exit 0
+          fi
+
+          if [ ! -f "$OUT" ]; then
+            echo "timestamp,cpu_w,gpu_w" > "$OUT"
+          fi
+
+          prev=$(cat "$RAPL")
+          while sleep "$INTERVAL"; do
+            cur=$(cat "$RAPL")
+            delta=$((cur - prev))
+            if [ "$delta" -lt 0 ]; then
+              delta=$((delta + 4294967296))
+            fi
+            prev=$cur
+
+            mw=$((delta / INTERVAL / 1000))
+            cpu_w="$((mw / 1000)).$(printf '%02d' $((mw % 1000 / 10)))"
+
+            gpu_w=""
+            if command -v nvidia-smi >/dev/null 2>&1; then
+              gpu_w=$(nvidia-smi --query-gpu=power.draw --format=csv,noheader,nounits 2>/dev/null | head -1 || true)
             fi
 
-            if [ ! -f "$OUT" ]; then
-              echo "timestamp,cpu_w,gpu_w" > "$OUT"
-            fi
-
-            prev=$(cat "$RAPL")
-            while sleep "$INTERVAL"; do
-              cur=$(cat "$RAPL")
-              delta=$((cur - prev))
-              if [ "$delta" -lt 0 ]; then
-                delta=$((delta + 4294967296))
-              fi
-              prev=$cur
-
-              mw=$((delta / INTERVAL / 1000))
-              cpu_w="$((mw / 1000)).$(printf '%02d' $((mw % 1000 / 10)))"
-
-              gpu_w=""
-              if command -v nvidia-smi >/dev/null 2>&1; then
-                gpu_w=$(nvidia-smi --query-gpu=power.draw --format=csv,noheader,nounits 2>/dev/null | head -1 || true)
-              fi
-
-              echo "$(date -u +%FT%TZ),''${cpu_w},''${gpu_w}" >> "$OUT"
-            done
-          ''
-        }/bin/power-logging";
+            echo "$(date -u +%FT%TZ),''${cpu_w},''${gpu_w}" >> "$OUT"
+          done
+        ''}/bin/power-logging";
         StateDirectory = "power-logging";
         Restart = "on-failure";
         RestartSec = "30s";
