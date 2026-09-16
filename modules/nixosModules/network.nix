@@ -196,7 +196,7 @@
                 "192.168.10.0/24"
                 "fd31:bf08:57cb::/64"
               ];
-              Endpoint = "olympus.moe:4500";
+              Endpoint = "vpn.olympus.moe:4500";
             }
             /*{
               # hermera-nixos

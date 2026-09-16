@@ -25,7 +25,7 @@
     };
     publicKey = {
       "nyx-nixos" = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
-      "aether-nixos" = "asdf";
+      "aether-nixos" = "I0bbm5zxn4+zj2vtW7/aT1asyUCpTi9h6G4Z6itq03g=";
     };
   in {
     sops.secrets."wireguard/${config.networking.hostName}/privateKey" = { mode = "640"; owner = "systemd-network"; group = "systemd-network"; };
@@ -86,6 +86,14 @@
             AllowedIPs = [
               "fd31:bf08:57cb::2/128"
               "192.168.10.2/32"
+            ];
+          }
+          {
+            # nyx-nixos
+            PublicKey = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
+            AllowedIPs = [
+              "fd31:bf08:57cb::253/128"
+              "192.168.10.253/32"
             ];
           }
         ];
