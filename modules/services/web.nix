@@ -94,6 +94,8 @@
                 "192.168.10.2/32"
               ];
             }
+          ]
+          ++ lib.optionals (config.networking.hostName != "nyx-nixos") [
             {
               # nyx-nixos
               PublicKey = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
@@ -102,6 +104,8 @@
                 "192.168.10.253/32"
               ];
             }
+          ]
+          ++ lib.optionals (config.networking.hostName != "aether-nixos") [
             {
               # aether-nixos
               PublicKey = "73mtIREvRqhfiUhfG47ITB3q+nMIO5M5+eVfIj9CslI=";

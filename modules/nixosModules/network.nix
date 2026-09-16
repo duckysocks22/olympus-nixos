@@ -211,10 +211,10 @@
               }
               {
                 #nyx-nixos
-                PublicKey = "";
+                PublicKey = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
                 AllowedIPs = [
-                  "192.168.10.0/24"
-                  "fd31:bf08:57cb::/64"
+                  "fd31:bf08:57cb::253/128"
+                  "192.168.10.253/32"
                 ];
                 Endpoint = "vpn2.olympus.moe:4500";
               }

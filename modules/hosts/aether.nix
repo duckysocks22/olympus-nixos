@@ -17,7 +17,6 @@
       self.nixosModules.server
       self.nixosModules.aetherSops
       self.nixosModules.buildClient
-      self.nixosModules.wireguardHost
     ];
   };
 

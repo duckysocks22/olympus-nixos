@@ -24,7 +24,6 @@
       self.nixosModules.gameServers
       self.nixosModules.files
       self.nixosModules.buildHost
-      self.nixosModules.wireguardHost
     ];
   };
 
