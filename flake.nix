@@ -4,13 +4,28 @@
     nixpkgs-unstable.url = "github:NixOs/nixpkgs/nixos-unstable";
     home-manager-unstable.url = "github:nix-community/home-manager";
     nix-index-database.url = "github:nix-community/nix-index-database";
-    
-    flake-parts = { url = "github:hercules-ci/flake-parts"; };
-    import-tree = { url = "github:vic/import-tree"; };
-    home-manager = { url = "github:nix-community/home-manager/release-26.05"; inputs.nixpkgs.follows = "nixpkgs"; };
-    sops-nix = { url = "github:Mic92/sops-nix"; inputs.nixpkgs.follows = "nixpkgs"; };
-    disko = { url = "github:nix-community/disko"; inputs.nixpkgs.follows = "nixpkgs"; };
-    preservation = { url = "github:nix-community/preservation"; };
+
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+    };
+    import-tree = {
+      url = "github:vic/import-tree";
+    };
+    home-manager = {
+      url = "github:nix-community/home-manager/release-26.05";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    preservation = {
+      url = "github:nix-community/preservation";
+    };
 
     niri = {
       url = "github:sodiboo/niri-flake";

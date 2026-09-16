@@ -26,7 +26,12 @@
         "dionysus-nixos" = "null";
         "ariadne-nixos" = "enp5s0";
       };
-      hasEthernet = host: let eth = ethDevice.${host}; in eth != "" && eth != "null";
+      hasEthernet =
+        host:
+        let
+          eth = ethDevice.${host};
+        in
+        eth != "" && eth != "null";
     in
     {
       imports = [
@@ -126,86 +131,94 @@
       };
       systemd.services.avahi-daemon.requires = lib.mkForce [ ];
     };
-  
-  flake.nixosModules.wireguardPeer = { config, lib, ... }: let
-    IPv4Address = {
-      "athena-nixos" = "192.168.10.1/32";
-      "circe-nixos" = "192.168.10.2/32";
-    };
-    IPv6Address = {
-      "athena-nixos" = "fd31:bf08:57cb::1/128";
-      "circe-nixos" = "fd31:bf08:57cb::2/128";
-    };
-    puiblicKey = {
-      "athena-nixos" = "asdf";
-      "circe-nixos" = "lBu6K0aoE95f9h/t1jB9Rgr9BTM8X9X0SYVE7hh6sxs=";
-    };
-  in {
-    config = lib.mkIf (builtins.elem config.networking.hostName (builtins.attrNames IPv4Address)) {
-      sops.secrets."wireguard/${config.networking.hostName}/privateKey" = { mode = "640"; owner = "systemd-network"; group = "systemd-network"; };
 
-      networking = {
-        firewall.allowedUDPPorts = [ 4500 ];
-        networkmanager.unmanaged = [ "interface-name:wg0" ];
+  flake.nixosModules.wireguardPeer =
+    { config, lib, ... }:
+    let
+      IPv4Address = {
+        "athena-nixos" = "192.168.10.1/32";
+        "circe-nixos" = "192.168.10.2/32";
       };
+      IPv6Address = {
+        "athena-nixos" = "fd31:bf08:57cb::1/128";
+        "circe-nixos" = "fd31:bf08:57cb::2/128";
+      };
+      puiblicKey = {
+        "athena-nixos" = "asdf";
+        "circe-nixos" = "lBu6K0aoE95f9h/t1jB9Rgr9BTM8X9X0SYVE7hh6sxs=";
+      };
+    in
+    {
+      config = lib.mkIf (builtins.elem config.networking.hostName (builtins.attrNames IPv4Address)) {
+        sops.secrets."wireguard/${config.networking.hostName}/privateKey" = {
+          mode = "640";
+          owner = "systemd-network";
+          group = "systemd-network";
+          restartUnits = [ "systemd-networkd.service" ];
+        };
 
-      systemd.network = {
-        enable = true;
-        networks."50-wg0" = {
-          matchConfig.Name = "wg0";
+        networking = {
+          firewall.allowedUDPPorts = [ 4500 ];
+          networkmanager.unmanaged = [ "interface-name:wg0" ];
+        };
 
-          address = [
-            IPv4Address.${config.networking.hostName}
-            IPv6Address.${config.networking.hostName}
-          ];
+        systemd.network = {
+          enable = true;
+          networks."50-wg0" = {
+            matchConfig.Name = "wg0";
 
-          networkConfig = {
-            IPv4Forwarding = true;
-            IPv6Forwarding = true;
-          };
+            address = [
+              IPv4Address.${config.networking.hostName}
+              IPv6Address.${config.networking.hostName}
+            ];
 
-          routingPolicyRules = [
-            {
-              routingPolicyRuleConfig = {
+            networkConfig = {
+              IPv4Forwarding = true;
+              IPv6Forwarding = true;
+            };
+
+            routingPolicyRules = [
+              {
                 Priority = 100;
                 FirewallMark = 42;
                 Table = "main";
-              };
-            }
-          ];
-        };
-
-        netdevs."50-wg0" = {
-          netdevConfig = {
-            Kind = "wireguard";
-            Name = "wg0";
+              }
+            ];
           };
 
-          wireguardConfig = {
-            ListenPort = 4500;
-            PrivateKeyFile = config.sops.secrets."wireguard/${config.networking.hostName}/privateKey".path;
-            RouteTable = "main";
-            FirewallMark = 42;
+          netdevs."50-wg0" = {
+            netdevConfig = {
+              Kind = "wireguard";
+              Name = "wg0";
+            };
+
+            wireguardConfig = {
+              ListenPort = 4500;
+              PrivateKeyFile = config.sops.secrets."wireguard/${config.networking.hostName}/privateKey".path;
+              RouteTable = "main";
+              FirewallMark = 42;
+            };
+
+            wireguardPeers = [
+              {
+                #aether-nixos
+                PublicKey = "73mtIREvRqhfiUhfG47ITB3q+nMIO5M5+eVfIj9CslI=";
+                AllowedIPs = [
+                  "192.168.10.0/24"
+                  "fd31:bf08:57cb::/64"
+                ];
+                Endpoint = "vpn1.olympus.moe:4500";
+              }
+              /*
+                {
+                  # hermera-nixos
+                }
+              */
+            ];
           };
-          
-          wireguardPeers = [
-            {
-              #aether-nixos
-              PublicKey = "73mtIREvRqhfiUhfG47ITB3q+nMIO5M5+eVfIj9CslI=";
-              AllowedIPs = [
-                "192.168.10.0/24"
-                "fd31:bf08:57cb::/64"
-              ];
-              Endpoint = "vpn.olympus.moe:4500";
-            }
-            /*{
-              # hermera-nixos
-            }*/
-          ];
         };
       };
     };
-  };
 
   flake.nixosModules.mullvad = { config, pkgs, ... }: {
     services.mullvad-vpn.enable = true;
@@ -238,101 +251,112 @@
     };
   };
 
-  flake.nixosModules.serverNetwork = { inputs, config, lib, ... }: let
-    IPv4Address = {
-      "nyx-nixos" = "172.17.100.1/16";
-      "aether-nixos" = "107.174.36.56/24";
-    };
-    adapter = {
-      "nyx-nixos" = "enp34s0";
-      "aether-nixos" = "ens3";
-    };
-    gateway = {
-      "nyx-nixos" = "172.17.0.254";
-    };
-    useDhcp = {
-      "nyx-nixos" = false;
-      "aether-nixos" = true;
-    };
-  in {
-    imports = [ inputs.self.nixosModules.wireguardHost ];
-    systemd.network = {
-      enable = true;
-      networks."${adapter.${config.networking.hostName}}" = {
-        matchConfig.Name = adapter.${config.networking.hostName};
-        networkConfig = {
-          DHCP = if useDhcp.${config.networking.hostName} then "yes" else "no";
-          DNS = "9.9.9.9";
-        } // lib.optionalAttrs (!useDhcp.${config.networking.hostName}) {
-          Address = IPv4Address.${config.networking.hostName};
-          Gateway = gateway.${config.networking.hostName};
-        };
-        linkConfig.RequiredForOnline = "yes";
+  flake.nixosModules.serverNetwork =
+    {
+      inputs,
+      config,
+      lib,
+      ...
+    }:
+    let
+      IPv4Address = {
+        "nyx-nixos" = "172.17.100.1/16";
+        "aether-nixos" = "107.174.36.56/24";
       };
-    };
-
-    networking.firewall = {
-      trustedInterfaces = [ adapter.${config.networking.hostName} ];
-      checkReversePath = "loose";
-      allowedTCPPorts = [
-        80
-        443
-        631
-        8080
-        7989
-        8096
-        3003
-        853
-        854
-        2222
-        25
-        1883
-        53
-        67
-        68
-        3210
-        3211
-      ] ++ lib.optionals config.services.home-assistant.enable [
-        config.services.home-assistant.config.http.server_port
-      ] ++ [
-        25665
-        25666
-        25765
-        25766
-        25865
-        25866
-        445
-      ];
-      allowedUDPPorts = [
-        53
-        853
-        5353
-        67
-        68
-        4001
-        4002
-        4003
-      ];
-    };
-
-    services.fail2ban = {
-      enable = true;
-      maxretry = 5;
-      ignoreIP = lib.optionals (IPv4Address ? ${config.networking.hostName}) [
-        IPv4Address.${config.networking.hostName}
-      ];
-      bantime = "24h";
-      bantime-increment = {
+      adapter = {
+        "nyx-nixos" = "enp34s0";
+        "aether-nixos" = "ens3";
+      };
+      gateway = {
+        "nyx-nixos" = "172.17.0.254";
+      };
+      useDhcp = {
+        "nyx-nixos" = false;
+        "aether-nixos" = true;
+      };
+    in
+    {
+      imports = [ inputs.self.nixosModules.wireguardHost ];
+      systemd.network = {
         enable = true;
-        formula = "ban.Time * math.exp(float(ban.Count+1)*banFactor)/math.exp(1*banFactor)";
-        # multipliers = "1 2 4 8 16 32 64";
-        maxtime = "168h";
-        overalljails = true;
+        networks."${adapter.${config.networking.hostName}}" = {
+          matchConfig.Name = adapter.${config.networking.hostName};
+          networkConfig = {
+            DHCP = if useDhcp.${config.networking.hostName} then "yes" else "no";
+            DNS = "9.9.9.9";
+          }
+          // lib.optionalAttrs (!useDhcp.${config.networking.hostName}) {
+            Address = IPv4Address.${config.networking.hostName};
+            Gateway = gateway.${config.networking.hostName};
+          };
+          linkConfig.RequiredForOnline = "yes";
+        };
       };
-      jails = {
+
+      networking.firewall = {
+        trustedInterfaces = [ adapter.${config.networking.hostName} ];
+        checkReversePath = "loose";
+        allowedTCPPorts = [
+          80
+          443
+          631
+          8080
+          7989
+          8096
+          3003
+          853
+          854
+          2222
+          25
+          1883
+          53
+          67
+          68
+          3210
+          3211
+        ]
+        ++ lib.optionals config.services.home-assistant.enable [
+          config.services.home-assistant.config.http.server_port
+        ]
+        ++ [
+          25665
+          25666
+          25765
+          25766
+          25865
+          25866
+          445
+        ];
+        allowedUDPPorts = [
+          53
+          853
+          5353
+          67
+          68
+          4001
+          4002
+          4003
+        ];
+      };
+
+      services.fail2ban = {
+        enable = true;
+        maxretry = 5;
+        ignoreIP = lib.optionals (IPv4Address ? ${config.networking.hostName}) [
+          IPv4Address.${config.networking.hostName}
+        ];
+        bantime = "24h";
+        bantime-increment = {
+          enable = true;
+          formula = "ban.Time * math.exp(float(ban.Count+1)*banFactor)/math.exp(1*banFactor)";
+          # multipliers = "1 2 4 8 16 32 64";
+          maxtime = "168h";
+          overalljails = true;
+        };
+        jails = {
+        };
       };
     };
-  };
 
   flake.nixosModules.dnscrypt-proxy =
     { lib, ... }:
