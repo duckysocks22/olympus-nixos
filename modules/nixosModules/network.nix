@@ -166,11 +166,9 @@
 
           routingPolicyRules = [
             {
-              routingPolicyRuleConfig = {
-                Priority = 100;
-                FirewallMark = 42;
-                Table = "main";
-              };
+              Priority = 100;
+              FirewallMark = 42;
+              Table = "main";
             }
           ];
         };
