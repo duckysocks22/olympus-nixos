@@ -107,7 +107,7 @@
             "athena-nixos" = rcKernel;
             "circe-nixos" = rcKernel;
           };
-          rcKernel = pkgs.linuxKernel.kernels.linux_7_2.override {
+          rcKernel = pkgs.linuxPackagesFor (pkgs.linuxKernel.kernels.linux_7_2.override {
             argsOverride = rec {
               src = pkgs.fetchurl {
                 url = "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-7.3-rc3.tar.gz";
@@ -116,7 +116,7 @@
               version = "7.3.0-rc3";
               modDirVersion = "7.3.0-rc3";
             };
-          };
+          });
         in kernel.${config.networking.hostName};
         kernelModules = [
           "sg"
