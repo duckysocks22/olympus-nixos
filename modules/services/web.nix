@@ -109,6 +109,8 @@
                 "fd31:bf08:57cb::254/128"
                 "192.168.10.254/32"
               ];
+              Endpoint = "vpn1.olympus.moe:4500";
+              PersistentKeepalive = 25;
             }
           ];
         };
