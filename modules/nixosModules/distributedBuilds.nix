@@ -41,9 +41,6 @@
 
     programs.ssh.knownHosts.nyx-nixos = {
       hostNames = [
-        "172.17.100.1"
-        "192.168.10.253"
-        "nyx-nixos"
         "ssh.olympus.moe"
       ];
       publicKey = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIEeEqqcPRubu6LqVhSZQY63rv0ALqn8OY1UuLCXB2wfd";
