@@ -62,35 +62,7 @@
         };
       };
 
-      networking.nat = {
-        enable = true;
-        enableIPv6 = true;
-        externalInterface = "enp34s0";
-        internalInterfaces = [ "wg0" ];
-      };
-
-      networking = {
-        useNetworkd = true;
-        firewall.allowedUDPPorts = [ 4500 ];
-      };
-
-      systemd.network = {
-        enable = true;
-        networks."50-wg0" = {
-          matchConfig.Name = "wg0";
-
-          address = [
-            IPv4Address.${config.networking.hostName}
-            IPv6Address.${config.networking.hostName}
-          ];
-
-          networkConfig = {
-            IPv4Forwarding = true;
-            IPv6Forwarding = true;
-          };
-        };
-
-        netdevs."50-wg0" = {
+      netdevs."50-wg0" = {
           netdevConfig = {
             Kind = "wireguard";
             Name = "wg0";
