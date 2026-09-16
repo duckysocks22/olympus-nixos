@@ -11,10 +11,13 @@
       self.nixosModules.aether
       self.nixosModules.aetherHardware
       self.nixosModules.aetherDisko
+      self.nixosModules.system
+      self.nixosModules.systemHarden
       self.nixosModules.serverNetwork
       self.nixosModules.server
       self.nixosModules.aetherSops
       self.nixosModules.buildClient
+      self.nixosModules.wireguardHost
     ];
   };
 
@@ -157,6 +160,7 @@
       efiSupport = true;
       efiInstallAsRemovable = true;
     };
+    boot.loader.limine.enable = lib.mkForce false;
     fileSystems."/nix".neededForBoot = true;
   };
 

@@ -30,8 +30,6 @@
 
     security.protectKernelImage = lib.mkDefault true;
 
-    boot.kernel.sysctl."kernel.kexec_load_disabled" = lib.mkDefault true;
-
     boot.kernelParams = [
       "slab_nomerge"
 
