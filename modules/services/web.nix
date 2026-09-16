@@ -102,6 +102,14 @@
                 "192.168.10.253/32"
               ];
             }
+            {
+              # aether-nixos
+              PublicKey = "73mtIREvRqhfiUhfG47ITB3q+nMIO5M5+eVfIj9CslI=";
+              AllowedIPs = [
+                "fd31:bf08:57cb::254/128"
+                "192.168.10.254/32"
+              ];
+            }
           ];
         };
       };

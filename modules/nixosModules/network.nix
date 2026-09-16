@@ -209,11 +209,15 @@
                 ];
                 Endpoint = "vpn1.olympus.moe:4500";
               }
-              /*
-                {
-                  # hermera-nixos
-                }
-              */
+              {
+                #nyx-nixos
+                PublicKey = "";
+                AllowedIPs = [
+                  "192.168.10.0/24"
+                  "fd31:bf08:57cb::/64"
+                ];
+                Endpoint = "vpn2.olympus.moe:4500";
+              }
             ];
           };
         };
