@@ -604,6 +604,7 @@
       util,
       pkgs,
       lib,
+      config,
       ...
     }:
     {
