@@ -29,6 +29,8 @@
       AllowSuspendThenHibernation = false;
     };
 
+    programs.dconf.enable = true;
+
     nix.settings.trusted-users = [ "root" "server" ];
 
     networking.hostName = "aether-nixos";
