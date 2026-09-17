@@ -13,69 +13,76 @@
 
   flake.nixosModules.reverseProxy.imports = [ inputs.self.nixosModules.caddy ];
 
-  flake.nixosModules.wireguardHost = { config, lib, ... }: let
-    IPv4Address = {
-      "nyx-nixos" = "192.168.10.253/32";
-      "hermera-nixos" = "192.168.10.252/32";
-      "aether-nixos" = "192.168.10.254/32";
-    };
-    IPv6Address = {
-      "nyx-nixos" = "fd31:bf08:57cb::253/128";
-      "hermera-nixos" = "fd31:bf08:57cb::252/128";
-      "aether-nixos" = "fd31:bf08:57cb::254/128";
-    };
-    adapter = {
-      "aether-nixos" = "ens3";
-      "nyx-nixos" = "enp34s0";
-    };
-    publicKey = {
-      "nyx-nixos" = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
-      "aether-nixos" = "I0bbm5zxn4+zj2vtW7/aT1asyUCpTi9h6G4Z6itq03g=";
-    };
-  in {
-    sops.secrets."wireguard/${config.networking.hostName}/privateKey" = { mode = "640"; owner = "systemd-network"; group = "systemd-network"; };
-
-    networking.nat = {
-      enable = true;
-      enableIPv6 = true;
-      externalInterface = adapter.${config.networking.hostName};
-      internalInterfaces = [ "wg0" ];
-      # AdGuard DoT/DoQ on nyx, reached via wg0
-      forwardPorts = lib.optionals (config.networking.hostName == "aether-nixos") [
-        {
-          sourcePort = 853;
-          destination = "192.168.10.253:853";
-        }
-        {
-          sourcePort = 853;
-          proto = "udp";
-          destination = "192.168.10.253:853";
-        }
-      ];
-    };
-
-    networking = {
-      useNetworkd = true;
-      firewall.allowedUDPPorts = [ 4500 ];
-    };
-
-    systemd.network = {
-      enable = true;
-      networks."50-wg0" = {
-        matchConfig.Name = "wg0";
-
-        address = [
-          IPv4Address.${config.networking.hostName}
-          IPv6Address.${config.networking.hostName}
-        ];
-
-        networkConfig = {
-          IPv4Forwarding = true;
-          IPv6Forwarding = true;
-        };
+  flake.nixosModules.wireguardHost =
+    { config, lib, ... }:
+    let
+      IPv4Address = {
+        "nyx-nixos" = "192.168.10.253/32";
+        "hermera-nixos" = "192.168.10.252/32";
+        "aether-nixos" = "192.168.10.254/32";
+      };
+      IPv6Address = {
+        "nyx-nixos" = "fd31:bf08:57cb::253/128";
+        "hermera-nixos" = "fd31:bf08:57cb::252/128";
+        "aether-nixos" = "fd31:bf08:57cb::254/128";
+      };
+      adapter = {
+        "aether-nixos" = "ens3";
+        "nyx-nixos" = "enp34s0";
+      };
+      publicKey = {
+        "nyx-nixos" = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
+        "aether-nixos" = "I0bbm5zxn4+zj2vtW7/aT1asyUCpTi9h6G4Z6itq03g=";
+      };
+    in
+    {
+      sops.secrets."wireguard/${config.networking.hostName}/privateKey" = {
+        mode = "640";
+        owner = "systemd-network";
+        group = "systemd-network";
       };
 
-      netdevs."50-wg0" = {
+      networking.nat = {
+        enable = true;
+        enableIPv6 = true;
+        externalInterface = adapter.${config.networking.hostName};
+        internalInterfaces = [ "wg0" ];
+        # AdGuard DoT/DoQ on nyx, reached via wg0
+        forwardPorts = lib.optionals (config.networking.hostName == "aether-nixos") [
+          {
+            sourcePort = 853;
+            destination = "192.168.10.253:853";
+          }
+          {
+            sourcePort = 853;
+            proto = "udp";
+            destination = "192.168.10.253:853";
+          }
+        ];
+      };
+
+      networking = {
+        useNetworkd = true;
+        firewall.allowedUDPPorts = [ 4500 ];
+      };
+
+      systemd.network = {
+        enable = true;
+        networks."50-wg0" = {
+          matchConfig.Name = "wg0";
+
+          address = [
+            IPv4Address.${config.networking.hostName}
+            IPv6Address.${config.networking.hostName}
+          ];
+
+          networkConfig = {
+            IPv4Forwarding = true;
+            IPv6Forwarding = true;
+          };
+        };
+
+        netdevs."50-wg0" = {
           netdevConfig = {
             Kind = "wireguard";
             Name = "wg0";
@@ -637,24 +644,26 @@
       ...
     }:
     {
-      services.avahi = let
-        adapter = {
-          "aether-nixos" = "ens3";
-          "nyx-nixos" = "enp34s0";
-        };
-      in {
-        enable = true;
-        openFirewall = true;
-        allowInterfaces = [
-          adapter.${config.networking.hostName}
-        ];
-        publish = {
+      services.avahi =
+        let
+          adapter = {
+            "aether-nixos" = "ens3";
+            "nyx-nixos" = "enp34s0";
+          };
+        in
+        {
           enable = true;
-          domain = true;
-          userServices = true;
+          openFirewall = true;
+          allowInterfaces = [
+            adapter.${config.networking.hostName}
+          ];
+          publish = {
+            enable = true;
+            domain = true;
+            userServices = true;
+          };
+          nssmdns4 = true;
         };
-        nssmdns4 = true;
-      };
 
       systemd.sockets.avahi-daemon = {
         wantedBy = lib.mkForce [ ];
@@ -663,98 +672,101 @@
       systemd.services.avahi-daemon.requires = lib.mkForce [ ];
     };
 
-  flake.nixosModules.adguardhome = { lib, config, ... }: let
-    adapter = {
-      "aether-nixos" = "ens3";
-      "nyx-nixos" = "enp34s0";
-    };
-  in {
-    services.adguardhome = {
-      enable = true;
-      host = "0.0.0.0";
-      mutableSettings = false;
-      port = 3003;
-      allowDHCP = false;
-      settings = {
-        dns = {
-          upstream_dns = [
-            "9.9.9.9"
-            "8.8.8.8"
-            "8.8.4.4"
-          ];
-          bootstrap_dns = [
-            "9.9.9.9"
-          ];
-          #aaaa_disabled = true;
-        };
-        tls = {
-          enabled = true;
-          server_name = "dns.puppygirls.net";
-          serve_plain_dns = false;
-          force_https = false;
-          port_https = 854;
-          port_dns_over_tls = 853;
-          certificate_path = "${config.sops.secrets."adguardhome/domain_cert".path}";
-          private_key_path = "${config.sops.secrets."adguardhome/domain_key".path}";
-        };
-        dhcp = {
-          enabled = false;
-          interface_name = adapter.${config.networking.hostName};
-          dhcpv4 = {
-            gateway_ip = "172.17.0.254";
-            subnet_mask = "255.255.0.0";
-            lease_duration = 0;
-            range_start = "172.17.0.2";
-            range_end = "172.17.0.243";
+  flake.nixosModules.adguardhome =
+    { lib, config, ... }:
+    let
+      adapter = {
+        "aether-nixos" = "ens3";
+        "nyx-nixos" = "enp34s0";
+      };
+    in
+    {
+      services.adguardhome = {
+        enable = true;
+        host = "0.0.0.0";
+        mutableSettings = false;
+        port = 3003;
+        allowDHCP = false;
+        settings = {
+          dns = {
+            upstream_dns = [
+              "9.9.9.9"
+              "8.8.8.8"
+              "8.8.4.4"
+            ];
+            bootstrap_dns = [
+              "9.9.9.9"
+            ];
+            #aaaa_disabled = true;
           };
-        };
-        filtering = {
-          protection_enabled = true;
-          filtering_enabled = true;
-
-          parental_enabled = false;
-          safe_search = {
+          tls = {
+            enabled = true;
+            server_name = "dns.puppygirls.net";
+            serve_plain_dns = false;
+            force_https = false;
+            port_https = 854;
+            port_dns_over_tls = 853;
+            certificate_path = "${config.sops.secrets."adguardhome/domain_cert".path}";
+            private_key_path = "${config.sops.secrets."adguardhome/domain_key".path}";
+          };
+          dhcp = {
             enabled = false;
+            interface_name = adapter.${config.networking.hostName};
+            dhcpv4 = {
+              gateway_ip = "172.17.0.254";
+              subnet_mask = "255.255.0.0";
+              lease_duration = 0;
+              range_start = "172.17.0.2";
+              range_end = "172.17.0.243";
+            };
           };
+          filtering = {
+            protection_enabled = true;
+            filtering_enabled = true;
+
+            parental_enabled = false;
+            safe_search = {
+              enabled = false;
+            };
+          };
+
+          trusted_proxies = [
+            "127.0.0.1"
+            "172.17.100.1"
+          ];
+
+          filters =
+            map
+              (url: {
+                enabled = true;
+                url = url;
+              })
+              [
+                "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.txt"
+                "https://raw.githubusercontent.com/Perflyst/PiHoleBlocklist/refs/heads/master/SmartTV.txt"
+                "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.txt"
+                "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/popupads.txt"
+              ];
+
+          whitelist_filters =
+            map
+              (url: {
+                enabled = true;
+                url = url;
+              })
+              [
+                "https://dawn.wine/foxtrottt/olympus-nixos/raw/branch/main/modules/nyx/services/networking/adguardhome/allowlist.txt"
+              ];
+
+          protection_enabled = false;
         };
+      };
 
-        trusted_proxies = [
-          "127.0.0.1"
-          "172.17.100.1"
-        ];
-
-        filters =
-          map
-            (url: {
-              enabled = true;
-              url = url;
-            })
-            [
-              "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.txt"
-              "https://raw.githubusercontent.com/Perflyst/PiHoleBlocklist/refs/heads/master/SmartTV.txt"
-              "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.txt"
-              "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/popupads.txt"
-            ];
-
-        whitelist_filters =
-          map
-            (url: {
-              enabled = true;
-              url = url;
-            })
-            [
-              "https://dawn.wine/foxtrottt/olympus-nixos/raw/branch/main/modules/nyx/services/networking/adguardhome/allowlist.txt"
-            ];
-
-        protection_enabled = false;
+      systemd.services.adguardhome = {
+        serviceConfig = {
+          DynamicUser = lib.mkForce false;
+          User = "server";
+        };
       };
     };
-
-    systemd.services.adguardhome = {
-      serviceConfig = {
-        DynamicUser = lib.mkForce false;
-        User = "server";
-      };
-    };
-  };
 }

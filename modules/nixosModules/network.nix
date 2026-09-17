@@ -298,7 +298,10 @@
       };
 
       networking.firewall = {
-        trustedInterfaces = [ adapter.${config.networking.hostName} "wg0" ];
+        trustedInterfaces = [
+          adapter.${config.networking.hostName}
+          "wg0"
+        ];
         checkReversePath = "loose";
         allowedTCPPorts = [ 22 ];
         allowedUDPPorts = [ 53 ];
@@ -345,7 +348,7 @@
           ];
 
           static = {
-           "PuppyGirls-DNS".stamp =
+            "PuppyGirls-DNS".stamp =
               "sdns://AgcAAAAAAAAADTEwNy4xNzQuMzYuNTYAEmRucy5wdXBweWdpcmxzLm5ldAovZG5zLXF1ZXJ5";
             "PuppyGirlsLocal-DNS".stamp =
               "sdns://AgcAAAAAAAAAEDE3Mi4xNy4xMDAuMTo4NTQAEmRucy5wdXBweWdpcmxzLm5ldAovZG5zLXF1ZXJ5";

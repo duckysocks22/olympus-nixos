@@ -12,19 +12,11 @@
     xdg.configFile."mimeapps.list".force = true;
 
     home.packages = with pkgs; [
-      kitty
-      zellij
       fastfetch
       kdePackages.dolphin
       unrar
       p7zip
-      (bottles.override {
-        removeWarningPopup = true;
-      })
       libreoffice-qt-fresh
-      wine
-      winetricks
-      protontricks
       filezilla
       feather
       lunatask
@@ -555,306 +547,6 @@
       };
     };
 
-  flake.homeModules.download = { pkgs, inputs, ... }: {
-    home.packages =
-      (with pkgs; [
-
-      ])
-      ++ (with inputs.luxxy-pkgs.packages.${pkgs.stdenv.hostPlatform.system}; [
-        /*
-          (jdownloader.override {
-            darkTheme = true;
-          })
-        */
-      ]);
-  };
-
-  flake.homeModules.easyeffects = { ... }: {
-    services.easyeffects = {
-      enable = true;
-      preset = "BaseAudio";
-      extraPresets = {
-        BaseAudio = {
-          "input" = {
-            "blocklist" = [ ];
-            "compressor#0" = {
-              "attack" = 15.0;
-              "boost-amount" = 0.0;
-              "boost-threshold" = -72.0;
-              "bypass" = false;
-              "dry" = -80.01;
-              "hpf-frequency" = 10.0;
-              "hpf-mode" = "Off";
-              "input-gain" = 0.0;
-              "input-to-link" = 0.0;
-              "input-to-sidechain" = 0.0;
-              "knee" = -6.0;
-              "link-to-input" = 0.0;
-              "link-to-sidechain" = 0.0;
-              "lpf-frequency" = 20000.0;
-              "lpf-mode" = "Off";
-              "makeup" = 3.0;
-              "mode" = "Downward";
-              "output-gain" = 0.0;
-              "ratio" = 3.0;
-              "release" = 200.0;
-              "release-threshold" = -40.0;
-              "sidechain" = {
-                "lookahead" = 0.0;
-                "mode" = "RMS";
-                "preamp" = 0.0;
-                "reactivity" = 10.0;
-                "source" = "Middle";
-                "stereo-split-source" = "Left/Right";
-                "type" = "Feed-forward";
-              };
-              "sidechain-to-input" = 0.0;
-              "sidechain-to-link" = 0.0;
-              "stereo-split" = false;
-              "threshold" = -18.0;
-              "wet" = 0.0;
-            };
-            "deepfilternet#0" = {
-              "attenuation-limit" = 100.0;
-              "bypass" = false;
-              "input-gain" = 0.0;
-              "max-df-processing-threshold" = 20.0;
-              "max-erb-processing-threshold" = 30.0;
-              "min-processing-buffer" = 0;
-              "min-processing-threshold" = 5.0;
-              "output-gain" = 0.0;
-              "post-filter-beta" = 0.019999999552965164;
-            };
-            "deesser#0" = {
-              "bypass" = false;
-              "detection" = "RMS";
-              "f1-freq" = 4000.0;
-              "f1-level" = -6.0;
-              "f2-freq" = 8000.0;
-              "f2-level" = -6.0;
-              "f2-q" = 1.5;
-              "input-gain" = 0.0;
-              "laxity" = 15;
-              "makeup" = 0.0;
-              "mode" = "Split";
-              "output-gain" = 0.0;
-              "ratio" = 3.0;
-              "sc-listen" = false;
-              "threshold" = -22.0;
-            };
-            "equalizer#0" = {
-              "balance" = 0.1;
-              "bypass" = false;
-              "input-gain" = 0.0;
-              "left" = {
-                "band0" = {
-                  "frequency" = 80.0;
-                  "gain" = 0.0;
-                  "mode" = "RLC (BT)";
-                  "mute" = false;
-                  "q" = 0.7;
-                  "slope" = "x2";
-                  "solo" = false;
-                  "type" = "Hi-pass";
-                  "width" = 4.0;
-                };
-                "band1" = {
-                  "frequency" = 220.0;
-                  "gain" = -2.0;
-                  "mode" = "RLC (MT)";
-                  "mute" = false;
-                  "q" = 0.7;
-                  "slope" = "x1";
-                  "solo" = false;
-                  "type" = "Bell";
-                  "width" = 4.0;
-                };
-                "band2" = {
-                  "frequency" = 350.0;
-                  "gain" = -2.0;
-                  "mode" = "BWC (MT)";
-                  "mute" = false;
-                  "q" = 1.2;
-                  "slope" = "x2";
-                  "solo" = false;
-                  "type" = "Bell";
-                  "width" = 4.0;
-                };
-                "band3" = {
-                  "frequency" = 3500.0;
-                  "gain" = 2.0;
-                  "mode" = "BWC (BT)";
-                  "mute" = false;
-                  "q" = 0.9;
-                  "slope" = "x2";
-                  "solo" = false;
-                  "type" = "Bell";
-                  "width" = 4.0;
-                };
-                "band4" = {
-                  "frequency" = 10000.0;
-                  "gain" = 2.0;
-                  "mode" = "LRX (MT)";
-                  "mute" = false;
-                  "q" = 0.7;
-                  "slope" = "x1";
-                  "solo" = false;
-                  "type" = "Hi-shelf";
-                  "width" = 4.0;
-                };
-              };
-              "mode" = "IIR";
-              "num-bands" = 5;
-              "output-gain" = 0.0;
-              "pitch-left" = 0.0;
-              "pitch-right" = 0.0;
-              "right" = {
-                "band0" = {
-                  "frequency" = 80.0;
-                  "gain" = 0.0;
-                  "mode" = "RLC (BT)";
-                  "mute" = false;
-                  "q" = 0.7;
-                  "slope" = "x2";
-                  "solo" = false;
-                  "type" = "Hi-pass";
-                  "width" = 4.0;
-                };
-                "band1" = {
-                  "frequency" = 220.0;
-                  "gain" = -2.0;
-                  "mode" = "RLC (MT)";
-                  "mute" = false;
-                  "q" = 0.7;
-                  "slope" = "x1";
-                  "solo" = false;
-                  "type" = "Bell";
-                  "width" = 4.0;
-                };
-                "band2" = {
-                  "frequency" = 350.0;
-                  "gain" = -2.0;
-                  "mode" = "BWC (MT)";
-                  "mute" = false;
-                  "q" = 1.2;
-                  "slope" = "x2";
-                  "solo" = false;
-                  "type" = "Bell";
-                  "width" = 4.0;
-                };
-                "band3" = {
-                  "frequency" = 3500.0;
-                  "gain" = 2.0;
-                  "mode" = "BWC (BT)";
-                  "mute" = false;
-                  "q" = 0.9;
-                  "slope" = "x2";
-                  "solo" = false;
-                  "type" = "Bell";
-                  "width" = 4.0;
-                };
-                "band4" = {
-                  "frequency" = 10000.0;
-                  "gain" = 2.0;
-                  "mode" = "LRX (MT)";
-                  "mute" = false;
-                  "q" = 0.7;
-                  "slope" = "x1";
-                  "solo" = false;
-                  "type" = "Hi-shelf";
-                  "width" = 4.0;
-                };
-              };
-              "split-channels" = false;
-            };
-            "gate#0" = {
-              "attack" = 5.0;
-              "bypass" = false;
-              "curve-threshold" = -50.0;
-              "curve-zone" = -2.0;
-              "dry" = -80.01;
-              "hpf-frequency" = 10.0;
-              "hpf-mode" = "Off";
-              "hysteresis" = true;
-              "hysteresis-threshold" = -3.0;
-              "hysteresis-zone" = -1.0;
-              "input-gain" = 0.0;
-              "input-to-link" = 0.0;
-              "input-to-sidechain" = 0.0;
-              "link-to-input" = 0.0;
-              "link-to-sidechain" = 0.0;
-              "lpf-frequency" = 20000.0;
-              "lpf-mode" = "Off";
-              "makeup" = 1.0;
-              "output-gain" = 0.0;
-              "reduction" = -12.0;
-              "release" = 250.0;
-              "sidechain" = {
-                "lookahead" = 0.0;
-                "mode" = "RMS";
-                "preamp" = 0.0;
-                "reactivity" = 10.0;
-                "source" = "Middle";
-                "stereo-split-source" = "Left/Right";
-                "type" = "Internal";
-              };
-              "sidechain-to-input" = 0.0;
-              "sidechain-to-link" = 0.0;
-              "stereo-split" = false;
-              "wet" = -1.0;
-            };
-            "limiter#0" = {
-              "alr" = false;
-              "alr-attack" = 5.0;
-              "alr-knee" = 0.0;
-              "alr-release" = 50.0;
-              "attack" = 2.0;
-              "bypass" = false;
-              "dithering" = "16bit";
-              "gain-boost" = false;
-              "input-gain" = 0.0;
-              "input-to-link" = 0.0;
-              "input-to-sidechain" = 0.0;
-              "link-to-input" = 0.0;
-              "link-to-sidechain" = 0.0;
-              "lookahead" = 2.0;
-              "mode" = "Herm Wide";
-              "output-gain" = 0.0;
-              "oversampling" = "None";
-              "release" = 5.0;
-              "sidechain-preamp" = 0.0;
-              "sidechain-to-input" = 0.0;
-              "sidechain-to-link" = 0.0;
-              "sidechain-type" = "Internal";
-              "stereo-link" = 100.0;
-              "threshold" = -1.5;
-            };
-            "plugins_order" = [
-              "rnnoise#0"
-              "deepfilternet#0"
-              "gate#0"
-              "equalizer#0"
-              "compressor#0"
-              "deesser#0"
-              "limiter#0"
-            ];
-            "rnnoise#0" = {
-              "bypass" = false;
-              "enable-vad" = false;
-              "input-gain" = 0.0;
-              "model-name" = "\"\"";
-              "output-gain" = 0.0;
-              "release" = 20.0;
-              "use-standard-model" = true;
-              "vad-thres" = 30.0;
-              "wet" = 0.0;
-            };
-          };
-        };
-      };
-    };
-  };
-
   flake.homeModules.launchers =
     { pkgs, inputs, ... }:
     let
@@ -888,13 +580,10 @@
       home.packages = [
         gamemoderun
         pkgs.prismlauncher
-        pkgs.moonlight-qt
         inputs.elysia.packages.x86_64-linux.default
         (wrapNoHardened pkgs.xivlauncher "XIVLauncher.Core")
         (pkgs.olympus.override { celesteWrapper = "steam-run"; })
         pkgs.r2modman
-        (wrapNoHardened pkgs.heroic "heroic")
-        (wrapNoHardened pkgs.azahar "azahar")
       ];
 
       programs.mangohud = {
@@ -909,16 +598,12 @@
   flake.homeModules.social = { pkgs, ... }: {
     home.packages = with pkgs; [
       signal-desktop
-      weechat
     ];
   };
 
   flake.homeModules.creation =
     { pkgs, ... }:
     let
-      unityhubNoSandbox = pkgs.writeShellScriptBin "unityhub-launcher" ''
-        exec ${pkgs.unityhub}/bin/unityhub --no-sandbox "$@"
-      '';
       davinci-resolveWrapped = pkgs.writeShellScriptBin "davinci-resolve" ''
         export QT_QPA_PLATFORM=xcb
         export RUSTICL_ENABLE=radeonsi
@@ -1002,29 +687,11 @@
       '';
     in
     {
-      xdg.desktopEntries.unityhub = {
-        name = "Unity Hub";
-        exec = "${unityhubNoSandbox}/bin/unityhub-launcher %U";
-        terminal = false;
-        type = "Application";
-        icon = "unityhub";
-        comment = "The Official Unity Hub";
-        categories = [ "Development" ];
-        mimeType = [ "x-scheme-handler/unityhub" ];
-        noDisplay = false;
-      };
-
       home.packages = with pkgs; [
         gimp-with-plugins
         gpu-screen-recorder
         gpu-screen-recorder-gtk
-        bitwig-studio
-        kdePackages.kdenlive
         handbrake
-        rawtherapee
-        ansel
-        unityhub
-        blender
         davinci-resolveWrapped
         ffmpeg
         resolveTranscode

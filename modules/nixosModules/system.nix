@@ -121,8 +121,7 @@
               }
             );
           in
-          kernel.${config.networking.hostName}
-          or (
+          kernel.${config.networking.hostName} or (
             if config ? jovian then
               pkgs.linuxPackages_jovian
             else

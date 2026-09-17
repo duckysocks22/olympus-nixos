@@ -44,11 +44,9 @@
         inputs.self.homeModules.nixvim
         inputs.self.homeModules.nixcord
         inputs.self.homeModules.piAgent
-        inputs.self.homeModules.easyeffects
         inputs.self.homeModules.stylix
         inputs.self.homeModules.niri
         inputs.self.homeModules.shell
-        inputs.self.homeModules.download
       ];
 
       home = {
@@ -138,7 +136,6 @@
           inputs.self.homeModules.piAgent
           inputs.self.homeModules.stylix
           inputs.self.homeModules.shell
-          inputs.self.homeModules.download
         ];
 
         home = {

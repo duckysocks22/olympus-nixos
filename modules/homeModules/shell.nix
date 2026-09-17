@@ -21,7 +21,7 @@
       home.packages =
         (with pkgs; [
           ripgrep
-          tmux
+          zellij
           elmPackages.nodejs
           jp2a
           shellcheck
