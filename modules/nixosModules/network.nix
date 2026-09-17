@@ -345,10 +345,11 @@
           ];
 
           static = {
-            "PuppyGirls-DNS".stamp =
-              "sdns://AgcAAAAAAAAADTczLjc5LjE2NS4yMjMAEmRucy5wdXBweWdpcmxzLm5ldAovZG5zLXF1ZXJ5";
+           "PuppyGirls-DNS".stamp =
+              "sdns://AgcAAAAAAAAADTEwNy4xNzQuMzYuNTYAEmRucy5wdXBweWdpcmxzLm5ldAovZG5zLXF1ZXJ5";
             "PuppyGirlsLocal-DNS".stamp =
-              "sdns://AgcAAAAAAAAADDE3Mi4xNy4xMDAuMQAPbnl4LW5peG9zLmxvY2FsCi9kbnMtcXVlcnk";
+              "sdns://AgcAAAAAAAAAEDE3Mi4xNy4xMDAuMTo4NTQAEmRucy5wdXBweWdpcmxzLm5ldAovZG5zLXF1ZXJ5";
+
           };
 
           ipv6_servers = hasIPv6Internet;
