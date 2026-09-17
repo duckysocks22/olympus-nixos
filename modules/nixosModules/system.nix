@@ -121,7 +121,13 @@
               }
             );
           in
-          kernel.${config.networking.hostName};
+          kernel.${config.networking.hostName}
+          or (
+            if config ? jovian then
+              pkgs.linuxPackages_jovian
+            else
+              throw "system.nix: no kernelPackages entry for host ${config.networking.hostName}"
+          );
         kernelModules = [
           "sg"
           "hid-tmff-new"
