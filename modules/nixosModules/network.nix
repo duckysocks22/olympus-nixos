@@ -298,49 +298,10 @@
       };
 
       networking.firewall = {
-        trustedInterfaces = [ adapter.${config.networking.hostName} ];
+        trustedInterfaces = [ adapter.${config.networking.hostName} "wg0" ];
         checkReversePath = "loose";
-        allowedTCPPorts = [
-          80
-          443
-          631
-          8080
-          7989
-          8096
-          3003
-          853
-          854
-          2222
-          25
-          1883
-          53
-          67
-          68
-          3210
-          3211
-        ]
-        ++ lib.optionals config.services.home-assistant.enable [
-          config.services.home-assistant.config.http.server_port
-        ]
-        ++ [
-          25665
-          25666
-          25765
-          25766
-          25865
-          25866
-          445
-        ];
-        allowedUDPPorts = [
-          53
-          853
-          5353
-          67
-          68
-          4001
-          4002
-          4003
-        ];
+        allowedTCPPorts = [ 2222 ];
+        allowedUDPPorts = [ 53 ];
       };
 
       services.fail2ban = {

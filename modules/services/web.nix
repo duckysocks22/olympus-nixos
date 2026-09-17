@@ -4,13 +4,14 @@
     imports = [
       inputs.self.nixosModules.adguardhome
       inputs.self.nixosModules.avahi
-      inputs.self.nixosModules.caddy
       inputs.self.nixosModules.atticd
       inputs.self.nixosModules.ntfy
       inputs.self.nixosModules.mollysocket
       inputs.self.nixosModules.forgejo-runner
     ];
   };
+
+  flake.nixosModules.reverseProxy.imports = [ inputs.self.nixosModules.caddy ];
 
   flake.nixosModules.wireguardHost = { config, lib, ... }: let
     IPv4Address = {
@@ -39,6 +40,18 @@
       enableIPv6 = true;
       externalInterface = adapter.${config.networking.hostName};
       internalInterfaces = [ "wg0" ];
+      # AdGuard DoT/DoQ on nyx, reached via wg0
+      forwardPorts = lib.optionals (config.networking.hostName == "aether-nixos") [
+        {
+          sourcePort = 853;
+          destination = "192.168.10.253:853";
+        }
+        {
+          sourcePort = 853;
+          proto = "udp";
+          destination = "192.168.10.253:853";
+        }
+      ];
     };
 
     networking = {
@@ -358,7 +371,7 @@
               client_auth {
                 mode require_and_verify
                 trust_pool file {
-                  pem_file /media/hdd1/certs/ca-cert.pem
+                  pem_file ${config.sops.secrets."caddy/ca-cert".path}
                 }
               }
             }
@@ -376,7 +389,7 @@
 
         '';
         virtualHosts."http://cache.puppygirls.net, https://cache.puppygirls.net".extraConfig = ''
-          reverse_proxy :7989 {
+          reverse_proxy 192.168.10.253:7989 {
             header_up Host {upstream_hostport}
             flush_interval -1
 
@@ -390,7 +403,7 @@
           }
         '';
         virtualHosts."http://dns.puppygirls.net, https://dns.puppygirls.net".extraConfig = ''
-          reverse_proxy /dns-query* 127.0.0.1:854 {
+          reverse_proxy /dns-query* 192.168.10.253:854 {
             header_up X-Real-IP {remote_host}
             transport http {
               tls_insecure_skip_verify
@@ -402,7 +415,7 @@
           }
         '';
         virtualHosts."http://stream.puppygirls.net, https://stream.puppygirls.net".extraConfig = ''
-          reverse_proxy :8096 {
+          reverse_proxy 192.168.10.253:8096 {
             header_up Host {host}
             header_up X-Real-IP {remote_host}
             header_up X-Forwarded-For {remote_host}
@@ -423,7 +436,7 @@
           @options method OPTIONS
           respond @options 204
 
-          reverse_proxy :5055 {
+          reverse_proxy 192.168.10.253:5055 {
             header_up X-Real-IP {remote_host}
           }
 
@@ -440,7 +453,7 @@
           @options method OPTIONS
           respond @options 204
 
-          reverse_proxy :5056 {
+          reverse_proxy 192.168.10.253:5056 {
             header_up X-Real-IP {remote_host}
             transport http {
               versions 1.1
@@ -456,7 +469,7 @@
           @options method OPTIONS
           respond @options 204
 
-          reverse_proxy :5057 {
+          reverse_proxy 192.168.10.253:5057 {
             header_up X-Real-IP {remote_host}
             transport http {
               versions 1.1
@@ -472,7 +485,7 @@
           @options method OPTIONS
           respond @options 204
 
-          reverse_proxy :5058 {
+          reverse_proxy 192.168.10.253:5058 {
             header_up X-Real-IP {remote_host}
             transport http {
               versions 1.1
@@ -488,7 +501,7 @@
           @options method OPTIONS
           respond @options 204
 
-          reverse_proxy :5059 {
+          reverse_proxy 192.168.10.253:5059 {
             header_up X-Real-IP {remote_host}
             transport http {
               versions 1.1
@@ -497,14 +510,14 @@
         '';
 
         virtualHosts."http://music.puppygirls.net, https://music.puppygirls.net".extraConfig = ''
-          reverse_proxy :4533
+          reverse_proxy 192.168.10.253:4533
 
           tls {
             dns bunny {$BUNNY_API}
           }
         '';
         virtualHosts."http://audio.puppygirls.net, https://audio.puppygirls.net".extraConfig = ''
-          reverse_proxy :8000
+          reverse_proxy 192.168.10.253:8000
 
           tls {
             dns bunny {$BUNNY_API}
@@ -512,11 +525,11 @@
         '';
         virtualHosts."https://ofsm.puppygirls.net".extraConfig = ''
           import mtls
-          reverse_proxy :42702
+          reverse_proxy 192.168.10.253:42702
         '';
         virtualHosts."https://crafty.puppygirls.net".extraConfig = ''
           import mtls
-          reverse_proxy :8443 {
+          reverse_proxy 192.168.10.253:8443 {
             header_up Host {host}
             header_up X-Real-IP {remote_host}
             header_up X-Forwarded-For {remote_host}
@@ -532,14 +545,14 @@
         #olympus.moe
         virtualHosts."https://rss.olympus.moe".extraConfig = ''
           import mtls
-          reverse_proxy :8082
+          reverse_proxy 192.168.10.253:8082
 
           tls {
             dns bunny {$BUNNY_API}
           }
         '';
         virtualHosts."https://rsshub.olympus.moe".extraConfig = ''
-          reverse_proxy :1200
+          reverse_proxy 192.168.10.253:1200
 
           tls {
             dns bunny {$BUNNY_API}
@@ -553,7 +566,7 @@
             path /phonebackup/*
           }
 
-          reverse_proxy @mkcol_phonebackup :3210 {
+          reverse_proxy @mkcol_phonebackup 192.168.10.253:3210 {
             header_up X-Forwarded-For {remote_host}
             @exists status 405
             handle_response @exists {
@@ -561,32 +574,32 @@
             }
           }
 
-          reverse_proxy :3210 {
+          reverse_proxy 192.168.10.253:3210 {
             header_up X-Forwarded-For {remote_host}
           }
 
         '';
         virtualHosts."https://immich.olympus.moe".extraConfig = ''
           import mtls
-          reverse_proxy :2283
+          reverse_proxy 192.168.10.253:2283
         '';
         virtualHosts."https://home.olympus.moe".extraConfig = ''
           import mtls
-          reverse_proxy :8123
+          reverse_proxy 192.168.10.253:8123
         '';
         virtualHosts."https://budget.olympus.moe".extraConfig = ''
           encode gzip zstd
-          reverse_proxy :5006
+          reverse_proxy 192.168.10.253:5006
           import mtls
         '';
         virtualHosts."https://qbit.olympus.moe".extraConfig = ''
           encode gzip zstd
-          reverse_proxy :8080
+          reverse_proxy 192.168.10.253:8080
 
           import mtls
         '';
         virtualHosts."https://ntfy.olympus.moe".extraConfig = ''
-          reverse_proxy :1147
+          reverse_proxy 192.168.10.253:1147
 
           @httpget {
             protocol http
@@ -600,7 +613,7 @@
           }
         '';
         virtualHosts."https://molly.olympus.moe".extraConfig = ''
-          reverse_proxy :8020 {
+          reverse_proxy 192.168.10.253:8020 {
             header_up Host {host}
           }
 

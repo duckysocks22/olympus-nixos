@@ -99,6 +99,11 @@
     sops.secrets."users/server" = {
       neededForUsers = true;
     };
+
+    sops.secrets."caddy/environment" = { };
+    sops.secrets."caddy/ca-cert" = {
+      owner = "caddy";
+    };
   };
 
   flake.nixosModules.serverSops = { inputs, config, ... }: {
