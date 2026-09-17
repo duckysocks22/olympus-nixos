@@ -358,6 +358,15 @@
         };
         nixPath = lib.mapAttrsToList (n: v: "${n}=flake:${n}") inputs;
         registry = lib.mapAttrs (n: v: { flake = v; }) inputs;
+        gc = {
+          automatic = true;
+          dates = "weekly";
+          options = "--delete-older-than 7d";
+        };
+        optimise = {
+          automatic = true;
+          dates = [ "weekly" ];
+        };
       };
 
       nixpkgs.overlays = [
