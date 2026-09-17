@@ -69,7 +69,7 @@
                   directory = ".ssh";
                   mode = "0700";
                 }
-                ".mozilla"
+                ".librewolf"
                 ".pi"
                 ".cache/DankMaterialShell"
                 ".cache/nvim"
@@ -128,7 +128,7 @@
                   directory = ".ssh";
                   mode = "0700";
                 }
-                ".mozilla"
+                ".librewolf"
                 ".pi"
                 ".cache/nvim"
                 ".cache/neovim"

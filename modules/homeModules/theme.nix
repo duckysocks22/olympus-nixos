@@ -44,7 +44,7 @@
           gtk.enable = true;
           opencode.enable = true;
           gnome.enable = true;
-          firefox = {
+          librewolf = {
             enable = true;
             profileNames = [ "default" ];
             firefoxGnomeTheme.enable = true;

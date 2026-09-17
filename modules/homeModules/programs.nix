@@ -750,21 +750,21 @@
       ...
     }:
     let
-      hmFirefox = config.programs.firefox.finalPackage;
+      hmLibrewolf = config.programs.librewolf.finalPackage;
       emptyFile = pkgs.writeText "empty" "";
-      firefoxNoHardened = pkgs.writeShellScriptBin "firefox" ''
+      librewolfNoHardened = pkgs.writeShellScriptBin "librewolf" ''
         exec ${pkgs.util-linux}/bin/unshare --mount --user --map-root-user \
-          ${pkgs.bash}/bin/bash -c "${pkgs.util-linux}/bin/mount --bind ${emptyFile} /etc/ld-nix.so.preload && exec ${hmFirefox}/bin/firefox \"\$@\"" -- "$@"
+          ${pkgs.bash}/bin/bash -c "${pkgs.util-linux}/bin/mount --bind ${emptyFile} /etc/ld-nix.so.preload && exec ${hmLibrewolf}/bin/librewolf \"\$@\"" -- "$@"
       '';
     in
     {
       home.packages = [
-        (lib.hiPrio firefoxNoHardened)
+        (lib.hiPrio librewolfNoHardened)
       ];
 
-      programs.firefox = {
+      programs.librewolf = {
         enable = true;
-        package = pkgs.firefox;
+        package = pkgs.librewolf;
 
         profiles."default" = {
           name = "default";
@@ -849,12 +849,6 @@
                 updates_disabled = true;
               };
 
-              "PipedRedirect@janigma.com" = {
-                install_url = moz "pipedredirectjanigma";
-                installation_mode = "force_installed";
-                updates_disabled = true;
-              };
-
               "firefox-extension@steamdb.info" = {
                 install_url = moz "steam-database";
                 installation_mode = "force_installed";
@@ -884,11 +878,6 @@
                 updates_disabled = true;
               };
 
-              "{aecec67f-0d10-4fa7-b7c7-609a2db280cf}" = {
-                install_url = moz "violentmonkey";
-                installation_mode = "force_installed";
-                updates_disabled = true;
-              };
             };
 
           "3rdparty".Extensions = {

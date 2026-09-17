@@ -142,7 +142,7 @@
           {
             matches = [
               {
-                app-id = "firefox$";
+                app-id = "librewolf$";
                 title = "^Picture-in-Picture$";
               }
               { app-id = "zoom"; }
@@ -175,7 +175,7 @@
           }
           {
             matches = [
-              { app-id = "firefox"; }
+              { app-id = "librewolf"; }
               { app-id = "jellyfin-desktop"; }
             ];
             opacity = 1.0;
