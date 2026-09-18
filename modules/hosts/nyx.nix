@@ -11,6 +11,7 @@
       self.nixosModules.nyx
       self.nixosModules.nyxHardware
       self.nixosModules.serverNetwork
+      self.nixosModules.systemHarden
       self.nixosModules.functions
       self.nixosModules.system
       self.nixosModules.powerLogging
@@ -82,6 +83,11 @@
           ports = [
             22
           ];
+          settings = {
+            PasswordAuthentication = false;
+            KbdInteractiveAuthentication = false;
+            PermitRootLogin = "no";
+          };
         };
       };
 

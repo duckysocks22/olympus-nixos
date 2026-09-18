@@ -79,6 +79,11 @@
             22
             2222
           ];
+          settings = {
+            PasswordAuthentication = false;
+            KbdInteractiveAuthentication = false;
+            PermitRootLogin = "no";
+          };
         };
       };
 

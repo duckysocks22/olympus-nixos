@@ -74,6 +74,17 @@
       };
       boot.kernelParams = [
         "pcie_aspm.policy=powersave"
+        "iommu.passthrough=1"
+      ];
+      boot.kernelPatches = [
+        {
+          name = "hibernate-lz4";
+          patch = null;
+          structuredExtraConfig = {
+            HIBERNATION_COMP_LZ4 = lib.kernel.yes;
+            HIBERNATION_DEF_COMP = lib.kernel.freeform "lz4";
+          };
+        }
       ];
 
       nixpkgs.config.allowUnfree = true;

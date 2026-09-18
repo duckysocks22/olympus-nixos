@@ -298,10 +298,13 @@
       };
 
       networking.firewall = {
-        trustedInterfaces = [
-          adapter.${config.networking.hostName}
-          "wg0"
-        ];
+        # aether's adapter (ens3) is its public VPS interface and must not be
+        # trusted; everything there goes through the port allowlist.
+        trustedInterfaces =
+          [ "wg0" ]
+          ++ lib.optionals (config.networking.hostName != "aether-nixos") [
+            adapter.${config.networking.hostName}
+          ];
         checkReversePath = "loose";
         allowedTCPPorts = [ 22 ];
         allowedUDPPorts = [ 53 ];
