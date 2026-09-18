@@ -300,7 +300,7 @@
       networking.firewall = {
         trustedInterfaces = [ adapter.${config.networking.hostName} "wg0" ];
         checkReversePath = "loose";
-        allowedTCPPorts = [ 2222 ];
+        allowedTCPPorts = [ 22 ];
         allowedUDPPorts = [ 53 ];
       };
 

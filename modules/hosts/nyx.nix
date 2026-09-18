@@ -81,7 +81,6 @@
           openFirewall = true;
           ports = [
             22
-            2222
           ];
         };
       };
