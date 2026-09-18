@@ -728,6 +728,38 @@
             safe_search = {
               enabled = false;
             };
+            # VPN member names, answered locally from wg addresses.
+            # AdGuard reads rewrites from the `filtering` block, not `dns`.
+            rewrites = lib.concatMap
+              (host: [
+                {
+                  domain = "${host.name}.vpn.olympus.moe";
+                  answer = host.v4;
+                  enabled = true;
+                }
+                {
+                  domain = "${host.name}.vpn.olympus.moe";
+                  answer = host.v6;
+                  enabled = true;
+                }
+                {
+                  domain = host.name;
+                  answer = host.v4;
+                  enabled = true;
+                }
+                {
+                  domain = host.name;
+                  answer = host.v6;
+                  enabled = true;
+                }
+              ])
+              [
+                { name = "athena-nixos"; v4 = "192.168.10.1"; v6 = "fd31:bf08:57cb::1"; }
+                { name = "circe-nixos"; v4 = "192.168.10.2"; v6 = "fd31:bf08:57cb::2"; }
+                { name = "nyx-nixos"; v4 = "192.168.10.253"; v6 = "fd31:bf08:57cb::253"; }
+                { name = "hermera-nixos"; v4 = "192.168.10.252"; v6 = "fd31:bf08:57cb::252"; }
+                { name = "aether-nixos"; v4 = "192.168.10.254"; v6 = "fd31:bf08:57cb::254"; }
+              ];
           };
 
           trusted_proxies = [
