@@ -208,6 +208,7 @@
                   "fd31:bf08:57cb::/64"
                 ];
                 Endpoint = "vpn1.olympus.moe:4500";
+                PersistentKeepalive = 25;
               }
               {
                 #nyx-nixos
@@ -217,9 +218,15 @@
                   "192.168.10.253/32"
                 ];
                 Endpoint = "vpn2.olympus.moe:4500";
+                PersistentKeepalive = 25;
               }
             ];
           };
+        };
+
+        systemd.services.systemd-networkd = {
+          after = [ "sops-install-secrets.service" ];
+          wants = [ "sops-install-secrets.service" ];
         };
       };
     };
