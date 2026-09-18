@@ -773,6 +773,8 @@
           '';
           settings = {
             "browser.startup.homepage" = "https://kagi.com/";
+            "privacy.sanitize.sanitizeOnShutdown" = false;
+            "privacy.clearOnShutdown_v2.cookiesAndStorage" = false;
             "browser.theme.toolbar-theme" = 0;
             "browser.theme.content-theme" = 0;
             "ui.systemUsesDarkTheme" = 1;
