@@ -79,7 +79,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     jovian = {
-      url = "github:duckysocks22/Jovian-NixOS";
+      url = "github:duckysocks22/Jovian-NixOS/ec-log";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     copyparty = {

@@ -25,6 +25,7 @@
         };
         devices.steammachine = lib.mkIf (config.networking.hostName == "ariadne-nixos") {
           enable = true;
+          autoUpdate = true;
         };
         decky-loader = {
           enable = true;
