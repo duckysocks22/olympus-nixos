@@ -8,6 +8,7 @@
       inputs.self.nixosModules.ntfy
       inputs.self.nixosModules.mollysocket
       inputs.self.nixosModules.forgejo-runner
+      inputs.self.nixosModules.vaultwarden
     ];
   };
 
@@ -47,7 +48,6 @@
         enableIPv6 = true;
         externalInterface = adapter.${config.networking.hostName};
         internalInterfaces = [ "wg0" ];
-        # AdGuard DoT/DoQ on nyx, reached via wg0
         forwardPorts = lib.optionals (config.networking.hostName == "aether-nixos") [
           {
             sourcePort = 853;
@@ -137,6 +137,40 @@
               PersistentKeepalive = 25;
             }
           ];
+        };
+      };
+    };
+
+  flake.nixosModules.vaultwarden =
+    { config, pkgs, ... }:
+    let
+      enabled = {
+        "nyx-nixos" = true;
+      };
+    in
+    {
+      services.vaultwarden = {
+        enable = enabled.${config.networking.hostName} or false;
+        package = pkgs.vaultwarden-postgresql;
+        dbBackend = "postgresql";
+
+        configurePostgres = true;
+        domain = "vault.olympus.moe";
+
+        backupDir = null;
+        environmentFile = "${config.sops.secrets."vaultwarden/env".path}";
+
+        config = {
+          SIGNUPS_ALLOWED = false;
+
+          ROCKET_ADDRESS = "192.168.10.253";
+          ROCKET_PORT = 8222;
+          ROCKET_LOG = "critical";
+
+          SMTP_HOST = "mail.olympus.moe";
+          SMTP_SECURITY = "force_tls";
+          SMTP_FROM = "admin@bitwarden.olympus.moe";
+          SMTP_FROM_NAME = "Olympus.moe Bitwarden Server";
         };
       };
     };
@@ -395,7 +429,7 @@
           }
 
         '';
-        virtualHosts."http://cache.puppygirls.net, https://cache.puppygirls.net".extraConfig = ''
+        virtualHosts."cache.puppygirls.net".extraConfig = ''
           reverse_proxy 192.168.10.253:7989 {
             header_up Host {upstream_hostport}
             flush_interval -1
@@ -409,7 +443,7 @@
             dns bunny {$BUNNY_API}
           }
         '';
-        virtualHosts."http://dns.puppygirls.net, https://dns.puppygirls.net".extraConfig = ''
+        virtualHosts."dns.puppygirls.net".extraConfig = ''
           reverse_proxy /dns-query* 192.168.10.253:854 {
             header_up X-Real-IP {remote_host}
             transport http {
@@ -421,7 +455,7 @@
             dns bunny {$BUNNY_API}
           }
         '';
-        virtualHosts."http://stream.puppygirls.net, https://stream.puppygirls.net".extraConfig = ''
+        virtualHosts."stream.puppygirls.net".extraConfig = ''
           reverse_proxy 192.168.10.253:8096 {
             header_up Host {host}
             header_up X-Real-IP {remote_host}
@@ -516,14 +550,14 @@
           }
         '';
 
-        virtualHosts."http://music.puppygirls.net, https://music.puppygirls.net".extraConfig = ''
+        virtualHosts."music.puppygirls.net".extraConfig = ''
           reverse_proxy 192.168.10.253:4533
 
           tls {
             dns bunny {$BUNNY_API}
           }
         '';
-        virtualHosts."http://audio.puppygirls.net, https://audio.puppygirls.net".extraConfig = ''
+        virtualHosts."audio.puppygirls.net".extraConfig = ''
           reverse_proxy 192.168.10.253:8000
 
           tls {
@@ -608,13 +642,6 @@
         virtualHosts."https://ntfy.olympus.moe".extraConfig = ''
           reverse_proxy 192.168.10.253:1147
 
-          @httpget {
-            protocol http
-            method GET
-            path_regexp ^/([-_a-z0-9]{0,64}$|docs/|static/)
-          }
-          redir @httpget https://{host}{uri}
-
           tls {
             dns bunny {$BUNNY_API}
           }
@@ -627,6 +654,10 @@
           tls {
             dns bunny {$BUNNY_API}
           }
+        '';
+        virtualHosts."https://vault.olympus.moe".extraConfig = ''
+          import mtls
+          reverse_proxy 192.168.10.253:8222
         '';
       };
       networking.firewall.allowedTCPPorts = [

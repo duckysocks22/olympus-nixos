@@ -128,6 +128,7 @@
     sops.secrets."netbird/routing-key" = { };
     sops.secrets."caddy/environment" = { };
     sops.secrets."attic/server-token" = { };
+    sops.secrets."vaultwarden/env" = { };
     sops.secrets."forgejo-runner/environment" = { };
     sops.secrets."navidrome/environment" = { };
     sops.secrets."media/freshrss" = {
