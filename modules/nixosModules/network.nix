@@ -362,7 +362,7 @@
             "PuppyGirls-DNS".stamp =
               "sdns://AgcAAAAAAAAADTEwNy4xNzQuMzYuNTYAEmRucy5wdXBweWdpcmxzLm5ldAovZG5zLXF1ZXJ5";
             "PuppyGirlsLocal-DNS".stamp =
-              "sdns://AgcAAAAAAAAAEDE3Mi4xNy4xMDAuMTo4NTQAEmRucy5wdXBweWdpcmxzLm5ldAovZG5zLXF1ZXJ5";
+              "sdns://AgcAAAAAAAAADDE3Mi4xNy4xMDAuMQAXZG5zLnB1cHB5Z2lybHMubmV0Ojg1NDAKL2Rucy1xdWVyeQ";
 
           };
 
