@@ -112,6 +112,13 @@
               ];
             }
             {
+              PublicKey = publicKey."hermes";
+              AllowedIPs = [
+                "fd31:bf08:57cb::30/128"
+                "192.168.10.30/32"
+              ];
+            }
+            {
               # dionysus-nixos
               PublicKey = publicKey."dionysus-nixos";
               AllowedIPs = [

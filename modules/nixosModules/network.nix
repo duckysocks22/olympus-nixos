@@ -394,5 +394,6 @@
     "ariadne-nixos" = "ecyjWz3Fg8nsIwwL0MDpjr1/+U435ORR3YpVKgEeBiQ=";
     "aether-nixos" = "73mtIREvRqhfiUhfG47ITB3q+nMIO5M5+eVfIj9CslI=";
     "nyx-nixos" = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
+    "hermes" = "DWvPMpjBkUsCUshoL8BlIlKc/l2j7u2I8Up9b09UvA0=";
   };
 }
