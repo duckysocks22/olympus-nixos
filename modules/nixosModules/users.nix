@@ -211,6 +211,7 @@
         inputs.self.homeModules.nixvim
         inputs.self.homeModules.shell
         inputs.self.homeModules.common
+        inputs.self.homeModules.piAgent
       ];
 
       home = {

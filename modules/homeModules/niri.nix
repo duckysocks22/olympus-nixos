@@ -630,7 +630,15 @@
         enableClipboardPaste = true;
 
         plugins = {
-          dankBatteryAlerts.enable = true;
+          dankBatteryAlerts = {
+            src = pkgs.fetchFromGitHub {
+              owner = "AvengeMedia";
+              repo = "dms-plugins";
+              rev = "bb90a1db7d540e64ae049c5906afba9b24baa865";
+              hash = "sha256-NYmw2wCZYAKNU1xcodKMDXs5wwtAguOUNazRxcLjsUE=";
+            };
+            enable = true;
+          };
           dms-screen-recorder = {
             src = pkgs.fetchFromGitHub {
               owner = "arqueon";
