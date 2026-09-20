@@ -15,7 +15,7 @@
   flake.nixosModules.reverseProxy.imports = [ inputs.self.nixosModules.caddy ];
 
   flake.nixosModules.wireguardHost =
-    { config, lib, ... }:
+    { inputs, config, lib, ... }:
     let
       IPv4Address = {
         "nyx-nixos" = "192.168.10.253/32";
@@ -31,10 +31,7 @@
         "aether-nixos" = "ens3";
         "nyx-nixos" = "enp34s0";
       };
-      publicKey = {
-        "nyx-nixos" = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
-        "aether-nixos" = "I0bbm5zxn4+zj2vtW7/aT1asyUCpTi9h6G4Z6itq03g=";
-      };
+      publicKey = inputs.self.wireguardPublicKeys;
     in
     {
       sops.secrets."wireguard/${config.networking.hostName}/privateKey" = {
@@ -108,17 +105,33 @@
             */
             {
               # circe-nixos
-              PublicKey = "lBu6K0aoE95f9h/t1jB9Rgr9BTM8X9X0SYVE7hh6sxs=";
+              PublicKey = publicKey."circe-nixos";
               AllowedIPs = [
                 "fd31:bf08:57cb::2/128"
                 "192.168.10.2/32"
+              ];
+            }
+            {
+              # dionysus-nixos
+              PublicKey = publicKey."dionysus-nixos";
+              AllowedIPs = [
+                "fd31:bf08:57cb::3/128"
+                "192.168.10.3/32"
+              ];
+            }
+            {
+              #ariadne-nixos
+              PublicKey = publicKey."ariadne-nixos";
+              AllowedIPs = [
+                "fd31:bf08:57cb::4/128"
+                "192.168.10.4/32"
               ];
             }
           ]
           ++ lib.optionals (config.networking.hostName != "nyx-nixos") [
             {
               # nyx-nixos
-              PublicKey = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
+              PublicKey = publicKey."nyx-nixos";
               AllowedIPs = [
                 "fd31:bf08:57cb::253/128"
                 "192.168.10.253/32"
@@ -128,7 +141,7 @@
           ++ lib.optionals (config.networking.hostName != "aether-nixos") [
             {
               # aether-nixos
-              PublicKey = "73mtIREvRqhfiUhfG47ITB3q+nMIO5M5+eVfIj9CslI=";
+              PublicKey = publicKey."aether-nixos";
               AllowedIPs = [
                 "fd31:bf08:57cb::254/128"
                 "192.168.10.254/32"
@@ -787,6 +800,8 @@
               [
                 { name = "athena-nixos"; v4 = "192.168.10.1"; v6 = "fd31:bf08:57cb::1"; }
                 { name = "circe-nixos"; v4 = "192.168.10.2"; v6 = "fd31:bf08:57cb::2"; }
+                { name = "dionysus-nixos"; v4 = "192.168.10.3"; v6 = "fd31:bf08:57cb::3"; }
+                { name = "ariadne-nixos"; v4 = "192.168.10.4"; v6 = "fd31:bf08:57cb::4"; }
                 { name = "nyx-nixos"; v4 = "192.168.10.253"; v6 = "fd31:bf08:57cb::253"; }
                 { name = "hermera-nixos"; v4 = "192.168.10.252"; v6 = "fd31:bf08:57cb::252"; }
                 { name = "aether-nixos"; v4 = "192.168.10.254"; v6 = "fd31:bf08:57cb::254"; }

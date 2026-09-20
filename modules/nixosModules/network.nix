@@ -133,20 +133,21 @@
     };
 
   flake.nixosModules.wireguardPeer =
-    { config, lib, ... }:
+    { inputs, config, lib, ... }:
     let
       IPv4Address = {
         "athena-nixos" = "192.168.10.1/32";
         "circe-nixos" = "192.168.10.2/32";
+        "dionysus-nixos" = "192.168.10.3/32";
+        "ariadne-nixos" = "192.168.10.4/32";
       };
       IPv6Address = {
         "athena-nixos" = "fd31:bf08:57cb::1/128";
         "circe-nixos" = "fd31:bf08:57cb::2/128";
+        "dionysus-nixos" = "fd31:bf08:57cb::3/128";
+        "ariadne-nixos" = "fd31:bf08:57cb::4/128";
       };
-      puiblicKey = {
-        "athena-nixos" = "asdf";
-        "circe-nixos" = "lBu6K0aoE95f9h/t1jB9Rgr9BTM8X9X0SYVE7hh6sxs=";
-      };
+      publicKey = inputs.self.wireguardPublicKeys;
     in
     {
       config = lib.mkIf (builtins.elem config.networking.hostName (builtins.attrNames IPv4Address)) {
@@ -202,7 +203,7 @@
             wireguardPeers = [
               {
                 #aether-nixos
-                PublicKey = "73mtIREvRqhfiUhfG47ITB3q+nMIO5M5+eVfIj9CslI=";
+                PublicKey = publicKey."aether-nixos";
                 AllowedIPs = [
                   "192.168.10.0/24"
                   "fd31:bf08:57cb::/64"
@@ -212,7 +213,7 @@
               }
               {
                 #nyx-nixos
-                PublicKey = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
+                PublicKey = publicKey."nyx-nixos";
                 AllowedIPs = [
                   "fd31:bf08:57cb::253/128"
                   "192.168.10.253/32"
@@ -385,4 +386,13 @@
       };
 
     };
+
+  flake.wireguardPublicKeys = {
+    "athena-nixos" = "urmom";
+    "circe-nixos" = "lBu6K0aoE95f9h/t1jB9Rgr9BTM8X9X0SYVE7hh6sxs=";
+    "dionysus-nixos" = "OaaSw3LeEGFuiycxMWhz0i2UALIZnV8JZ1fl3nWpmlc=";
+    "ariadne-nixos" = "ecyjWz3Fg8nsIwwL0MDpjr1/+U435ORR3YpVKgEeBiQ=";
+    "aether-nixos" = "73mtIREvRqhfiUhfG47ITB3q+nMIO5M5+eVfIj9CslI=";
+    "nyx-nixos" = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
+  };
 }
