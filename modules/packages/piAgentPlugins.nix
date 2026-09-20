@@ -538,7 +538,7 @@
                 -vf "select='not(mod(n\,${toString frameStride}))',crop=$CROP,scale=${
                   toString (cfg.pet.sprite.size * 8)
                 }:-1:flags=lanczos,format=rgba" \
-                -pix_fmt rgba -fps_mode passthrough -vsync 0 \
+                -pix_fmt rgba -fps_mode passthrough \
                 "$out/${name}/f_%03d.png"
             ''
           ) spriteSources;
