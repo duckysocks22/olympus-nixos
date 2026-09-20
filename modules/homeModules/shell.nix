@@ -85,17 +85,18 @@
             function rebuild() {
               if [[ "$1" == "-h" || "$1" == "--help" ]]; then
                 echo "Usage: rebuild [flag]"
-                echo "'-u, --update"
+                echo "  -u, --update"
+                return 0
               fi
 
-              if [[ $1" == "-u" || "$1" == "--update" ]]; then
+              if [[ "$1" == "-u" || "$1" == "--update" ]]; then
                 nix flake update --flake ~/olympus-nixos
                 nh os switch
                 attic push main /run/current-system
-              elif
+              else
                 nh os switch
               fi
-            }
+            };
             function encode() {
               if [[ "$1" == "-h" || "$1" == "--help" ]]; then
                 echo "Usage: encode [INPUT] [OUTPUT]"
