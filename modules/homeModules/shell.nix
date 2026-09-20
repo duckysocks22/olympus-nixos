@@ -62,8 +62,6 @@
 
           shellAliases = {
             vi = "nvim";
-            #rebuild = "sudo nixos-rebuild switch -L --flake ${config.home.homeDirectory}/olympus-nixos";
-            rebuild = "nh os switch";
             par = ''
               cd ${config.home.homeDirectory}/olympus-nixos
               git pull
@@ -84,6 +82,20 @@
           };
 
           initContent = ''
+            function rebuild() {
+              if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+                echo "Usage: rebuild [flag]"
+                echo "'-u, --update"
+              fi
+
+              if [[ $1" == "-u" || "$1" == "--update" ]]; then
+                nix flake update --flake ~/olympus-nixos
+                nh os switch
+                attic push main /run/current-system
+              elif
+                nh os switch
+              fi
+            }
             function encode() {
               if [[ "$1" == "-h" || "$1" == "--help" ]]; then
                 echo "Usage: encode [INPUT] [OUTPUT]"
