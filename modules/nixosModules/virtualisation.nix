@@ -17,10 +17,6 @@
       virtualisation = {
         libvirtd.enable = true;
         spiceUSBRedirection.enable = true;
-        waydroid = {
-          enable = true;
-          package = pkgs.waydroid-nftables;
-        };
       };
 
       environment.systemPackages = with pkgs; [
