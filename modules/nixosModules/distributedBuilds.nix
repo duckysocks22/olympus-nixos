@@ -1,15 +1,21 @@
 { inputs, self, ... }: {
-  flake.nixosModules.buildHost = { ... }: {
-    users.users.remotebuild = {
+  flake.nixosModules.buildHost =
+    let
+      nixServeCommand =
+        "restrict,command=\"/run/current-system/sw/bin/nix-store --serve --write\" ";
+      nixServeKey = key: nixServeCommand + key;
+    in
+    {
+      users.users.remotebuild = {
       isNormalUser = true;
       createHome = false;
       group = "remotebuild";
       extraGroups = [ "nixbld" ];
       openssh.authorizedKeys.keys = [
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO8yfaT4Vc5wUoFx1jzNZoKXBiLGsqxuTndqz/9M3NdB root@dionysus-nixos"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMFCqhCYgJNuZ0+3oJFFmEjmUNSBPhLSzZfuHWjY2ivc root@ariadne-nixos"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP0iFfMsPQAbz7QOqgBnZQsJPjVXXq9djMm23+2mnETB root@aether-nixos"
-        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO7f9ImZW+fkfzIxW9ZVfcjiUE5NUN+qnYlkpk+mr2F3 root@circe-nixos"
+        (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO8yfaT4Vc5wUoFx1jzNZoKXBiLGsqxuTndqz/9M3NdB root@dionysus-nixos")
+        (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMFCqhCYgJNuZ0+3oJFFmEjmUNSBPhLSzZfuHWjY2ivc root@ariadne-nixos")
+        (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP0iFfMsPQAbz7QOqgBnZQsJPjVXXq9djMm23+2mnETB root@aether-nixos")
+        (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO7f9ImZW+fkfzIxW9ZVfcjiUE5NUN+qnYlkpk+mr2F3 root@circe-nixos")
       ];
     };
     users.groups.remotebuild = { };

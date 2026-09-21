@@ -159,7 +159,13 @@
         };
 
         networking = {
-          firewall.allowedUDPPorts = [ 4500 ];
+          firewall = {
+            allowedUDPPorts = [ 4500 ];
+            extraCommands = ''
+              iptables -A nixos-fw -s 192.168.10.254 -j nixos-fw-log-refuse
+              ip6tables -A nixos-fw -s fd31:bf08:57cb::254 -j nixos-fw-log-refuse
+            '';
+          };
           networkmanager.unmanaged = [ "interface-name:wg0" ];
         };
 
