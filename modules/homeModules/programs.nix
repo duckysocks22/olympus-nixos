@@ -20,6 +20,7 @@
       filezilla
       feather
       lunatask
+      kdePackages.kate
     ];
 
     programs.kitty = {
