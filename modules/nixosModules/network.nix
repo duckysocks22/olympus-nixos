@@ -133,7 +133,12 @@
     };
 
   flake.nixosModules.wireguardPeer =
-    { inputs, config, lib, ... }:
+    {
+      inputs,
+      config,
+      lib,
+      ...
+    }:
     let
       IPv4Address = {
         "athena-nixos" = "192.168.10.1/32";
@@ -314,11 +319,12 @@
       networking.firewall = {
         # aether's adapter (ens3) is its public VPS interface and must not be
         # trusted; everything there goes through the port allowlist.
-        trustedInterfaces =
-          [ "wg0" ]
-          ++ lib.optionals (config.networking.hostName != "aether-nixos") [
-            adapter.${config.networking.hostName}
-          ];
+        trustedInterfaces = [
+          "wg0"
+        ]
+        ++ lib.optionals (config.networking.hostName != "aether-nixos") [
+          adapter.${config.networking.hostName}
+        ];
         checkReversePath = "loose";
         allowedTCPPorts = [ 22 ];
         allowedUDPPorts = [ 53 ];

@@ -15,6 +15,7 @@
     {
       imports = [
         self.homeModules.git
+        self.homeModules.download
         inputs.nix-index-database.homeModules.default
       ];
 
@@ -399,5 +400,11 @@
         };
       };
     };
+  };
+
+  flake.homeModules.download = { pkgs, ... }: {
+    home.packages = with pkgs; [
+      aria2
+    ];
   };
 }
