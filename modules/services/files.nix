@@ -20,9 +20,9 @@
       services.immich = {
         enable = true;
         package = pkgs-unstable.immich;
-        host = "127.0.0.1";
+        host = "192.168.10.253";
         port = 2283;
-        openFirewall = true;
+        openFirewall = false;
         environment.IMMICH_LOG_LEVEL = "warn";
 
         accelerationDevices = [ "/dev/dri/renderD128" ];

@@ -297,6 +297,30 @@
         "nyx-nixos" = false;
         "aether-nixos" = true;
       };
+      nyxPorts = {
+        allowedTCPPorts = [
+          1147
+          2283
+          3210
+          3211
+          5006
+          631
+          8020
+          8080
+          8082
+          8123
+          8443
+          853
+          854
+          25565
+          42702
+          7989
+        ];
+        allowedUDPPorts = [
+          631
+          853
+        ];
+      };
     in
     {
       imports = [ inputs.self.nixosModules.wireguardHost ];
@@ -317,17 +341,18 @@
       };
 
       networking.firewall = {
-        # aether's adapter (ens3) is its public VPS interface and must not be
-        # trusted; everything there goes through the port allowlist.
-        trustedInterfaces = [
-          "wg0"
-        ]
-        ++ lib.optionals (config.networking.hostName != "aether-nixos") [
-          adapter.${config.networking.hostName}
-        ];
         checkReversePath = "loose";
-        allowedTCPPorts = [ 22 ];
+        allowedTCPPorts = [
+          22
+          53
+        ];
         allowedUDPPorts = [ 53 ];
+      }
+      // lib.optionalAttrs (config.networking.hostName == "nyx-nixos") {
+        interfaces = {
+          "enp34s0" = nyxPorts;
+          "wg0" = nyxPorts;
+        };
       };
 
       services.fail2ban = {

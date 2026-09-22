@@ -222,7 +222,7 @@
 
       # Containers
       virtualisation.oci-containers.containers."prometheus-runner" = {
-        image = "docker.io/gitea/act_runner:nightly";
+        image = "docker.io/gitea/act_runner:0.6.1";
         environmentFiles = [
           "${config.sops.secrets."forgejo-runner/environment".path}"
         ];
@@ -877,7 +877,6 @@
                 "https://dawn.wine/foxtrottt/olympus-nixos/raw/branch/main/modules/nyx/services/networking/adguardhome/allowlist.txt"
               ];
 
-          protection_enabled = false;
         };
       };
 

@@ -51,7 +51,7 @@
     services.nginx.virtualHosts."freshrss" = {
       listen = [
         {
-          addr = "127.0.0.1";
+          addr = "192.168.10.253";
           port = 8082;
           ssl = false;
         }
@@ -73,6 +73,7 @@
   flake.nixosModules.navidrome = { lib, config, ... }: {
     services.navidrome = {
       enable = true;
+      openFirewall = true;
       environmentFile = "${config.sops.secrets."navidrome/environment".path}";
       settings = {
         Address = "0.0.0.0";
@@ -80,7 +81,6 @@
         MusicFolder = "/media/hdd1/audio/music";
         AutoImportPlaylists = false;
         EnableSharing = true;
-        openFirewall = true;
         AutoTranscodeDownload = true;
         Agents = "lastfm,deezer,listenbrains";
         LastFM.Enabled = true;
