@@ -386,7 +386,10 @@
 
 
           After making changes within the olympus-nixos repo to another system that is not the current host system,
-          run a dry-build for those configurations to make sure they all evaluate properly.
+          run a dry-build for those configurations to make sure they all evaluate properly. MAKE SURE IT"S A DRY BUILD          USING sudo nixos-rebuild dry-build or nh os switch --dry, do NOT fully build the systemn.
+
+          When asked for a commit message suggestions, use the 'conventional commits' format unless previous commits
+          in the repo show otherwise.
         '';
       };
     };
