@@ -361,6 +361,11 @@
       };
 
       xdg.configFile."fastfetch/ascii.txst".source = ../../assets/ascii.txt;
+
+      xdg.configFile."attic/config.toml" = {
+        source = config.lib.file.mkOutOfStoreSymlink "/run/secrets/attic/client-config";
+        force = true;
+      };
     };
 
   flake.homeModules.git = { pkgs, ... }: {

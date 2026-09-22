@@ -44,6 +44,8 @@
 
       sops.secrets."bazinga/pass" = { };
 
+      sops.secrets."attic/client-config".owner = config.users.users.foxtrot.name;
+
       systemd.services.iwd-hidden-profile = {
         description = "Dynamically generate IWD profile for Work Network";
         wantedBy = [ "multi-user.target" ];
@@ -104,6 +106,8 @@
     sops.secrets."caddy/ca-cert" = {
       owner = "caddy";
     };
+
+    sops.secrets."attic/client-config".owner = config.users.users.server.name;
   };
 
   flake.nixosModules.serverSops = { inputs, config, ... }: {
@@ -128,6 +132,7 @@
     sops.secrets."netbird/routing-key" = { };
     sops.secrets."caddy/environment" = { };
     sops.secrets."attic/server-token" = { };
+    sops.secrets."attic/client-config".owner = config.users.users.server.name;
     sops.secrets."vaultwarden/env" = { };
     sops.secrets."forgejo-runner/environment" = { };
     sops.secrets."navidrome/environment" = { };
@@ -243,5 +248,7 @@
     sops.secrets."samba/local".group = config.users.users.deck.group;
 
     sops.secrets."bazinga/pass" = { };
+
+    sops.secrets."attic/client-config".owner = config.users.users.deck.name;
   };
 }
