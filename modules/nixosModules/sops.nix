@@ -124,6 +124,8 @@
     #  path = "/etc/davfs2/secrets";
     #};
 
+    sops.secrets."llama-cpp/api-key" = { mode = "644"; };
+
     sops.secrets."samba-nyx/socks" = { };
     sops.secrets."samba-nyx/serena" = { };
     sops.secrets."samba-nyx/zia" = { };
