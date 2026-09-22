@@ -234,6 +234,7 @@
           enabledModels = [
             "opencode-go/mimo-*"
             "opencode-go/glm-*"
+            "llama.cpp/*"
           ];
           defaultThinkingLevel = "high";
           packages = [
