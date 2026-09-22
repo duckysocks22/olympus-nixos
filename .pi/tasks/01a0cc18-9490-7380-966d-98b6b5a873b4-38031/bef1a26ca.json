@@ -1,0 +1,28 @@
+{
+  "id": "bef1a26ca",
+  "name": "dry-build all six configs retry",
+  "command": "cd ~/olympus-nixos || exit 1; fail=0; for c in nyx-nixos aether-nixos ariadne-nixos athena-nixos circe-nixos dionysus-nixos; do echo \"=== $c ===\"; if nix build \".#nixosConfigurations.$c.config.system.build.toplevel\" --dry-run >\"/tmp/dry-$c.log\" 2>&1; then echo \"EVAL OK: $c\"; else echo \"EVAL FAIL: $c\"; fail=1; tail -40 \"/tmp/dry-$c.log\"; fi; done; if [ $fail -eq 0 ]; then echo \"OVERALL: ALL_OK\"; else echo \"OVERALL: SOME_FAILED\"; fi; exit $fail",
+  "status": "completed",
+  "outputPath": ".pi/tasks/01a0cc18-9490-7380-966d-98b6b5a873b4-38031/bef1a26ca.output",
+  "cwd": "/home/foxtrot/olympus-nixos",
+  "startTime": 1790131533779,
+  "endTime": 1790131759023,
+  "exitCode": 0,
+  "signal": null,
+  "pid": 38963,
+  "bytesWritten": 272,
+  "isAgent": false,
+  "surviveReload": false,
+  "notified": true,
+  "notifyOnCompletion": true,
+  "triggerOnCompletion": true,
+  "timeoutSeconds": 2400,
+  "shellPolicy": {
+    "policy": "inherit",
+    "executable": "/run/current-system/sw/bin/zsh",
+    "argvPrefix": [
+      "-c"
+    ],
+    "dialect": "posix"
+  }
+}

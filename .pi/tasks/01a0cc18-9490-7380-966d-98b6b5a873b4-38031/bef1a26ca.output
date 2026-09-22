@@ -1,0 +1,13 @@
+=== nyx-nixos ===
+EVAL OK: nyx-nixos
+=== aether-nixos ===
+EVAL OK: aether-nixos
+=== ariadne-nixos ===
+EVAL OK: ariadne-nixos
+=== athena-nixos ===
+EVAL OK: athena-nixos
+=== circe-nixos ===
+EVAL OK: circe-nixos
+=== dionysus-nixos ===
+EVAL OK: dionysus-nixos
+OVERALL: ALL_OK

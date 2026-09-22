@@ -1,0 +1,12 @@
+{
+  "name": "finance-summary",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "finance-summary": "./summary.mjs"
+  },
+  "dependencies": {
+    "@actual-app/api": "26.9.0"
+  }
+}

@@ -105,6 +105,7 @@
                 "Music"
                 "Pictures"
                 "Videos"
+                "Git"
               ];
               files = [
                 ".histfile"

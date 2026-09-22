@@ -1,0 +1,31 @@
+=== nyx-nixos ===
+EVAL FAIL: nyx-nixos
+fetching git input 'git+file:///home/foxtrot/olympus-nixos'
+warning: Git tree '/home/foxtrot/olympus-nixos' is dirty
+error: flake 'git+file:///home/foxtrot/olympus-nixos' does not provide attribute 'packages.x86_64-linux.nyx-nixos.config.system.build.toplevel', 'legacyPackages.x86_64-linux.nyx-nixos.config.system.build.toplevel' or 'nyx-nixos.config.system.build.toplevel'
+=== aether-nixos ===
+EVAL FAIL: aether-nixos
+fetching git input 'git+file:///home/foxtrot/olympus-nixos'
+warning: Git tree '/home/foxtrot/olympus-nixos' is dirty
+error: flake 'git+file:///home/foxtrot/olympus-nixos' does not provide attribute 'packages.x86_64-linux.aether-nixos.config.system.build.toplevel', 'legacyPackages.x86_64-linux.aether-nixos.config.system.build.toplevel' or 'aether-nixos.config.system.build.toplevel'
+=== ariadne-nixos ===
+EVAL FAIL: ariadne-nixos
+fetching git input 'git+file:///home/foxtrot/olympus-nixos'
+warning: Git tree '/home/foxtrot/olympus-nixos' is dirty
+error: flake 'git+file:///home/foxtrot/olympus-nixos' does not provide attribute 'packages.x86_64-linux.ariadne-nixos.config.system.build.toplevel', 'legacyPackages.x86_64-linux.ariadne-nixos.config.system.build.toplevel' or 'ariadne-nixos.config.system.build.toplevel'
+=== athena-nixos ===
+EVAL FAIL: athena-nixos
+fetching git input 'git+file:///home/foxtrot/olympus-nixos'
+warning: Git tree '/home/foxtrot/olympus-nixos' is dirty
+error: flake 'git+file:///home/foxtrot/olympus-nixos' does not provide attribute 'packages.x86_64-linux.athena-nixos.config.system.build.toplevel', 'legacyPackages.x86_64-linux.athena-nixos.config.system.build.toplevel' or 'athena-nixos.config.system.build.toplevel'
+=== circe-nixos ===
+EVAL FAIL: circe-nixos
+fetching git input 'git+file:///home/foxtrot/olympus-nixos'
+warning: Git tree '/home/foxtrot/olympus-nixos' is dirty
+error: flake 'git+file:///home/foxtrot/olympus-nixos' does not provide attribute 'packages.x86_64-linux.circe-nixos.config.system.build.toplevel', 'legacyPackages.x86_64-linux.circe-nixos.config.system.build.toplevel' or 'circe-nixos.config.system.build.toplevel'
+=== dionysus-nixos ===
+EVAL FAIL: dionysus-nixos
+fetching git input 'git+file:///home/foxtrot/olympus-nixos'
+warning: Git tree '/home/foxtrot/olympus-nixos' is dirty
+error: flake 'git+file:///home/foxtrot/olympus-nixos' does not provide attribute 'packages.x86_64-linux.dionysus-nixos.config.system.build.toplevel', 'legacyPackages.x86_64-linux.dionysus-nixos.config.system.build.toplevel' or 'dionysus-nixos.config.system.build.toplevel'
+OVERALL: SOME_FAILED

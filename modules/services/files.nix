@@ -4,6 +4,7 @@
       self.nixosModules.syncthing
       self.nixosModules.samba
       self.nixosModules.actual-budget
+      self.nixosModules.finance-summary
       self.nixosModules.immich
       self.nixosModules.copyparty
     ];

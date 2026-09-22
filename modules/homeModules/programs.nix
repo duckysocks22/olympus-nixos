@@ -238,13 +238,17 @@
           ];
           defaultThinkingLevel = "high";
           packages = [
-            "pi-web-access"
-            "pi-subagents"
-            "pi-background-tasks"
-            "rpiv-todo"
-            "pi-simplify"
-            "bigpowers"
-            "pi-dynamic-workflows"
+            "npm:pi-web-access"
+            "npm:pi-subagents"
+            "npm:pi-background-tasks"
+            "npm:rpiv-todo"
+            "npm:pi-simplify"
+            "npm:bigpowers"
+            "npm:pi-dynamic-workflows"
+            "npm:pi-loop-police"
+            "npm:pi-death-loop-guard"
+            "npm:pi-watchdog-supervisor"
+            "npm:pi-btw"
           ];
           enableInstallTelemetry = false;
           enableAnalytics = false;
@@ -252,6 +256,27 @@
           hideThinkingBlock = true;
           terminal.images = "kitty";
           customUI = true;
+          compaction = {
+            reserveTokens = 2048;
+            keepRecentTokens = 1024;
+          };
+        };
+
+        models = {
+          providers = {
+            "llama.cpp" = {
+              modelOverrides = {
+                "Ornith-1.5-9B-IQ4_XS" = {
+                  contextWindow = 16384;
+                  maxTokens = 4096;
+                };
+                "Bonsai-27B-Q1_0" = {
+                  contextWindow = 65536;
+                  maxTokens = 16384;
+                };
+              };
+            };
+          };
         };
 
         statusLine = {
@@ -394,6 +419,9 @@
           in the repo show otherwise.
         '';
       };
+
+      home.file.".pi/agent/extensions/actual-finance".source = ../../assets/pi/actual-finance;
+      home.file.".pi/agent/skills/actual-finance".source = ../../assets/pi/skills/actual-finance;
     };
 
   flake.homeModules.opencode =
