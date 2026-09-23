@@ -213,7 +213,7 @@
       ...
     }:
     let
-      claudeRules = pkgs.fetchurl {
+      modelRules = pkgs.fetchurl {
         url = "https://raw.githubusercontent.com/sisyphusse1-ops/claude-code-pro-pack/refs/heads/main/CLAUDE.md";
         hash = "sha256-wayXk5qtd+mmKNUPlqKRjyHQGml92kqbng+LTy26GJs=";
       };
@@ -350,7 +350,13 @@
           notifications.enable = false;
         };
         context = ''
-          ${builtins.readFile claudeRules}
+          ${builtins.readFile modelRules}
+
+          ## HARD RULES ##
+
+          NEVER include any PII (personally identifiable information) within ANY repository. Secrets MUST be managed via 'sops-nix'.
+
+          NEVER touch any files within the 'secrets\' directory in the repo, modification of the sops files will me managed by the user alone.
 
           # Memory / Persistent Context
 
@@ -388,6 +394,8 @@
 
           ## Nix / Flake Gotchas (olympus-nixos)
 
+          Any configuration of programs/services installed on the system MUST happen via '.nix' files within the repo, nothing can be handled imperatively as those changes will NOT hold.
+
           Any changes to pi-coding-agents's own permissions, context, agent definition,
           or settings must be made in the pi-agent-coding module in:
 
@@ -413,7 +421,7 @@
 
 
           After making changes within the olympus-nixos repo to another system that is not the current host system,
-          run a dry-build for those configurations to make sure they all evaluate properly. MAKE SURE IT"S A DRY BUILD          USING sudo nixos-rebuild dry-build or nh os switch --dry, do NOT fully build the systemn.
+          run a dry-build for those configurations to make sure they all evaluate properly. MAKE SURE IT"S A DRY BUILD          USING sudo nixos-rebuild dry-build or nh os switch --dry, do NOT fully build ANY systems, the user will handle that.
 
           When asked for a commit message suggestions, use the 'conventional commits' format unless previous commits
           in the repo show otherwise.
