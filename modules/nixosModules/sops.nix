@@ -125,6 +125,7 @@
     #};
 
     sops.secrets."atuin/env" = { };
+    sops.secrets."atuin/ai-env" = { };
 
     sops.secrets."llama-cpp/api-key" = { mode = "644"; };
     sops.secrets."finance-summary/env" = { };

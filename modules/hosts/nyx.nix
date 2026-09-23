@@ -27,6 +27,7 @@
       self.nixosModules.buildHost
       self.nixosModules.compute
       self.nixosModules.atuinServer
+      self.nixosModules.atuinAIServer
     ];
   };
 
