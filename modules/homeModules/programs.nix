@@ -356,13 +356,16 @@
 
           NEVER include any PII (personally identifiable information) within ANY repository. Secrets MUST be managed via 'sops-nix'.
 
-          NEVER touch any files within the 'secrets\' directory in the repo, modification of the sops files will me managed by the user alone.
+          NEVER touch any files within the 'secrets\' directory in the repo, modification OR decryption/reading of the sops files is strictly PROHIBITED and will me managed by the user alone.
 
           # Memory / Persistent Context
 
           ## Code Style Preferences
 
           Do not add inline comments to code. Explain changes in commit messages instead.
+
+          When working within the 'olympus-nixos' repo, prefer to use 'flake-parts' and follow allong with the
+          dendritic system layout.
 
           ## Session Workflow
 
