@@ -124,6 +124,8 @@
     #  path = "/etc/davfs2/secrets";
     #};
 
+    sops.secrets."atuin/env" = { };
+
     sops.secrets."llama-cpp/api-key" = { mode = "644"; };
     sops.secrets."finance-summary/env" = { };
 

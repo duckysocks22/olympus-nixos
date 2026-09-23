@@ -47,6 +47,7 @@
         inputs.self.homeModules.stylix
         inputs.self.homeModules.niri
         inputs.self.homeModules.shell
+        inputs.self.homeModules.foxtrotSops
       ];
 
       home = {
@@ -136,6 +137,7 @@
           inputs.self.homeModules.piAgent
           inputs.self.homeModules.stylix
           inputs.self.homeModules.shell
+          inputs.self.homeModules.serverSops
         ];
 
         home = {
@@ -212,6 +214,7 @@
         inputs.self.homeModules.shell
         inputs.self.homeModules.common
         inputs.self.homeModules.piAgent
+        inputs.self.homeModules.deckSops
       ];
 
       home = {

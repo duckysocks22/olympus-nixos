@@ -881,4 +881,19 @@
         };
       };
     };
+
+    flake.nixosModules.atuinServer = { config, pkgs, ... }: {
+      services.atuin = {
+        enable = true;
+        package = pkgs.atuin;
+        host = "::";
+        port = 1823;
+        environmentFile = config.sops.secrets."atuin/env".path;
+        database = {
+          createLocally = true;
+        };
+      };
+
+      networking.firewall.allowedTCPPorts = [ config.services.atuin.port ];
+    };
 }

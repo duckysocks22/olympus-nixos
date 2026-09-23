@@ -26,6 +26,7 @@
       self.nixosModules.files
       self.nixosModules.buildHost
       self.nixosModules.compute
+      self.nixosModules.atuinServer
     ];
   };
 

@@ -16,6 +16,7 @@
       imports = [
         self.homeModules.git
         self.homeModules.download
+        self.homeModules.atuin
         inputs.nix-index-database.homeModules.default
       ];
 
@@ -411,5 +412,24 @@
     home.packages = with pkgs; [
       aria2
     ];
+  };
+
+  flake.homeModules.atuin = { config, pkgs, ... }: {
+    programs.atuin = {
+      enable = true;
+      settings = {
+        auto_sync = true;
+        sync_frequency = "5m";
+        sync_address = "http://192.168.10.253:1823";
+        search_mode = "fuzzy";
+
+        ai = {
+          enabled = true;
+          model = "mimo-v2.6-flash";
+        };
+
+        key_path = config.sops.secrets."atuin/key".path;
+      };
+    };
   };
 }
