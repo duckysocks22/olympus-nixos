@@ -14,7 +14,7 @@
           (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO8yfaT4Vc5wUoFx1jzNZoKXBiLGsqxuTndqz/9M3NdB root@dionysus-nixos")
           (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMFCqhCYgJNuZ0+3oJFFmEjmUNSBPhLSzZfuHWjY2ivc root@ariadne-nixos")
           (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP0iFfMsPQAbz7QOqgBnZQsJPjVXXq9djMm23+2mnETB root@aether-nixos")
-          (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO7f9ImZW+fkfzIxW9ZVfcjiUE5NUN+qnYlkpk+mr2F3 root@circe-nixos")
+          (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKfMy/c6fka9VpW0hv6eJ7sMKOjDgSblpRcBUxDUvDlo root@circe-nixos")
         ];
       };
       users.groups.remotebuild = { };
@@ -26,9 +26,9 @@
     { config, ... }:
     let
       # 192.168.10.253 is nyx's WireGuard-mesh address, reachable only by
-      # mesh members (aether). LAN clients use nyx's LAN address instead.
+      # mesh members (aether, circe). LAN clients use nyx's LAN address instead.
       builderHostName =
-        if config.networking.hostName == "aether-nixos" then "192.168.10.253" else "172.17.100.1";
+        if builtins.elem config.networking.hostName [ "aether-nixos" "circe-nixos" ] then "192.168.10.253" else "172.17.100.1";
     in
     {
       nix.distributedBuilds = true;

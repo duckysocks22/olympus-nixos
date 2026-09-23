@@ -88,6 +88,7 @@
                 ".config/heroic"
                 ".config/mozilla"
                 ".config/filezilla"
+                ".config/fish"
                 ".local/state/nvim"
                 ".local/state/neovim"
                 ".local/state/wireplumber"

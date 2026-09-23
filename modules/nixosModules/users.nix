@@ -17,8 +17,10 @@
         "cdrom"
         "libvirtd"
       ];
-      shell = pkgs.zsh;
+      shell = pkgs.fish;
     };
+
+    programs.fish.enable = true;
 
     services.displayManager.sessionPackages = [ pkgs.niri ];
 
@@ -99,13 +101,15 @@
           "render"
           "cdrom"
         ];
-        shell = pkgs.zsh;
+        shell = pkgs.fish;
         openssh.authorizedKeys.keys = [
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJcAXHlW7WhNVvoU5H6q7BZDu09Tnd60P8QDJVhpbSiJ foxtrot@circe-nixos"
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJyzVQusZn11jF8/TqiSWBd+TbPxgKZIM2GK+jvZ7aCN foxtrot@athena-nixos"
           "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDv/PuSaDn5Dg+1Bghk9OfR52iIFf5TvCucODDZKrCcx server@nixos"
         ];
       };
+
+      programs.fish.enable = true;
 
       users.users.share = {
         description = "Write-access to samba media shares";
@@ -184,7 +188,7 @@
         "networkmanager"
         "wheel"
       ];
-      shell = pkgs.zsh;
+      shell = pkgs.fish;
       openssh.authorizedKeys.keys = [
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJcAXHlW7WhNVvoU5H6q7BZDu09Tnd60P8QDJVhpbSiJ foxtrot@circe-nixos"
         "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJyzVQusZn11jF8/TqiSWBd+TbPxgKZIM2GK+jvZ7aCN foxtrot@athena-nixos"
@@ -204,6 +208,8 @@
         config.allowUnfree = true;
       };
     };
+
+    programs.fish.enable = true;
 
     home-manager.users.deck = { config, ... }: {
       imports = [
