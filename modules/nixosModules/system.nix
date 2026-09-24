@@ -350,6 +350,7 @@
             "big-parallel"
             "kvm"
             "nixos-test"
+            "pipe-operators"
           ];
 
           auto-optimise-store = true;

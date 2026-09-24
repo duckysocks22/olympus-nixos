@@ -209,6 +209,10 @@
       };
     };
 
+    environment.systemPackages = with pkgs; [
+      vacuum-tube
+    ];
+
     programs.fish.enable = true;
 
     home-manager.users.deck = { config, ... }: {

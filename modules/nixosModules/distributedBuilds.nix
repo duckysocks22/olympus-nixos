@@ -11,7 +11,7 @@
         group = "remotebuild";
         extraGroups = [ "nixbld" ];
         openssh.authorizedKeys.keys = [
-          (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIO8yfaT4Vc5wUoFx1jzNZoKXBiLGsqxuTndqz/9M3NdB root@dionysus-nixos")
+          (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAVF7dMsquwXmzdfKtFuD5KJ7SLeftFhl5Ezh1Rf0Aej root@dionysus-nixos")
           (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMFCqhCYgJNuZ0+3oJFFmEjmUNSBPhLSzZfuHWjY2ivc root@ariadne-nixos")
           (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP0iFfMsPQAbz7QOqgBnZQsJPjVXXq9djMm23+2mnETB root@aether-nixos")
           (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKfMy/c6fka9VpW0hv6eJ7sMKOjDgSblpRcBUxDUvDlo root@circe-nixos")

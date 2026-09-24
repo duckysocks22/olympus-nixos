@@ -16,7 +16,6 @@
       kdePackages.dolphin
       unrar
       p7zip
-      libreoffice-qt-fresh
       filezilla
       feather
       lunatask
