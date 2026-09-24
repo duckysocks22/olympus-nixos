@@ -249,6 +249,7 @@
             "npm:pi-death-loop-guard"
             "npm:pi-watchdog-supervisor"
             "npm:pi-btw"
+            "npm:pi-agent-modes"
           ];
           enableInstallTelemetry = false;
           enableAnalytics = false;
