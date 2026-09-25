@@ -75,6 +75,7 @@
           };
         };
         extraConfigVim = ''
+          let g:editorconfig = v:false
           if has('clipboard')
             set clipboard=unnamedplus
           end
