@@ -248,7 +248,9 @@
             "npm:pi-death-loop-guard"
             "npm:pi-watchdog-supervisor"
             "npm:pi-btw"
-            "npm:pi-agent-modes"
+            "npm:@juicesharp/rpiv-ask-user-question"
+            "npm:pi-mesh-extension"
+            "${inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.pi-agent-modes}"
           ];
           enableInstallTelemetry = false;
           enableAnalytics = false;
@@ -359,6 +361,11 @@
           NEVER touch any files within the 'secrets\' directory in the repo, modification OR decryption/reading of the sops files is strictly PROHIBITED and will me managed by the user alone.
 
           # Memory / Persistent Context
+
+          ## Plugins/Extensions/Skills
+
+          Try to remember to make use of the different tools/skills/etc that you have available to you if it
+          would improve your productivity and speed (I.E subagents, pi-mesh-extension, background commands, etc.)
 
           ## Code Style Preferences
 
