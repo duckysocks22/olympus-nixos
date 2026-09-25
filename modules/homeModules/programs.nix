@@ -637,6 +637,7 @@
         (wrapNoHardened pkgs.xivlauncher "XIVLauncher.Core")
         (pkgs.olympus.override { celesteWrapper = "steam-run"; })
         pkgs.r2modman
+        pkgs.heroic
       ];
 
       programs.mangohud = {
