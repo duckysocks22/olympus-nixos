@@ -348,7 +348,7 @@
           nix build -L .#nixosConfigurations.olympus-iso.config.system.build.isoImage
         '';
         weather = ''curl "wttr.in/?u"'';
-        ai-commit = ''git commit --trailer "Co-Authored-By: GLM-5.3-Flash <noreply@z.ai>"'';
+        ai-commit = ''git commit --trailer "Co-Authored-By: MiMo-v2.6-Flash <noreply@z.ai>"'';
         cachestore = "attic push --ignore-upstream-cache-filter main $(ls -d /nix/store/*/ | grep -v fake_nixpkgs)";
         cachesys = "attic push main /run/current-system";
         cp = "rsync --progress --stats";
