@@ -635,9 +635,11 @@
         pkgs.prismlauncher
         inputs.elysia.packages.x86_64-linux.default
         (wrapNoHardened pkgs.xivlauncher "XIVLauncher.Core")
+        (wrapNoHardened pkgs.heroic "heroic")
+        (wrapNoHardened pkgs.vacuum-tube "VacuumTube")
         (pkgs.olympus.override { celesteWrapper = "steam-run"; })
         pkgs.r2modman
-        pkgs.heroic
+
       ];
 
       programs.mangohud = {
