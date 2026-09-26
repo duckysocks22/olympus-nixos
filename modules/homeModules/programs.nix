@@ -612,6 +612,8 @@
         pkg: binName:
         let
           wrapper = pkgs.writeShellScript "${binName}-no-hardened" ''
+            unset LD_LIBRARY_PATH
+            unset LD_PRELOAD
             exec ${gamemoderun}/bin/gamemoderun \
               ${pkgs.bubblewrap}/bin/bwrap \
                 --dev-bind / / \

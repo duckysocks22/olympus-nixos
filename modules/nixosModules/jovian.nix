@@ -57,6 +57,8 @@
         xserver.enable = true;
       };
 
+      systemd.services."drkonqi-coredump-processor@".wantedBy = lib.mkForce [ ];
+
       environment.plasma6.excludePackages = with pkgs.kdePackages; [
         plasma-browser-integration
         konsole
