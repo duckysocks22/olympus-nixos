@@ -636,7 +636,7 @@
         gamemoderun
         pkgs.prismlauncher
         inputs.elysia.packages.x86_64-linux.default
-        (wrapNoHardened pkgs.xivlauncher "XIVLauncher.Core")
+        pkgs.xivlauncher
         (wrapNoHardened pkgs.heroic "heroic")
         (wrapNoHardened pkgs.vacuum-tube "VacuumTube")
         (pkgs.olympus.override { celesteWrapper = "steam-run"; })
