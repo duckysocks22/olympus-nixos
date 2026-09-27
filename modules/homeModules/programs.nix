@@ -250,7 +250,6 @@
             "npm:pi-watchdog-supervisor"
             "npm:pi-btw"
             "npm:@juicesharp/rpiv-ask-user-question"
-            "npm:pi-mesh-extension"
             "${inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.pi-agent-modes}"
           ];
           enableInstallTelemetry = false;
