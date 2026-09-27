@@ -17,7 +17,7 @@
       autoconnect = {
         "athena-nixos" = "false";
         "circe-nixos" = "true";
-        "ariadne-nixos" = "false";
+        "ariadne-nixos" = "true";
         "dionysus-nixos" = "true";
       };
       ethDevice = {
@@ -32,6 +32,18 @@
           eth = ethDevice.${host};
         in
         eth != "" && eth != "null";
+      bazingaGuard = pkgs.writeShellScript "bazinga-guard" ''
+        eth="${ethDevice.${config.networking.hostName}}"
+        carrier="$(${pkgs.coreutils}/bin/cat /sys/class/net/$eth/carrier 2>/dev/null || true)"
+        if [ -z "$carrier" ]; then
+          carrier="$(${pkgs.coreutils}/bin/cat /sys/class/net/$eth/operstate 2>/dev/null || true)"
+        fi
+        if [ "$carrier" = "1" ] || [ "$carrier" = "up" ]; then
+          ${config.networking.networkmanager.package}/bin/nmcli -w 5 connection down id bazinga >/dev/null 2>&1 || true
+        else
+          ${config.networking.networkmanager.package}/bin/nmcli -w 5 connection up id bazinga >/dev/null 2>&1 || true
+        fi
+      '';
     in
     {
       imports = [
@@ -45,9 +57,15 @@
           enable = true;
           wifi = {
             backend = "iwd";
-            powersave = true;
+            powersave = false;
             scanRandMacAddress = false;
           };
+          dispatcherScripts = lib.mkIf (hasEthernet config.networking.hostName) [
+            {
+              source = bazingaGuard;
+              type = "basic";
+            }
+          ];
           ensureProfiles = {
             environmentFiles = [ config.sops.secrets."bazinga/pass".path ];
             profiles.bazinga = {
@@ -72,6 +90,7 @@
               ipv6 = {
                 addr-gen-mode = "stable-privacy";
                 method = "auto";
+                ignore-auto-dns = true;
               };
             };
           };
@@ -117,6 +136,10 @@
           nssmdns4 = true;
           nssmdns6 = true;
         };
+
+        udev.extraRules = lib.mkIf (hasEthernet config.networking.hostName) ''
+          ACTION=="add|change", SUBSYSTEM=="net", KERNEL=="${ethDevice.${config.networking.hostName}}", RUN+="${bazingaGuard}"
+        '';
       };
 
       programs.ssh.extraConfig = ''
@@ -399,7 +422,7 @@
             "PuppyGirls-DNS".stamp =
               "sdns://AgcAAAAAAAAADTEwNy4xNzQuMzYuNTYAEmRucy5wdXBweWdpcmxzLm5ldAovZG5zLXF1ZXJ5";
             "PuppyGirlsLocal-DNS".stamp =
-              "sdns://AgcAAAAAAAAADDE3Mi4xNy4xMDAuMQAXZG5zLnB1cHB5Z2lybHMubmV0Ojg1NDAKL2Rucy1xdWVyeQ";
+              "sdns://AgcAAAAAAAAADDE3Mi4xNy4xMDAuMQAWZG5zLnB1cHB5Z2lybHMubmV0Ojg1NAovZG5zLXF1ZXJ5";
 
           };
 
@@ -414,7 +437,6 @@
       networking = {
         nameservers = [
           "127.0.0.1"
-          "::1"
         ];
 
         networkmanager.insertNameservers = [ "127.0.0.1" ];
