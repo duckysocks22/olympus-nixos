@@ -206,6 +206,7 @@
           ++ [
             inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.dwproton
             inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.proton-em
+            inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.xlm
           ];
       };
 
