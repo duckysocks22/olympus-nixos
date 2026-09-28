@@ -57,6 +57,8 @@
         homeDirectory = "/home/foxtrot";
         stateVersion = "26.05";
         sessionVariables = {
+          EDITOR = "nvim";
+          VISUAL = "nvim";
           SCREENDIR = "${config.xdg.dataHome}/screen";
           _JAVA_OPTIONS = "-Djava.util.prefs.userRoot=${config.xdg.dataHome}/java";
           XDG_CONFIG_HOME = config.xdg.configHome;
@@ -149,6 +151,8 @@
           homeDirectory = "/home/server";
           stateVersion = "26.05";
           sessionVariables = {
+            EDITOR = "nvim";
+            VISUAL = "nvim";
             SCREENDIR = "${config.xdg.dataHome}/screen";
             _JAVA_OPTIONS = "-Djava.util.prefs.userRoot=${config.xdg.dataHome}/java";
             XDG_CONFIG_HOME = config.xdg.configHome;
@@ -228,6 +232,8 @@
         homeDirectory = "/home/deck";
         stateVersion = "26.05";
         sessionVariables = {
+          EDITOR = "nvim";
+          VISUAL = "nvim";
           SCREENDIR = "${config.xdg.dataHome}/screen";
           XDG_CONFIG_HOME = config.xdg.configHome;
           XDG_CACHE_HOME = config.xdg.cacheHome;
