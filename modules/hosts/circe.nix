@@ -76,6 +76,10 @@
         "pcie_aspm.policy=powersave"
         "iommu.passthrough=1"
       ];
+      boot.kernel.sysctl = {
+        "kernel.sysrq" = 1;
+        "kernel.printk" = "7 4 1 7";
+      };
       boot.kernelPatches = [
         {
           name = "hibernate-lz4";
