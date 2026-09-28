@@ -12,10 +12,139 @@
       cfg = config.programs.pi-coding-agent;
       boolStr = b: if b then "true" else "false";
 
+      themes = {
+        default = {
+          style = "plain";
+        };
+        minimal = {
+          style = "minimal";
+        };
+        catppuccin = {
+          style = "powerline";
+          shape = "pill";
+          segments = {
+            path = {
+              bg = "#f38ba8";
+              fg = "#1e1e2e";
+            };
+            branch = {
+              bg = "#89b4fa";
+              fg = "#1e1e2e";
+            };
+            model = {
+              bg = "#a6e3a1";
+              fg = "#1e1e2e";
+            };
+            tokens = {
+              bg = "#94e2d5";
+              fg = "#1e1e2e";
+            };
+            cost = {
+              bg = "#89dceb";
+              fg = "#1e1e2e";
+            };
+            context = {
+              bg = "#cba6f7";
+              fg = "#1e1e2e";
+            };
+            usage = {
+              bg = "#f9e2af";
+              fg = "#1e1e2e";
+            };
+          };
+        };
+        gruvbox-rainbow = {
+          style = "powerline";
+          shape = "arrow";
+          segments = {
+            path = {
+              bg = "#fe8019";
+              fg = "#282828";
+            };
+            branch = {
+              bg = "#b8bb26";
+              fg = "#282828";
+            };
+            model = {
+              bg = "#83a598";
+              fg = "#282828";
+            };
+            tokens = {
+              bg = "#8ec07c";
+              fg = "#282828";
+            };
+            cost = {
+              bg = "#928374";
+              fg = "#282828";
+            };
+            context = {
+              bg = "#ebdbb2";
+              fg = "#282828";
+            };
+            usage = {
+              bg = "#d3869b";
+              fg = "#282828";
+            };
+          };
+        };
+        pastel-powerline = {
+          style = "powerline";
+          shape = "arrow";
+          segments = {
+            path = {
+              bg = "#f28b82";
+              fg = "#202124";
+            };
+            branch = {
+              bg = "#fdd49e";
+              fg = "#202124";
+            };
+            model = {
+              bg = "#aecbfa";
+              fg = "#202124";
+            };
+            tokens = {
+              bg = "#a8dab5";
+              fg = "#202124";
+            };
+            cost = {
+              bg = "#9dd6c4";
+              fg = "#202124";
+            };
+            context = {
+              bg = "#b3c9f7";
+              fg = "#202124";
+            };
+            usage = {
+              bg = "#f7c1d4";
+              fg = "#202124";
+            };
+          };
+        };
+        tokyo-night = {
+          style = "powerline";
+          shape = "arrow";
+          segments = {
+            path = {
+              bg = "#7aa2f7";
+              fg = "#1a1b26";
+            };
+            context = {
+              bg = "#292e42";
+              fg = "#c0caf5";
+            };
+            usage = {
+              bg = "#24283b";
+              fg = "#c0caf5";
+            };
+          };
+        };
+      };
+
       statusLineFile = pkgs.writeText "pi-status-line-extension.ts" ''
         import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
         import { truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
-        import { appendFileSync, readdirSync, readFileSync, statSync } from "node:fs";
+        import { existsSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
         import { join } from "node:path";
 
         const SHOW_MODEL = ${boolStr cfg.statusLine.showModel};
@@ -30,6 +159,28 @@
         const USAGE_LIVE = ${boolStr cfg.statusLine.usage.live};
         const USAGE_PROVIDER = ${builtins.toJSON cfg.statusLine.usage.provider};
         const USAGE_ACCOUNT_BASE = ${builtins.toJSON cfg.statusLine.usage.accountBaseUrl};
+
+        interface Seg {
+          id: string;
+          text: string;
+        }
+
+        interface SegColors {
+          bg: string;
+          fg?: string;
+        }
+
+        interface ThemeSpec {
+          style: string;
+          shape?: string;
+          segments?: Record<string, SegColors>;
+        }
+
+        const THEMES: Record<string, ThemeSpec> = ${builtins.toJSON themes};
+        const DEFAULT_THEME = ${builtins.toJSON cfg.statusLine.theme};
+        const STATE_FILE = ${builtins.toJSON (cfg.configDir + "/statusline-theme")};
+        const AUTO_THEME = "auto";
+        const AUTO_SOFTEN = 0.3;
 
         interface LiveWindow {
           percent: number;
@@ -183,10 +334,521 @@
           );
         }
 
+        function hexToRgb(hex: string): number[] {
+          const h = hex.replace("#", "");
+          return [
+            parseInt(h.substring(0, 2), 16),
+            parseInt(h.substring(2, 4), 16),
+            parseInt(h.substring(4, 6), 16),
+          ];
+        }
+
+        const CUBE_VALUES = [0, 95, 135, 175, 215, 255];
+
+        function nearestCube(v: number): number {
+          let best = 0;
+          let bestDist = Infinity;
+          for (let i = 0; i < CUBE_VALUES.length; i++) {
+            const d = Math.abs(CUBE_VALUES[i] - v);
+            if (d < bestDist) {
+              bestDist = d;
+              best = i;
+            }
+          }
+          return best;
+        }
+
+        function rgbTo256(r: number, g: number, b: number): number {
+          const cr = nearestCube(r);
+          const cg = nearestCube(g);
+          const cb = nearestCube(b);
+          const gray = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+          const gi = Math.max(0, Math.min(23, Math.round((gray - 8) / 10)));
+          const gv = 8 + gi * 10;
+          const cubeDist =
+            Math.abs(CUBE_VALUES[cr] - r) + Math.abs(CUBE_VALUES[cg] - g) + Math.abs(CUBE_VALUES[cb] - b);
+          const grayDist = Math.abs(gv - gray);
+          const spread = Math.max(r, g, b) - Math.min(r, g, b);
+          if (spread < 10 && grayDist < cubeDist) {
+            return 232 + gi;
+          }
+          return 16 + 36 * cr + 6 * cg + cb;
+        }
+
+        function fgAnsi(hex: string, mode: string): string {
+          const rgb = hexToRgb(hex);
+          if (mode === "256color") {
+            return "\x1b[38;5;" + rgbTo256(rgb[0], rgb[1], rgb[2]) + "m";
+          }
+          return "\x1b[38;2;" + rgb[0] + ";" + rgb[1] + ";" + rgb[2] + "m";
+        }
+
+        function bgAnsi(hex: string, mode: string): string {
+          const rgb = hexToRgb(hex);
+          if (mode === "256color") {
+            return "\x1b[48;5;" + rgbTo256(rgb[0], rgb[1], rgb[2]) + "m";
+          }
+          return "\x1b[48;2;" + rgb[0] + ";" + rgb[1] + ";" + rgb[2] + "m";
+        }
+
+        const RESET = "\x1b[0m";
+
+        function varStr(vars: Record<string, any>, key: string): string | null {
+          const v = vars[key];
+          return typeof v === "string" && v.startsWith("#") ? v : null;
+        }
+
+        function relLum(hex: string): number {
+          const rgb = hexToRgb(hex).map((v) => {
+            const s = v / 255;
+            return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+          });
+          return 0.2126 * rgb[0] + 0.7152 * rgb[1] + 0.0722 * rgb[2];
+        }
+
+        function contrastRatio(a: string, b: string): number {
+          const la = relLum(a);
+          const lb = relLum(b);
+          return (Math.max(la, lb) + 0.05) / (Math.min(la, lb) + 0.05);
+        }
+
+        function mixHex(a: string, b: string, t: number): string {
+          const x = hexToRgb(a);
+          const y = hexToRgb(b);
+          const c = x.map((v, i) => Math.round(v * (1 - t) + y[i] * t));
+          return (
+            "#" +
+            c
+              .map((v) => Math.max(0, Math.min(255, v)).toString(16).padStart(2, "0"))
+              .join("")
+          );
+        }
+
+        function pickFg(bg: string, candidates: (string | null)[]): string {
+          const valid = candidates.filter((c): c is string => !!c && c.startsWith("#"));
+          let fallback = valid[0] || "#ffffff";
+          let fallbackScore = -1;
+          let gentlest = fallback;
+          let gentlestScore = Infinity;
+          for (const c of valid) {
+            const score = contrastRatio(bg, c);
+            if (score > fallbackScore) {
+              fallbackScore = score;
+              fallback = c;
+            }
+            if (score >= 4.5 && score < gentlestScore) {
+              gentlestScore = score;
+              gentlest = c;
+            }
+          }
+          return gentlestScore !== Infinity ? gentlest : fallback;
+        }
+
+        function contrastFg(bg: string, vars: Record<string, any>): string {
+          return pickFg(bg, [
+            varStr(vars, "fg2"),
+            varStr(vars, "fgBright"),
+            varStr(vars, "fg"),
+            varStr(vars, "text"),
+            "#e2dedb",
+            varStr(vars, "bg"),
+            varStr(vars, "surface"),
+            "#101014",
+          ]);
+        }
+
+        let autoCacheKey: string | null = null;
+        let autoCacheSpec: ThemeSpec | null = null;
+
+        function autoSpec(theme: any): ThemeSpec | null {
+          try {
+            const sp = theme && theme.sourcePath;
+            if (!sp || typeof sp !== "string") return null;
+            const st = statSync(sp);
+            const key = sp + ":" + st.mtimeMs;
+            if (key === autoCacheKey) return autoCacheSpec;
+            const json = JSON.parse(readFileSync(sp, "utf8"));
+            const vars: Record<string, any> = json.vars || {};
+            const pick = (names: string[]): string | null => {
+              for (const n of names) {
+                const v = varStr(vars, n);
+                if (v) return v;
+              }
+              return null;
+            };
+            const defs: [string, string[]][] = [
+              ["path", ["blue", "accent"]],
+              ["branch", ["green"]],
+              ["model", ["magenta", "purple", "accent"]],
+              ["tokens", ["cyan"]],
+              ["cost", ["yellow", "orange"]],
+              ["context", ["orange", "yellow", "surface2"]],
+              ["usage", ["surface2", "surface", "selectedBg", "gray", "red"]],
+            ];
+            const segments: Record<string, SegColors> = {};
+            const softenBase = varStr(vars, "surface") || varStr(vars, "bg");
+            for (const def of defs) {
+              let bg = pick(def[1]);
+              if (bg && softenBase) bg = mixHex(bg, softenBase, AUTO_SOFTEN);
+              if (bg) segments[def[0]] = { bg: bg, fg: contrastFg(bg, vars) };
+            }
+            const spec: ThemeSpec | null =
+              Object.keys(segments).length > 0 ? { style: "powerline", shape: "arrow", segments: segments } : null;
+            autoCacheKey = key;
+            autoCacheSpec = spec;
+            return spec;
+          } catch (e) {
+            autoCacheKey = null;
+            autoCacheSpec = null;
+            return null;
+          }
+        }
+
+        let cachedOverride: string | null | undefined = undefined;
+
+        function getOverride(): string | null {
+          if (cachedOverride === undefined) {
+            let name: string | null = null;
+            try {
+              if (existsSync(STATE_FILE)) name = readFileSync(STATE_FILE, "utf8").trim();
+            } catch (e) {
+              name = null;
+            }
+            if (name && name !== AUTO_THEME && !THEMES[name]) {
+              console.error("[pi-status-line] invalid theme in " + STATE_FILE + ": " + name);
+              name = null;
+            }
+            cachedOverride = name || null;
+          }
+          return cachedOverride;
+        }
+
+        function resolveSpec(theme: any): ThemeSpec {
+          const name = getOverride() || DEFAULT_THEME;
+          if (name === AUTO_THEME) {
+            const spec = autoSpec(theme);
+            if (spec) return spec;
+            return THEMES["default"] || { style: "plain" };
+          }
+          return THEMES[name] || THEMES["default"] || { style: "plain" };
+        }
+
+        interface LineData {
+          path: string;
+          model: string;
+          level: string;
+          pct: number | null;
+          input: number;
+          output: number;
+          cost: number;
+          branch: string | null;
+        }
+
+        function shortenCwd(cwd: string): string {
+          const home = process.env.HOME || "";
+          if (!home) return cwd;
+          if (cwd === home) return "~";
+          if (cwd.startsWith(home + "/")) return "~" + cwd.slice(home.length);
+          return cwd;
+        }
+
+        const fmtTokens = (n: number): string => (n < 1000 ? String(n) : (n / 1000).toFixed(1) + "k");
+
+        function collect(ctx: any, footerData: any): LineData {
+          let input = 0;
+          let output = 0;
+          let cost = 0;
+          if (SHOW_TOKENS || SHOW_COST) {
+            for (const e of ctx.sessionManager.getBranch()) {
+              if (e.type === "message" && e.message.role === "assistant") {
+                const m: any = e.message;
+                if (m.usage) {
+                  input += m.usage.input || 0;
+                  output += m.usage.output || 0;
+                  if (m.usage.cost) cost += m.usage.cost.total || 0;
+                }
+              }
+            }
+          }
+          let pct: number | null = null;
+          if (SHOW_CONTEXT) {
+            const u = ctx.getContextUsage();
+            if (u && u.percent !== null && u.percent !== undefined) pct = Math.round(u.percent);
+          }
+          return {
+            path: shortenCwd(String(ctx.cwd || process.cwd() || "")),
+            model: ctx.model ? ctx.model.id : "no-model",
+            level: String(ctx.thinkingLevel ?? "off"),
+            pct: pct,
+            input: input,
+            output: output,
+            cost: cost,
+            branch: SHOW_BRANCH ? footerData.getGitBranch() : null,
+          };
+        }
+
+        function contextBar(pct: number | null): { filled: number; color: string } | null {
+          if (pct === null) return null;
+          const color = pct < 50 ? "success" : pct < 75 ? "warning" : "error";
+          return { filled: Math.min(10, Math.floor((pct + 5) / 10)), color: color };
+        }
+
+        function usageText(theme: any): string {
+          if (USAGE_LIVE && liveUsage) {
+            const now = Date.now();
+            return [
+              meterLive("5h", liveUsage.rolling, now, theme),
+              meterLive("wk", liveUsage.weekly, now, theme),
+              meterLive("mo", liveUsage.monthly, now, theme),
+            ].join(" ");
+          }
+          if (USAGE_FIVE_HOUR > 0 || USAGE_WEEKLY > 0 || USAGE_MONTHLY > 0) {
+            const now = Date.now();
+            const meters: string[] = [];
+            if (USAGE_FIVE_HOUR > 0) meters.push(meterStr("5h", usage.d, USAGE_FIVE_HOUR, now, now, theme));
+            if (USAGE_WEEKLY > 0) meters.push(meterStr("wk", usage.wk, USAGE_WEEKLY, now, now, theme));
+            if (USAGE_MONTHLY > 0) meters.push(meterStr("mo", usage.mo, USAGE_MONTHLY, now, now, theme));
+            return meters.filter(Boolean).join(" ");
+          }
+          return "";
+        }
+
+        const noopTheme = { fg: (_c: string, t: string): string => t };
+
+        function renderPlain(d: LineData, theme: any): string {
+          const parts: string[] = [];
+          if (d.path) parts.push(d.path);
+          if (SHOW_MODEL) {
+            let levelColor = "dim";
+            if (d.level === "low" || d.level === "medium") levelColor = "success";
+            else if (d.level === "high" || d.level === "xhigh" || d.level === "max") levelColor = "accent";
+            parts.push(theme.fg("accent", "◆ " + d.model) + " " + theme.fg(levelColor, d.level));
+          }
+          if (SHOW_CONTEXT) {
+            const bar = contextBar(d.pct);
+            if (!bar) {
+              parts.push(theme.fg("dim", "ctx --"));
+            } else {
+              const filledStr = "█".repeat(bar.filled);
+              const emptyStr = "░".repeat(10 - bar.filled);
+              parts.push(
+                theme.fg("dim", "ctx ") +
+                  theme.fg(bar.color, filledStr) +
+                  theme.fg("dim", emptyStr) +
+                  " " +
+                  theme.fg(bar.color, String(d.pct) + "%"),
+              );
+            }
+          }
+          if (SHOW_TOKENS || SHOW_COST) {
+            const bits: string[] = [];
+            if (SHOW_TOKENS) bits.push("↑" + fmtTokens(d.input) + " ↓" + fmtTokens(d.output));
+            if (SHOW_COST) bits.push("$" + d.cost.toFixed(2));
+            if (bits.length > 0) parts.push(theme.fg("dim", bits.join(" ")));
+          }
+          if (d.branch) parts.push(theme.fg("warning", d.branch));
+          const u = usageText(theme);
+          if (u) parts.push(u);
+          return parts.join(theme.fg("dim", " | "));
+        }
+
+        function renderMinimal(d: LineData): string {
+          const parts: string[] = [];
+          if (d.path) parts.push(d.path);
+          if (SHOW_MODEL) parts.push(d.model + " " + d.level);
+          if (SHOW_CONTEXT) parts.push(d.pct === null ? "--" : String(d.pct) + "%");
+          if (SHOW_TOKENS || SHOW_COST) {
+            const bits: string[] = [];
+            if (SHOW_TOKENS) bits.push("↑" + fmtTokens(d.input) + " ↓" + fmtTokens(d.output));
+            if (SHOW_COST) bits.push("$" + d.cost.toFixed(2));
+            if (bits.length > 0) parts.push(bits.join(" "));
+          }
+          if (d.branch) parts.push(d.branch);
+          const u = usageText(noopTheme);
+          if (u) parts.push(u);
+          return parts.join("  ");
+        }
+
+        function segsFrom(d: LineData): Seg[] {
+          const segs: Seg[] = [];
+          if (d.path) segs.push({ id: "path", text: d.path });
+          if (d.branch) segs.push({ id: "branch", text: d.branch });
+          if (SHOW_MODEL) segs.push({ id: "model", text: d.model + " " + d.level });
+          if (SHOW_TOKENS) segs.push({ id: "tokens", text: "↑" + fmtTokens(d.input) + " ↓" + fmtTokens(d.output) });
+          if (SHOW_COST) segs.push({ id: "cost", text: "$" + d.cost.toFixed(2) });
+          if (SHOW_CONTEXT) {
+            const bar = contextBar(d.pct);
+            segs.push({
+              id: "context",
+              text: bar
+                ? "█".repeat(bar.filled) + "░".repeat(10 - bar.filled) + " " + d.pct + "%"
+                : "--",
+            });
+          }
+          const u = usageText(noopTheme);
+          if (u) segs.push({ id: "usage", text: u });
+          return segs;
+        }
+
+        function renderPowerline(d: LineData, spec: ThemeSpec, theme: any): string {
+          const mode = theme.getColorMode();
+          const colors = spec.segments || {};
+          const pill = spec.shape === "pill";
+          const segs = segsFrom(d);
+          let out = "";
+          let prevBg: string | null = null;
+          let first = true;
+          for (const seg of segs) {
+            const c: SegColors | undefined = colors[seg.id];
+            if (!c) {
+              if (prevBg !== null) {
+                out += RESET;
+                prevBg = null;
+              }
+              if (!first) out += " ";
+              out += seg.text;
+              first = false;
+              continue;
+            }
+            const fgHex = c.fg || pickFg(c.bg, ["#101014", "#f4f4f6"]);
+            const bgCode = bgAnsi(c.bg, mode);
+            const fgCode = fgAnsi(fgHex, mode);
+            const bold = "\x1b[1m";
+            let text = seg.text;
+            const bar = seg.id === "context" ? contextBar(d.pct) : null;
+            if (bar) {
+              const emptyHex = mixHex(fgHex, c.bg, 0.45);
+              text =
+                fgCode +
+                bold +
+                "█".repeat(bar.filled) +
+                fgAnsi(emptyHex, mode) +
+                bold +
+                "░".repeat(10 - bar.filled) +
+                fgCode +
+                bold +
+                " " +
+                d.pct +
+                "%";
+            }
+            if (pill) {
+              if (!first) out += " ";
+              out +=
+                fgAnsi(c.bg, mode) +
+                "" +
+                RESET +
+                bgCode +
+                fgCode +
+                bold +
+                " " +
+                text +
+                " " +
+                RESET +
+                fgAnsi(c.bg, mode) +
+                "" +
+                RESET;
+              prevBg = null;
+            } else {
+              if (prevBg !== null) {
+                out += fgAnsi(prevBg, mode) + bgCode + "\uE0B0" + RESET;
+              } else if (!first) {
+                out += " ";
+              }
+              out += bgCode + fgCode + bold + " " + text + " " + RESET;
+              prevBg = c.bg;
+            }
+            first = false;
+          }
+          if (prevBg !== null) {
+            out += fgAnsi(prevBg, mode) + "\uE0B0" + RESET;
+          }
+          return out;
+        }
+
         export default function (pi: ExtensionAPI) {
           let footerTui: { requestRender(force?: boolean): void } | undefined;
           let usageTimer: ReturnType<typeof setInterval> | null = null;
           let lastCtx: any = null;
+          let lastData: LineData | null = null;
+
+          function previewLines(theme: any, fallbackModel: string, fallbackLevel: string): string[] {
+            const base: LineData = lastData || {
+              path: shortenCwd(process.cwd()),
+              model: fallbackModel,
+              level: fallbackLevel,
+              pct: 42,
+              input: 12400,
+              output: 3200,
+              cost: 0.42,
+              branch: "main",
+            };
+            const lines: string[] = [];
+            const rows: [string, ThemeSpec][] = [["current", resolveSpec(theme)]];
+            for (const n of Object.keys(THEMES)) rows.push([n, THEMES[n]]);
+            for (const row of rows) {
+              lines.push(theme.fg("dim", row[0] + ":"));
+              let line: string;
+              if (row[1].style === "powerline") line = renderPowerline(base, row[1], theme);
+              else if (row[1].style === "minimal") line = renderMinimal(base);
+              else line = renderPlain(base, theme);
+              lines.push("  " + line);
+              lines.push("");
+            }
+            return lines;
+          }
+
+          pi.registerCommand("statusline", {
+            description: "Switch the status line theme (themes | <name> | reset | clear)",
+            handler: async (args, ctx) => {
+              const sub = args.trim().split(/\s+/)[0] || "themes";
+              if (sub === "themes" || sub === "list") {
+                ctx.ui.setWidget("pi-status-line-preview", (tui: any, theme: any) => ({
+                  invalidate() {},
+                  render(width: number): string[] {
+                    const lines = previewLines(
+                      theme,
+                      ctx.model ? ctx.model.id : "model",
+                      String((ctx as any).thinkingLevel ?? "high"),
+                    );
+                    return lines.map((l) => truncateToWidth(l, width));
+                  },
+                }));
+                ctx.ui.notify("Previewing themes — /statusline <name> to apply, /statusline clear to hide", "info");
+                return;
+              }
+              if (sub === "clear" || sub === "hide") {
+                ctx.ui.setWidget("pi-status-line-preview", undefined);
+                return;
+              }
+              if (sub === "reset") {
+                try {
+                  if (existsSync(STATE_FILE)) unlinkSync(STATE_FILE);
+                } catch (e: any) {
+                  ctx.ui.notify("statusline: cannot delete state file: " + String(e), "error");
+                  return;
+                }
+                cachedOverride = null;
+                footerTui?.requestRender();
+                ctx.ui.setWidget("pi-status-line-preview", undefined);
+                ctx.ui.notify("Status line theme reset to nix default (" + DEFAULT_THEME + ")", "info");
+                return;
+              }
+              if (sub === AUTO_THEME || THEMES[sub]) {
+                try {
+                  writeFileSync(STATE_FILE, sub);
+                } catch (e: any) {
+                  ctx.ui.notify("statusline: cannot write state file: " + String(e), "error");
+                  return;
+                }
+                cachedOverride = sub;
+                footerTui?.requestRender();
+                ctx.ui.setWidget("pi-status-line-preview", undefined);
+                ctx.ui.notify("Status line theme: " + sub, "info");
+                return;
+              }
+              ctx.ui.notify("Unknown status line theme: " + sub + " — try /statusline themes", "error");
+            },
+          });
 
           pi.on("model_select", async () => {
             footerTui?.requestRender();
@@ -233,78 +895,14 @@
                 invalidate() {},
                 render(width: number): string[] {
                   try {
-                  const parts: string[] = [];
-
-                  if (SHOW_MODEL) {
-                    const model = ctx.model ? ctx.model.id : "no-model";
-                    const level = String(ctx.thinkingLevel ?? "off");
-                    let levelColor = "dim";
-                    if (level === "low" || level === "medium") levelColor = "success";
-                    else if (level === "high" || level === "xhigh" || level === "max") levelColor = "accent";
-                    parts.push(theme.fg("accent", "◆ " + model) + " " + theme.fg(levelColor, level));
-                  }
-
-                  if (SHOW_CONTEXT) {
-                    const usage = ctx.getContextUsage();
-                    const pct =
-                      usage && usage.percent !== null && usage.percent !== undefined
-                        ? Math.round(usage.percent)
-                        : null;
-                    if (pct === null) {
-                      parts.push(theme.fg("dim", "ctx --"));
-                    } else {
-                      const color = pct < 50 ? "success" : pct < 75 ? "warning" : "error";
-                      const filled = Math.min(10, Math.floor((pct + 5) / 10));
-                      const bar = theme.fg(color, "█".repeat(filled)) + theme.fg("dim", "░".repeat(10 - filled));
-                      parts.push(theme.fg("dim", "ctx ") + bar + " " + theme.fg(color, String(pct) + "%"));
-                    }
-                  }
-
-                  if (SHOW_TOKENS || SHOW_COST) {
-                    let input = 0;
-                    let output = 0;
-                    let cost = 0;
-                    for (const e of ctx.sessionManager.getBranch()) {
-                      if (e.type === "message" && e.message.role === "assistant") {
-                        const m: any = e.message;
-                        if (m.usage) {
-                          input += m.usage.input || 0;
-                          output += m.usage.output || 0;
-                          if (m.usage.cost) cost += m.usage.cost.total || 0;
-                        }
-                      }
-                    }
-                    const fmt = (n: number) => (n < 1000 ? String(n) : (n / 1000).toFixed(1) + "k");
-                    const bits: string[] = [];
-                    if (SHOW_TOKENS) bits.push("↑" + fmt(input) + " ↓" + fmt(output));
-                    if (SHOW_COST) bits.push("$" + cost.toFixed(2));
-                    if (bits.length > 0) parts.push(theme.fg("dim", bits.join(" ")));
-                  }
-
-                  if (SHOW_BRANCH) {
-                    const branch = footerData.getGitBranch();
-                    if (branch) parts.push(theme.fg("warning", branch));
-                  }
-
-                  if (USAGE_LIVE && liveUsage) {
-                    const now = Date.now();
-                    parts.push(
-                      [
-                        meterLive("5h", liveUsage.rolling, now, theme),
-                        meterLive("wk", liveUsage.weekly, now, theme),
-                        meterLive("mo", liveUsage.monthly, now, theme),
-                      ].join(" "),
-                    );
-                  } else if (USAGE_FIVE_HOUR > 0 || USAGE_WEEKLY > 0 || USAGE_MONTHLY > 0) {
-                    const now = Date.now();
-                    const meters: string[] = [];
-                    if (USAGE_FIVE_HOUR > 0) meters.push(meterStr("5h", usage.d, USAGE_FIVE_HOUR, now, now, theme));
-                    if (USAGE_WEEKLY > 0) meters.push(meterStr("wk", usage.wk, USAGE_WEEKLY, now, now, theme));
-                    if (USAGE_MONTHLY > 0) meters.push(meterStr("mo", usage.mo, USAGE_MONTHLY, now, now, theme));
-                    if (meters.length > 0) parts.push(meters.join(" "));
-                  }
-
-                  return [truncateToWidth(parts.join(theme.fg("dim", " | ")), width)];
+                  const data = collect(ctx, footerData);
+                  lastData = data;
+                  const spec = resolveSpec(theme);
+                  let line: string;
+                  if (spec.style === "powerline") line = renderPowerline(data, spec, theme);
+                  else if (spec.style === "minimal") line = renderMinimal(data);
+                  else line = renderPlain(data, theme);
+                  return [truncateToWidth(line, width) + (spec.style === "powerline" ? RESET : "")];
                   } catch (e: any) {
                     return [truncateToWidth("statusline-err: " + String(e), width)];
                   }
@@ -335,6 +933,27 @@
     {
       options.programs.pi-coding-agent.statusLine = {
         enable = lib.mkEnableOption "pi custom status line (ported from claude-statusline)";
+
+        theme = lib.mkOption {
+          type = lib.types.enum [
+            "auto"
+            "default"
+            "minimal"
+            "catppuccin"
+            "gruvbox-rainbow"
+            "pastel-powerline"
+            "tokyo-night"
+          ];
+          default = "auto";
+          description = ''
+            Status line theme. "auto" derives powerline segment colors from the
+            active pi theme (e.g. the Stylix-generated stylix.json), so the line
+            follows /theme automatically. At runtime, /statusline <theme>
+            overrides this value by writing ${cfg.configDir}/statusline-theme
+            (not home-manager managed); /statusline reset deletes that file and
+            returns to this option's value.
+          '';
+        };
 
         showModel = lib.mkOption {
           type = lib.types.bool;

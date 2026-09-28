@@ -283,6 +283,7 @@
 
         statusLine = {
           enable = true;
+          theme = "auto";
           usage = {
             fiveHour = 12.0;
             weekly = 30.0;
