@@ -137,7 +137,7 @@
             "server string" = "nyxsmb";
             "netbios name" = "nyxsmb";
             "security" = "user";
-            "hosts allow" = "172.17.0.0/16";
+            "hosts allow" = "172.17.0.0/16 192.168.10.0/24";
             "hosts deny" = "0.0.0.0/0";
             "guest account" = "share";
             "map to guest" = "bad user";
