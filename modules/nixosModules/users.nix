@@ -22,7 +22,7 @@
 
     programs.fish.enable = true;
 
-    services.displayManager.sessionPackages = [ pkgs.niri ];
+    services.displayManager.sessionPackages = [ pkgs.niri inputs.doors.packages.${pkgs.stdenv.hostPlatform.system}.doors ];
 
     home-manager.useGlobalPkgs = true;
     home-manager.useUserPackages = true;
@@ -48,6 +48,7 @@
         inputs.self.homeModules.piAgent
         inputs.self.homeModules.stylix
         inputs.self.homeModules.niri
+        inputs.self.homeModules.doors
         inputs.self.homeModules.shell
         inputs.self.homeModules.foxtrotSops
       ];

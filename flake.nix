@@ -90,6 +90,10 @@
       url = "github:aksiksi/compose2nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+    doors = {
+      url = "git+https://dawn.wine/CreeperFace/doors.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

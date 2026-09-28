@@ -11,6 +11,7 @@
       self.nixosModules.dionysusDisko
       self.nixosModules.functions
       self.nixosModules.system
+      self.nixosModules.mouseModifiers
       self.nixosModules.common
       self.nixosModules.systemHarden
       self.nixosModules.defaultNetwork

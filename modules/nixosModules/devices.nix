@@ -27,7 +27,7 @@
     systemd.mounts = [
       {
         description = "Olympus Shared SMB mount";
-        what = "//172.17.100.1/shared";
+        what = "//192.168.10.253/shared";
         where = "/media/olympus/shared";
         options = "credentials=${
           config.sops.secrets."samba/local".path
@@ -42,7 +42,7 @@
       }
       {
         description = "Olympus Private SMB mount";
-        what = "//172.17.100.1/private";
+        what = "//192.168.10.253/private";
         where = "/media/olympus/private";
         options = "credentials=${
           config.sops.secrets."samba/local".path

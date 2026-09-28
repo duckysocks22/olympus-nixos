@@ -16,6 +16,7 @@
       self.nixosModules.systemHarden
       self.nixosModules.dms-greeter
       self.nixosModules.system
+      self.nixosModules.mouseModifiers
       self.nixosModules.foxtrot
       self.nixosModules.common
       self.nixosModules.defaultNetwork
