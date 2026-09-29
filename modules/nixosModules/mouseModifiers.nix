@@ -16,15 +16,16 @@
       };
       script = ''
         shopt -s nullglob
-        mice=(/dev/input/by-id/*-event-mouse)
-        if [ ''${#mice[@]} -eq 0 ]; then
-          echo "mouse-modifiers: no mouse event devices found" >&2
-          exit 1
-        fi
-        exec ${pkgs.evsieve}/bin/evsieve --input "''${mice[@]}" grab persist=reopen \
-          --map btn:side key:leftshift \
-          --map btn:extra key:leftctrl \
-          --output name=evsieve-mouse
+        while true; do
+          mice=(/dev/input/by-id/*-event-mouse)
+          if [ ''${#mice[@]} -gt 0 ]; then
+            exec ${pkgs.evsieve}/bin/evsieve --input "''${mice[@]}" grab persist=reopen \
+              --map btn:side key:leftshift \
+              --map btn:extra key:leftctrl \
+              --output name=evsieve-mouse
+          fi
+          sleep 5
+        done
       '';
     };
   };
