@@ -51,6 +51,7 @@
         inputs.self.homeModules.doors
         inputs.self.homeModules.shell
         inputs.self.homeModules.foxtrotSops
+        inputs.self.homeModules.syncthing
       ];
 
       home = {
@@ -226,6 +227,7 @@
         inputs.self.homeModules.common
         inputs.self.homeModules.piAgent
         inputs.self.homeModules.deckSops
+        inputs.self.homeModules.syncthing
       ];
 
       home = {

@@ -10,6 +10,43 @@
     ];
   };
 
+  flake.nixosModules.syncthing = { config, lib, pkgs, ... }: {
+    services.syncthing = {
+      enable = true;
+      openDefaultPorts = true;
+      extraFlags = [ "--no-default-folder" ];
+      key = "${config.sops.secrets."syncthing/nyx/cert".path}";
+      cert = "${config.sops.secrets."syncthing/nyx/key".path}";
+
+      guiPasswordFile = "${config.sops.secrets."admin/pass".path}";
+      settings = {
+        gui.user = "foxtrot";
+        devices = {
+          "circe" = { id = ""; };
+          "dionysus" = { id = ""; };
+          "ariadne" = { id = ""; };
+        };
+        
+        folders = {
+          "ffxivGameConfig" = {
+            path = "/media/hdd1/shares/copyparty/ffxiv/gameConfig";
+            devices = [ "circe" "dionysus" "ariadne" ];
+            ignorePerms = false;
+          };
+          "ffxivPluginConfig" = {
+            path = "/media/hdd1/shares/copyparty/ffxiv/pluginsConfig";
+            devices = [ "circe" "dionysus" "ariadne" ];
+            ignorePerms = false;
+          };
+        };
+      };
+
+      guiAddress = ":8384";
+    };
+
+    networking.firewall.allowedTCPPorts = [ 8384 ];
+  };
+
   flake.nixosModules.immich =
     {
       config,
@@ -107,24 +144,6 @@
         user = "root";
       };
     };
-
-  flake.nixosModules.syncthing = { config, ... }: {
-    services.syncthing = {
-      enable = true;
-      openDefaultPorts = true;
-      key = "${config.sops.secrets."syncthing/nyx/cert".path}";
-      cert = "${config.sops.secrets."syncthing/nyx/key".path}";
-      settings = {
-        gui.user = "foxtrot";
-        guiPasswordFile = "${config.sops.secrets."admin/pass".path}";
-
-        folders = {
-
-        };
-      };
-    };
-    networking.firewall.allowedTCPPorts = [ 8384 ];
-  };
 
   flake.nixosModules.samba = { config, pkgs, ... }: {
     services = {
