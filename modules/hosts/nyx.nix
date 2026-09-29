@@ -54,6 +54,8 @@
       networking.hostName = "nyx-nixos";
       networking.useDHCP = lib.mkForce false;
 
+      environment.memoryAllocator.provider = lib.mkForce "libc";
+
       # Host runs AdGuardHome on :53; resolved's stub listeners (127.0.0.53/127.0.0.54)
       # block its wildcard bind. Point host DNS at AdGuard instead.
       services.resolved.enable = false;
