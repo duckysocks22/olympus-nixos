@@ -28,7 +28,6 @@
       self.nixosModules.compute
       self.nixosModules.atuinServer
       self.nixosModules.atuinAIServer
-      self.nixosModules.syncthing
     ];
   };
 

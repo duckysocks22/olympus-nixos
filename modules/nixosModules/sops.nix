@@ -165,15 +165,6 @@
       owner = "tdarr";
     };
 
-    sops.secrets."syncthing/nyx/cert" = {
-      owner = "syncthing";
-      path = "/run/secrets/syncthing/nyx/cert.pem";
-    };
-    sops.secrets."syncthing/nyx/key" = {
-      owner = "syncthing";
-      path = "/run/secrets/syncthing/nyx/key.pem";
-    };
-
     sops.secrets."adguardhome/domain_cert" = {
       owner = "server";
       path = "/media/hdd1/certs/dns.puppygirls.net/dns.puppygirls.net.crt";

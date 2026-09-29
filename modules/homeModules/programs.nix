@@ -30,18 +30,6 @@
     };
   };
 
-  flake.homeModules.syncthing = { pkgs, lib, inputs, config, ... }: {
-    services.syncthing = {
-      enable = true;
-      tray.enable = true;
-      guiCredentials = {
-        username = "foxtrot";
-        passwordFile = "${config.sops.secrets."syncthing/pass".path}";
-      };
-      guiAddress = ":8384";
-    };
-  };
-
   flake.homeModules.nixvim =
     {
       pkgs,

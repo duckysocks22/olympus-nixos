@@ -259,7 +259,7 @@
 
       plugins = [
         { name = "grc"; src = pkgs.fishPlugins.grc.src; }
-        { name = "fzf"; src = pkgs.fishPlugins.fzf.src; }
+        { name = "fzf-fish"; src = pkgs.fishPlugins.fzf-fish.src; }
         { name = "done"; src = pkgs.fishPlugins.done.src; }
         { name = "tide"; src = pkgs.fishPlugins.tide.src; }
         { name = "forgit"; src = pkgs.fishPlugins.forgit.src; }
