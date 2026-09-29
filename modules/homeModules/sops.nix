@@ -9,6 +9,7 @@
     sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
 
     sops.secrets."atuin/key" = { };
+    sops.secrets."syncthing/pass" = { };
   };
 
   flake.homeModules.serverSops = { inputs, config, ... }: {
@@ -31,5 +32,6 @@
     sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
 
     sops.secrets."atuin/key" = { };
+    sops.secrets."syncthing/pass" = { };
   };
 }

@@ -1386,4 +1386,23 @@
         };
       };
     };
+
+    flake.homeModules.syncthing = { config, osConfig, ... }: let
+      address = {
+        "circe-nixos" = "192.168.10.2";
+        "dionysus-nixos" = "192.168.10.3";
+        "ariadne-nixos" = "192.168.10.4";
+        "athena-nixos" = "192.168.10.1";
+      };
+    in {
+      services.syncthing = {
+        enable = true;
+
+        guiAddress = "${address.${osConfig.networking.hostName}}:8384";
+        guiCredentials = {
+          username = "foxtrot";
+          passwordFile = "${config.sops.secrets."syncthing/pass".path}";
+        };
+      };
+    };
 }

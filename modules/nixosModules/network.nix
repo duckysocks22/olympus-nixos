@@ -114,8 +114,8 @@
           unmanaged = [ ethDevice.${config.networking.hostName} ];
         };
         firewall = {
-          allowedTCPPorts = [ 4646 ];
-          allowedUDPPorts = [ 4646 ];
+          allowedTCPPorts = [ 4646 8384 ];
+          allowedUDPPorts = [ 4646 8384 ];
         };
       };
 
@@ -349,6 +349,7 @@
           8080
           8082
           8123
+          8384
           8443
           853
           854
@@ -385,6 +386,7 @@
         allowedTCPPorts = [
           22
           53
+          8384
         ];
         allowedUDPPorts = [ 53 ];
       }
@@ -491,5 +493,23 @@
     "aether-nixos" = "73mtIREvRqhfiUhfG47ITB3q+nMIO5M5+eVfIj9CslI=";
     "nyx-nixos" = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
     "hermes" = "DWvPMpjBkUsCUshoL8BlIlKc/l2j7u2I8Up9b09UvA0=";
+  };
+
+  flake.nixosModules.syncthing = { config, ... }: let
+    address = {
+      "nyx-nixos" = "192.168.10.253";
+    };
+  in {
+    services.syncthing = {
+      enable = true;
+      openDefaultPorts = true;
+
+      guiAddress = "${address.${config.networking.hostName}}:8384";
+      guiPasswordFile = "${config.sops.secrets."admin/pass".path}";
+
+      settings = {
+        gui.user = "foxtrot";
+      };
+    };
   };
 }
