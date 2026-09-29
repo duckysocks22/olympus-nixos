@@ -44,6 +44,17 @@
           ${config.networking.networkmanager.package}/bin/nmcli -w 5 connection up id bazinga >/dev/null 2>&1 || true
         fi
       '';
+      dnsPin = pkgs.writeShellScript "dns-pin" ''
+        case "$ACTION" in
+          up|dhcp4-change|dhcp6-change|reapply) ;;
+          *) exit 0 ;;
+        esac
+        if [ -z "$CONNECTION_ID" ] || [ -z "$DEVICE_INTERFACE" ]; then
+          exit 0
+        fi
+        ${config.networking.networkmanager.package}/bin/nmcli con modify "$CONNECTION_ID" ipv4.ignore-auto-dns true ipv6.ignore-auto-dns true ipv4.dns 127.0.0.1 >/dev/null 2>&1 || true
+        ${pkgs.systemd}/bin/resolvectl dns "$DEVICE_INTERFACE" 127.0.0.1 >/dev/null 2>&1 || true
+      '';
     in
     {
       imports = [
@@ -60,7 +71,13 @@
             powersave = false;
             scanRandMacAddress = false;
           };
-          dispatcherScripts = lib.mkIf (hasEthernet config.networking.hostName) [
+          dispatcherScripts = [
+            {
+              source = dnsPin;
+              type = "basic";
+            }
+          ]
+          ++ lib.optionals (hasEthernet config.networking.hostName) [
             {
               source = bazingaGuard;
               type = "basic";
@@ -407,6 +424,7 @@
         enable = true;
         upstreamDefaults = false;
         settings = {
+          listen_addresses = [ "127.0.0.1:5354" ];
           bootstrap_resolvers = [
             "9.9.9.9:53"
             "1.1.1.1:53"
@@ -432,6 +450,25 @@
           require_nolog = false;
           require_nofilter = false;
         };
+      };
+
+      services.dnsproxy = {
+        enable = true;
+        settings = {
+          "listen-addrs" = [ "127.0.0.1" ];
+          "listen-ports" = [ 53 ];
+          upstream = [ "127.0.0.1:5354" ];
+          fallback = [
+            "sdns://AgcAAAAAAAAABzEuMC4wLjEAEmRucy5jbG91ZGZsYXJlLmNvbQovZG5zLXF1ZXJ5"
+            "sdns://AgMAAAAAAAAABzkuOS45LjkgsBkgdEu7dsmrBT4B4Ht-BQ5HPSD3n3vqQ1-v5DydJC8SZG5zOS5xdWFkOS5uZXQ6NDQzCi9kbnMtcXVlcnk"
+          ];
+          timeout = "3s";
+        };
+      };
+
+      systemd.services.dnsproxy = {
+        after = [ "dnscrypt-proxy.service" ];
+        wants = [ "dnscrypt-proxy.service" ];
       };
 
       networking = {
