@@ -59,12 +59,32 @@
             proto = "udp";
             destination = "192.168.10.253:853";
           }
+          {
+            sourcePort = 25565;
+            destination = "192.168.10.253:25665";
+          }
+          {
+            sourcePort = 25665;
+            destination = "192.168.10.253:25665";
+          }
+          {
+            sourcePort = 25865;
+            destination = "192.168.10.253:25865";
+          }
         ];
       };
 
       networking = {
         useNetworkd = true;
-        firewall.allowedUDPPorts = [ 4500 ];
+        firewall = {
+          allowedUDPPorts = [ 4500 ] ++ lib.optionals (config.networking.hostName == "aether-nixos") [ 853 ];
+          allowedTCPPorts = lib.optionals (config.networking.hostName == "aether-nixos") [
+            853
+            25565
+            25665
+            25865
+          ];
+        };
       };
 
       systemd.network = {
