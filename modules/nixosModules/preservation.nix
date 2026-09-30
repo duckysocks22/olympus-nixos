@@ -89,6 +89,7 @@
                 ".config/mozilla"
                 ".config/filezilla"
                 ".config/fish"
+                ".config/Lunatask"
                 ".local/state/nvim"
                 ".local/state/neovim"
                 ".local/state/wireplumber"
