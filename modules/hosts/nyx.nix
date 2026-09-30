@@ -29,6 +29,7 @@
       self.nixosModules.atuinServer
       self.nixosModules.atuinAIServer
       self.nixosModules.syncthing
+      self.nixosModules.homepage
     ];
   };
 
