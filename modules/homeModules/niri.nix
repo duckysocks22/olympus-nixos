@@ -312,6 +312,12 @@
             };
             action.spawn = "dolphin";
           };
+          "Mod+B" = {
+            hotkey-overlay = {
+              title = "Open Librewolf";
+            };
+            action.spawn = "librewolf";
+          };
 
           # --- Security ---
           "Mod+L" = {
