@@ -230,6 +230,28 @@
         inputs.self.homeModules.syncthing
       ];
 
+      home.file = {
+        ".local/bin/com.discordapp.Discord" = {
+          source = pkgs.writeShellScript "com.discordapp.Discord" ''
+            exec ${pkgs.discord}/bin/discord "$@"
+          '';
+          force = true;
+        };
+        ".local/share/applications/com.discordapp.Discord.desktop" = {
+          source = pkgs.writeText "com.discordapp.Discord.desktop" ''
+            [Desktop Entry]
+            Name=Discord
+            Comment=All-in-one voice and text chat for gamers
+            Exec=${config.home.homeDirectory}/.local/bin/com.discordapp.Discord
+            Icon=discord
+            Terminal=false
+            Type=Application
+            Categories=Network;InstantMessaging;
+          '';
+          force = true;
+        };
+      };
+
       home = {
         username = "deck";
         homeDirectory = "/home/deck";
