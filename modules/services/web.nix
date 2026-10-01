@@ -49,6 +49,9 @@
         enableIPv6 = true;
         externalInterface = adapter.${config.networking.hostName};
         internalInterfaces = [ "wg0" ];
+        extraCommands = lib.optionalString (config.networking.hostName == "aether-nixos") ''
+          iptables -w -t nat -A nixos-nat-post -o wg0 -j MASQUERADE
+        '';
         forwardPorts = lib.optionals (config.networking.hostName == "aether-nixos") [
           {
             sourcePort = 853;
