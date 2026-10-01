@@ -15,11 +15,17 @@
     }:
     {
 
-      systemd.services.mc-statech-industries = util.functions.mkSimpleService {
-        description = "Minecraft Statech Industries Server";
+      systemd.services.mc-ntnh = util.functions.mkSimpleService {
+        description = "Minecraft Nuclear Tech New Horizons Server";
         ExecStart = pkgs.writeShellScript "start.sh" ''
-          cd /home/server/game-servers/minecraft/statech-industries
-          ${pkgs.jdk17}/bin/java -server -Xmx6G -jar fabric-server-mc.1.19.2-loader.0.16.9-launcher.1.0.1.jar nogui
+          cd /home/server/game-servers/minecraft/ntnh-server
+
+          set -e
+
+          SERVER_JAR="forge-1.7.10-10.13.4.1614-1.7.10-universal.jar"
+
+          exec ${pkgs.jdk8}/bin/java -Xms4G -Xmx8G -XX:+UseG1GC -XX:+UnlockExperimentalVMOptions -XX:MaxGCPauseMillis=100 -jar "$SERVER_JAR" nogui
+
         '';
         user = "server";
       };

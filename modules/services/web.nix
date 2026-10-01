@@ -1169,9 +1169,9 @@
               };
             }
             {
-              "StaTech | Minecraft" = {
+              "NTNH | Minecraft" = {
                 description = "statech.puppygirls.net";
-                icon = "https://i.imgur.com/PAj6tW1.png";
+                icon = "https://avatars.githubusercontent.com/u/209024689?s=200&v=4";
                 widget = {
                   type = "minecraft";
                   url = "udp://localhost:25665";
