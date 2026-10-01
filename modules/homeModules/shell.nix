@@ -45,6 +45,9 @@
         ssh = {
           enable = true;
           enableDefaultConfig = false;
+          settings."192.168.10.253" = {
+            Compression = true;
+          };
           settings."*" = {
             ForwardAgent = false;
             AddKeysToAgent = "yes";

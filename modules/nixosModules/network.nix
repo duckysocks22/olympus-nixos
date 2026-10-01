@@ -231,7 +231,7 @@
 
             routingPolicyRules = [
               {
-                Priority = 100;
+                Priority = 97;
                 FirewallMark = 42;
                 Table = "main";
               }
