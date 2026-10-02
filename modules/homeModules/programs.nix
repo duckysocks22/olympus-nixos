@@ -124,7 +124,8 @@
           enable = true;
           installPackage = false;
           krisp.enable = true;
-          vencord.enable = true;
+          vencord.enable = false;
+          equicord.enable = true;
           commandLineArgs = [
             "--enable-features=WebRTCPipeWireCapturer"
             "--disable-gpu"
@@ -190,6 +191,11 @@
             noF1.enable = true;
             petpet.enable = true;
             expressionCloner.enable = true;
+            anonymiseFileNames = {
+              enable = true;
+              anonymiseByDefault = true;
+              method = 0;
+            };
           };
         };
         quickCss = "

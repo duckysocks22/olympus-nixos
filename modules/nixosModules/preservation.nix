@@ -82,6 +82,7 @@
                 ".config/Signal"
                 ".config/discord"
                 ".config/Vencord"
+                ".config/Equicord"
                 ".config/Lunatask"
                 ".config/attic"
                 ".config/git"
