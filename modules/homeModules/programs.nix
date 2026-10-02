@@ -17,7 +17,6 @@
       unrar
       p7zip
       filezilla
-      feather
       lunatask
       kdePackages.kate
     ];
