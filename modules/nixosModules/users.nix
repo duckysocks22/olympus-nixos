@@ -233,6 +233,8 @@
       home.file = {
         ".local/bin/com.discordapp.Discord" = {
           source = pkgs.writeShellScript "com.discordapp.Discord" ''
+            unset LD_LIBRARY_PATH
+            unset LD_PRELOAD
             exec ${pkgs.discord}/bin/discord "$@"
           '';
           force = true;
