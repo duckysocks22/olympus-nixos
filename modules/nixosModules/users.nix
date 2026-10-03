@@ -254,6 +254,22 @@
         };
       };
 
+      systemd.user.services.discord-autostart = {
+        Unit = {
+          Description = "Discord (background) for Steam Big Picture";
+          After = [ "gamescope-session.service" ];
+          PartOf = [ "graphical-session.target" ];
+        };
+        Service = {
+          Type = "exec";
+          EnvironmentFile = "-%t/gamescope-environment";
+          ExecStart = "${config.home.homeDirectory}/.local/bin/com.discordapp.Discord";
+          Restart = "on-failure";
+          RestartSec = 10;
+        };
+        Install.WantedBy = [ "graphical-session.target" ];
+      };
+
       home = {
         username = "deck";
         homeDirectory = "/home/deck";
