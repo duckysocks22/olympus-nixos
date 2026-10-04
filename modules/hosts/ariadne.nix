@@ -73,6 +73,30 @@
       systemd.sleep.settings.Sleep = {
         HibernateDelaySec = "2h";
       };
+      powerManagement = {
+        enable = true;
+        powerDownCommands = ''
+          # Clear SteamOS deep-sleep inhibit (InhibitDs) right before suspend,
+          # so amd_pmc can reach its deepest s2idle state and won't insta-wake.
+          if command -v busctl >/dev/null 2>&1; then
+            busctl call com.steampowered.SteamOSManager1 \
+              /com/steampowered/SteamOSManager1 \
+              org.freedesktop.DBus.Properties Set \
+              ssb "com.steampowered.SteamOSManager1.RootManager" "InhibitDs" b false \
+              || true
+          fi
+        '';
+        resumeCommands = ''
+          # Restore deep-sleep inhibit after resume, matching SteamOS' own default.
+          if command -v busctl >/dev/null 2>&1; then
+            busctl call com.steampowered.SteamOSManager1 \
+              /com/steampowered/SteamOSManager1 \
+              org.freedesktop.DBus.Properties Set \
+              ssb "com.steampowered.SteamOSManager1.RootManager" "InhibitDs" b true \
+              || true
+          fi
+        '';
+      };
       nixpkgs.config.allowUnfree = true;
       system.stateVersion = "26.05";
 
