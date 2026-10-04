@@ -235,7 +235,7 @@
         package = pkgs-unstable.pi-coding-agent;
         settings = {
           defaultProvider = "opencode-go";
-          defaultModel = "mimo-v2.6-flash";
+          defaultModel = "glm-5.3-flash";
           enabledModels = [
             "opencode-go/mimo-*"
             "opencode-go/glm-*"
