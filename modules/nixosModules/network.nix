@@ -26,24 +26,6 @@
         "dionysus-nixos" = "null";
         "ariadne-nixos" = "enp5s0";
       };
-      hasEthernet =
-        host:
-        let
-          eth = ethDevice.${host};
-        in
-        eth != "" && eth != "null";
-      bazingaGuard = pkgs.writeShellScript "bazinga-guard" ''
-        eth="${ethDevice.${config.networking.hostName}}"
-        carrier="$(${pkgs.coreutils}/bin/cat /sys/class/net/$eth/carrier 2>/dev/null || true)"
-        if [ -z "$carrier" ]; then
-          carrier="$(${pkgs.coreutils}/bin/cat /sys/class/net/$eth/operstate 2>/dev/null || true)"
-        fi
-        if [ "$carrier" = "1" ] || [ "$carrier" = "up" ]; then
-          ${config.networking.networkmanager.package}/bin/nmcli -w 5 connection down id bazinga >/dev/null 2>&1 || true
-        else
-          ${config.networking.networkmanager.package}/bin/nmcli -w 5 connection up id bazinga >/dev/null 2>&1 || true
-        fi
-      '';
       dnsPin = pkgs.writeShellScript "dns-pin" ''
         case "$ACTION" in
           up|dhcp4-change|dhcp6-change|reapply) ;;
@@ -74,12 +56,6 @@
           dispatcherScripts = [
             {
               source = dnsPin;
-              type = "basic";
-            }
-          ]
-          ++ lib.optionals (hasEthernet config.networking.hostName) [
-            {
-              source = bazingaGuard;
               type = "basic";
             }
           ];
@@ -131,7 +107,6 @@
           };
           linkConfig.RequiredForOnline = "yes";
         };
-        wait-online.enable = hasEthernet config.networking.hostName;
       };
 
       networking.wireless.iwd.enable = true;
@@ -153,10 +128,6 @@
           nssmdns4 = true;
           nssmdns6 = true;
         };
-
-        udev.extraRules = lib.mkIf (hasEthernet config.networking.hostName) ''
-          ACTION=="add|change", SUBSYSTEM=="net", KERNEL=="${ethDevice.${config.networking.hostName}}", RUN+="${bazingaGuard}"
-        '';
       };
 
       programs.ssh.extraConfig = ''
