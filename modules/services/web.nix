@@ -947,10 +947,10 @@
       let
         configToml = pkgs.writeText "atuin-ai-config.toml" ''
           port = 1824
-          endpoint = "https://opencode.ai/zen/go/v1"
-          api_key = { env = "OPENCODE_API_KEY" }
+          endpoint = "https://api.fireworks.ai/inference/v1"
+          api_key = { env = "FIREWORKS_API_KEY" }
 
-          default_model = "glm-5.3-flash"
+          default_model = "glm-5p3-flash"
 
           [request.body]
           stream_options = { include_usage = true }
@@ -961,34 +961,10 @@
           x-opencode-session = "9c1d4b7e-2a63-4f18-9e5b-7d0a2c6f8b34"
 
           [[models]]
-          alias = "mimo-v2.6-pro"
-          name = "MiMo V2.6 Pro"
-          description = "OpenCode Go - MiMo V2.6 Pro"
-          model = "mimo-v2.6-pro"
-
-          [[models]]
-          alias = "glm-5.3-flash"
+          alias = "glm-5p3-flash"
           name = "GLM 5.3 Flash"
-          description = "OpenCode Go - GLM 5.3 Flash"
-          model = "glm-5.3-flash"
-
-          [[models]]
-          alias = "deepseek-v4.1-flash"
-          name = "DeepSeek V4.1 Flash"
-          description = "OpenCode Go - DeepSeek V4.1 Flash"
-          model = "deepseek-v4.1-flash"
-
-          [[models]]
-          alias = "kimi-k2.6"
-          name = "Kimi K2.6"
-          description = "OpenCode Go - Kimi K2.6"
-          model = "kimi-k2.6"
-
-          [[models]]
-          alias = "hy3"
-          name = "Hy3"
-          description = "OpenCode Go - Hy3"
-          model = "hy3"
+          description = "Fireworks API - GLM Flash Latest"
+          model = "accounts/fireworks/routers/glm-5p3-flash"
         '';
       in
       {

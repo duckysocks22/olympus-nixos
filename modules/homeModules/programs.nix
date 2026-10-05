@@ -234,11 +234,10 @@
         enable = true;
         package = pkgs-unstable.pi-coding-agent;
         settings = {
-          defaultProvider = "opencode-go";
-          defaultModel = "glm-5.3-flash";
+          defaultProvider = "fireworks";
+          defaultModel = "accounts/fireworks/routers/glm-5p3-flash";
           enabledModels = [
-            "opencode-go/mimo-*"
-            "opencode-go/glm-*"
+            "accounts/fireworks/routers/glm-*"
             "llama.cpp/*"
           ];
           defaultThinkingLevel = "high";
