@@ -440,6 +440,18 @@
 
           When asked for a commit message suggestions, use the 'conventional commits' format unless previous commits
           in the repo show otherwise.
+
+          ## System/Host Specific Notes
+
+          When performing a task/debugging a system that isn't the current host that you're running on, if needed you can SSH into the various systems via the following:
+            - Athena = 'foxtrot@athena-nixos.vpn.olympus.moe'
+            - Circe = 'foxtrot@circe-nixos.vpn.olympus.moe'
+            - Dionysus = 'deck@dionysus-nixos.vpn.olympus.moe'
+            - Ariadne = 'deck@ariadne-nixos.vpn.olympus.moe'
+            - Nyx = 'server@nyx-nixos.vpn.olympus.moe'
+            - Aether = 'server@aether-nixos.vpn.olympus.moe'
+
+          If the SSH is unsuccessful, that most likely means that the destination machine is offline. If you can try to continue whatever you're doing without needed access to said machine.
         '';
       };
 
