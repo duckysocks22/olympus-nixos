@@ -485,7 +485,7 @@
         virtualHosts."dns.puppygirls.net".extraConfig = ''
           reverse_proxy /dns-query* 192.168.10.253:854 {
             header_up X-Real-IP {remote_host}
-            transport http {
+            transport http 
               tls_insecure_skip_verify
             }
           }
@@ -777,11 +777,11 @@
             enabled = true;
             server_name = "dns.puppygirls.net";
             serve_plain_dns = false;
-            force_https = false;
+            force_https = true;
             port_https = 854;
             port_dns_over_tls = 853;
-            certificate_path = "${config.sops.secrets."adguardhome/domain_cert".path}";
-            private_key_path = "${config.sops.secrets."adguardhome/domain_key".path}";
+            certificate_path = "/var/lib/acme/dns.puppygirls.net/cert.pem";
+            private_key_path = "/var/lib/acme/dns.puppygirls.net/key.pem";
           };
           dhcp = {
             enabled = false;
@@ -901,9 +901,28 @@
       systemd.services.adguardhome = {
         serviceConfig = {
           DynamicUser = lib.mkForce false;
-          User = "server";
+          User = "adguardhome";
         };
       };
+
+      # Mange cert to allow DNS encryption :3
+      security.acme = {
+        acceptTerms = true;
+        defaults.email = "code@olympus.moe";
+        certs."dns.puppygirls.net" = {
+          dnsProvider = "bunny";
+          group = "adguardhome";
+          environmentFile = config.sops.secrets."adguardhome/environment".path;
+          reloadServices = [ "adguardhome" ];
+        };
+      };
+
+      users.users.adguardhome = {
+        isSystemUser = true;
+        group = "adguardhome";
+      };
+
+      users.groups.adguardhome = { };
     };
 
     flake.nixosModules.atuinServer = { config, pkgs, ... }: {
