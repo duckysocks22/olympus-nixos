@@ -139,6 +139,7 @@
     sops.secrets."users/foxtrot" = { };
     sops.secrets."netbird/routing-key" = { };
     sops.secrets."caddy/environment" = { };
+    sops.secrets."adguardhome/environment" = { };
     sops.secrets."attic/server-token" = { };
     sops.secrets."attic/client-config".owner = config.users.users.server.name;
     sops.secrets."vaultwarden/env" = { };
