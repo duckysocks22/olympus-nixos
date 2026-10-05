@@ -117,6 +117,11 @@
 
       home.file."${config.programs.nixcord.configDir}/settings/quickCss.css".force = true;
 
+      home.file."${config.programs.nixcord.configDir}/themes/dank-discord.css" = {
+        source = config.lib.file.mkOutOfStoreSymlink "${config.xdg.configHome}/Vencord/themes/dank-discord.css";
+        force = true;
+      };
+
       programs.nixcord = {
         enable = true;
 
@@ -133,11 +138,6 @@
           settings = {
             openasar = {
               setup = true;
-              # nixcord's patched moduleUpdater emits 'checked' synchronously before the
-              # splash window exists, so OpenAsar's launchMain() hits its win!=null guard
-              # and APP_SHOULD_LAUNCH never fires -> client hangs on "Starting".
-              # quickstart sidesteps the splash handoff by launching the main window
-              # 300ms after splash creation.
               quickstart = true;
             };
           };
