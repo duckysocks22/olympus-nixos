@@ -235,8 +235,9 @@
         package = pkgs-unstable.pi-coding-agent;
         settings = {
           defaultProvider = "fireworks";
-          defaultModel = "accounts/fireworks/routers/glm-5p3-flash";
+          defaultModel = "accounts/fireworks/routers/glm-flash-latest";
           enabledModels = [
+            "accounts/fireworks/routers/glm-flash-latest"
             "accounts/fireworks/routers/glm-*"
             "llama.cpp/*"
           ];
