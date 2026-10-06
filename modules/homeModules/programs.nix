@@ -458,6 +458,14 @@
 
       home.file.".pi/agent/extensions/actual-finance".source = ../../assets/pi/actual-finance;
       home.file.".pi/agent/skills/actual-finance".source = ../../assets/pi/skills/actual-finance;
+
+      home.file.".pi/agent/modes.config.json".text = builtins.toJSON {
+        modes.ask.allowTools = [
+          "describe_image"
+          "tool_search"
+          "codemode"
+        ];
+      };
     };
 
   flake.homeModules.opencode =
