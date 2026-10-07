@@ -237,6 +237,10 @@
           defaultProvider = "fireworks";
           defaultModel = "accounts/fireworks/routers/glm-flash-latest";
           enabledModels = [
+<<<<<<< HEAD
+=======
+            "accounts/fireworks/routers/glm-flash-latest"
+>>>>>>> 8ea7eff720cd444b0c513737cdde604518dd59b8
             "accounts/fireworks/routers/glm-*"
             "llama.cpp/*"
           ];
@@ -254,6 +258,7 @@
             "npm:pi-watchdog-supervisor"
             "npm:pi-btw"
             "npm:@juicesharp/rpiv-ask-user-question"
+            "npm:@getpipher/vision"
             "${inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.pi-agent-modes}"
           ];
           enableInstallTelemetry = false;
@@ -440,11 +445,31 @@
 
           When asked for a commit message suggestions, use the 'conventional commits' format unless previous commits
           in the repo show otherwise.
+
+          ## System/Host Specific Notes
+
+          When performing a task/debugging a system that isn't the current host that you're running on, if needed you can SSH into the various systems via the following:
+            - Athena = 'foxtrot@athena-nixos.vpn.olympus.moe'
+            - Circe = 'foxtrot@circe-nixos.vpn.olympus.moe'
+            - Dionysus = 'deck@dionysus-nixos.vpn.olympus.moe'
+            - Ariadne = 'deck@ariadne-nixos.vpn.olympus.moe'
+            - Nyx = 'server@nyx-nixos.vpn.olympus.moe'
+            - Aether = 'server@aether-nixos.vpn.olympus.moe'
+
+          If the SSH is unsuccessful, that most likely means that the destination machine is offline. If you can try to continue whatever you're doing without needed access to said machine.
         '';
       };
 
       home.file.".pi/agent/extensions/actual-finance".source = ../../assets/pi/actual-finance;
       home.file.".pi/agent/skills/actual-finance".source = ../../assets/pi/skills/actual-finance;
+
+      home.file.".pi/agent/modes.config.json".text = builtins.toJSON {
+        modes.ask.allowTools = [
+          "describe_image"
+          "tool_search"
+          "codemode"
+        ];
+      };
     };
 
   flake.homeModules.opencode =
@@ -953,14 +978,20 @@
                 cloudStorageEnabled = lib.mkForce false;
 
                 importedLists = [
-                  "https:#filters.adtidy.org/extension/ublock/filters/3.txt"
-                  "https:#github.com/DandelionSprout/adfilt/raw/master/LegitimateURLShortener.txt"
+                  "https://filters.adtidy.org/extension/ublock/filters/3.txt"
+                  "https://github.com/DandelionSprout/adfilt/raw/master/LegitimateURLShortener.txt"
                 ];
 
                 externalLists = lib.concatStringsSep "\n" importedLists;
               };
 
+              toOverwrite.filters = [
+                "www.youtube.com##ytd-reel-shelf-renderer.ytd-item-section-renderer.style-scope"
+                "www.youtube.com##ytd-rich-section-renderer:has(ytm-shorts-lockup-view-model)"
+              ];
+
               selectedFilterLists = [
+                "user-filters"
                 "CZE-0"
                 "adguard-generic"
                 "adguard-annoyance"
@@ -968,7 +999,8 @@
                 "adguard-spyware-url"
                 "easylist"
                 "easyprivacy"
-                "https:#github.com/DandelionSprout/adfilt/raw/master/LegitimateURLShortener.txt"
+                "https://github.com/DandelionSprout/adfilt/raw/master/LegitimateURLShortener.txt"
+                "https://filters.adtidy.org/extension/ublock/filters/3.txt"
                 "plowe-0"
                 "ublock-abuse"
                 "ublock-badware"
