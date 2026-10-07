@@ -510,12 +510,7 @@
       enable = true;
       openDefaultPorts = true;
 
-      guiAddress = "${address.${config.networking.hostName}}:8384";
-      guiPasswordFile = "${config.sops.secrets."admin/pass".path}";
-
-      settings = {
-        gui.user = "foxtrot";
-      };
+      guiAddress = "192.168.10.253:8384";
     };
   };
 }
