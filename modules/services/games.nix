@@ -30,11 +30,6 @@
         user = "server";
       };
 
-      users.users.minecraft = {
-        isSystemUser = true;
-        group = "minecraft";
-      };
-
       systemd.services.mc-forever = util.functions.mkSimpleService {
         description = "Minecraft Vanilla";
         ExecStart = pkgs.writeShellScript "start.sh" ''
@@ -53,7 +48,7 @@
       users.users.minecraft = {
         isSystemUser = true;
         group = "minecraft";
-      }
+      };
 
       users.groups.minecraft = { };
     };

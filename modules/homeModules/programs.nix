@@ -42,6 +42,14 @@
         enable = true;
         enableMan = false;
         nixpkgs.source = inputs.nixpkgs;
+        plugins.lsp = {
+          enable = true;
+          servers.qmlls.enable = true;
+        };
+        plugins.treesitter = {
+          enable = true;
+          grammarPackages = [ pkgs.vimPlugins.nvim-treesitter.builtGrammars.qmljs ];
+        };
         plugins = {
           lazy = {
             enable = true;
@@ -237,10 +245,6 @@
           defaultProvider = "fireworks";
           defaultModel = "accounts/fireworks/routers/glm-flash-latest";
           enabledModels = [
-<<<<<<< HEAD
-=======
-            "accounts/fireworks/routers/glm-flash-latest"
->>>>>>> 8ea7eff720cd444b0c513737cdde604518dd59b8
             "accounts/fireworks/routers/glm-*"
             "llama.cpp/*"
           ];
