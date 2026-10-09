@@ -51,12 +51,6 @@
           grammarPackages = [ pkgs.vimPlugins.nvim-treesitter.builtGrammars.qmljs ];
         };
         plugins = {
-          lazy = {
-            enable = true;
-            settings = {
-
-            };
-          };
           indent-blankline = {
             enable = true;
             settings = {
