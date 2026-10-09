@@ -1729,4 +1729,843 @@
         };
       };
     };
+
+  flake.homeModules.pi-agent-skills =
+    {
+      pkgs,
+      config,
+      lib,
+      ...
+    }:
+    let
+      cfg = config.programs.pi-coding-agent;
+
+      skillFiles = {
+        commit-message = pkgs.writeText "commit-message-SKILL.md" ''
+          ---
+          name: commit-message
+          description: "Reviews working-tree changes, then drafts a Conventional Commits title/body and states the semantic-release version bump a single such commit would imply. Use when the user wants to commit recent work, prepare a Conventional Commits message, or asks for semantic-release / semver-consistent messaging before git commit."
+          ---
+
+          # Commit Message
+
+          > **HARD GATE** — Commits must follow Conventional Commits spec (type(scope): description). Do NOT use vague messages like 'fix' or 'updates.' The message must explain the 'why,' not the 'what.'
+
+          ## Modes
+
+          - Default: standard Conventional Commits message
+          - --fix-type: Forces type=fix. Use when commit type is unambiguous.
+
+          ## Sources
+
+          - **Primary source of truth:** `git status`, `git diff`, and `git diff --cached` run in the repo root.
+          - **Context:** use the current conversation to summarize *intent* and to spot **breaking** API/behavior changes that diff alone may not show.
+          - If the user tracks a session baseline (branch, tag, or `git stash create` at start), you may diff against it; otherwise use only the index and working tree.
+
+          ## Workflow
+
+          1. **Inventory** — List changed paths; group by feature vs chore vs docs vs test-only.
+          2. **Decide commit shape** — One atomic commit is ideal. If the diff mixes unrelated concerns, recommend **multiple commits** (each with its own type/scope) before suggesting one message.
+          3. **Classify for semantic release** — `fix` → patch, `feat` → minor, **breaking** → major.
+          4. **Write the message** — `type(optional-scope)!: description`. Use `!` or a `BREAKING CHANGE:` footer when behavior contracts change.
+          5. **Note defensive-code categories touched** — Rate limit | Retry with backoff | Circuit breaker | Timeout | Graceful degradation.
+          6. **Deliver** — Output:
+             - Proposed **full commit message** (title + optional body + footers).
+             - **Release bump** this commit would drive: `patch` | `minor` | `major` | `none`.
+             - Optional native command: `git commit -m`. Never omit `-m`; never run commit or destructive git commands unless the user explicitly asked in that message.
+
+          ## Checklist before finalizing
+
+          - [ ] Type matches the **dominant** user-visible outcome (`feat` vs `fix` vs `perf`, etc.).
+          - [ ] **Scope** is a short noun in parentheses if it helps (e.g. `fix(api): …`).
+          - [ ] Breaking changes are explicit (`!` and/or `BREAKING CHANGE:` in the body/footer).
+          - [ ] Description is imperative, lowercase start after the prefix, no trailing period in the title line.
+          - [ ] **NO `Co-authored-by` or `Co-Authored-By` footers** — all commits must appear as if authored solely by the human user.
+
+          ## When not to invent a bump
+
+          If the repo uses a custom `@semantic-release/commit-analyzer` preset, note that your bump is **heuristic** and the user should match `.releaserc` / `release.config.*`.
+
+          ---
+
+          # Conventional Commits + semantic-style release (reference)
+
+          ## Message format
+
+          From [Conventional Commits 1.0.0](https://www.conventionalcommits.org/en/v1.0.0/#specification):
+
+          ```text
+          <type>[optional scope][optional !]: <description>
+
+          [optional body]
+
+          [optional footer(s)]
+          ```
+
+          - **Scope:** parenthesized noun, e.g. `feat(parser): …`.
+          - **Breaking:** `!` before `:` (e.g. `feat(api)!: …`) and/or footer `BREAKING CHANGE: description` (token must be uppercase per spec for that footer name).
+          - **Description:** short summary; body explains *why* or migration steps.
+
+          Common **types** (not exhaustive): `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`, `ci`, `chore` — as in [Angular / commitlint conventions](https://github.com/conventional-changelog/commitlint).
+
+          ### Reverts
+
+          If the commit reverts a previous commit, it should begin with `revert:`, followed by the header of the reverted commit. In the body, it should say: `This reverts commit <hash>.`
+
+          ### Breaking Changes
+
+          A breaking change can be signaled by:
+          1. A `BREAKING CHANGE:` footer (must be uppercase, at the start of the footer). This is the **most compatible** way to trigger a Major release in `semantic-release` (Angular preset).
+          2. A `!` after the type/scope: `feat(api)!: change user response shape`.
+
+          **Pro-tip:** For maximum compatibility with all tooling, use BOTH the `!` and the `BREAKING CHANGE:` footer.
+
+          ### Footers (Tokens & Values)
+
+          Footers follow the same `Token: value` pattern as Git Trailers. Common tokens: `Refs: #123`, `See-also: docs/ADR-001.md`, `Signed-off-by: Name <email>`.
+
+          **Multi-line footers:** If a footer value spans multiple lines, each subsequent line must be indented.
+
+          ## Release Type Mapping (Default Angular Preset)
+
+          | Commit pattern | Release | Notes |
+          |----------------|---------|-------|
+          | `fix:` | **Patch** | Bug fixes |
+          | `feat:` | **Minor** | New features |
+          | `perf:` | **Patch** | Performance improvements |
+          | `any type` + `BREAKING CHANGE:` footer | **Major** | **Mandatory** for Major version bumps in default configs. |
+          | `any type!:` (exclamation mark) | **Major** | Supported by modern CC parsers, but use footer for max safety. |
+          | `docs:`, `chore:`, `test:`, `ci:`, `refactor:`, `style:` | **None** | Does not trigger a new release by default. |
+
+          > **Warning:** While `refactor:` and `style:` improve code, they do NOT trigger a release in the default Angular preset. Use `fix:` if a refactor also fixes a bug, or `feat:` if it adds new behavior.
+
+          ## Squash and PR titles
+
+          If the team squashes on merge, the **PR title** often becomes the single squashed commit subject — it should still follow `type(scope): description` for tooling.
+        '';
+
+        investigate-bug = pkgs.writeText "investigate-bug-SKILL.md" ''
+          ---
+          name: investigate-bug
+          description: "Investigate a bug or issue by exploring the codebase to find root cause, then write a TDD-based fix plan to specs/bugs/BUG-*.md. Use when user reports a bug, wants to investigate a problem, mentions \"triage\", or wants to plan a fix."
+          ---
+
+          # Investigate Bug
+
+          **Boundary**: End-to-end bug entry point — history check → RCA (via `diagnose-root`) → fix approach → TDD plan → bug file. Delegates the 4-phase RCA to `diagnose-root`; does not re-implement it.
+
+          Investigate a reported problem, find its root cause, and write a TDD fix plan to `specs/bugs/BUG-*.md`. This is a mostly hands-off workflow — minimize questions to the user.
+
+          ## Process
+
+          ### 0. Read previous bug history
+
+          Before starting diagnosis:
+
+          1. Read `specs/bugs/registry.yaml` (if it exists) — check for prior bugs in the same `scope` or with similar symptoms.
+          2. If a relevant prior bug is found, read the corresponding `specs/bugs/BUG-*.md` file to understand previous root cause analysis and fix approach.
+          3. Note in your investigation whether this is a recurrence, a related issue, or novel.
+
+          ### 1. Capture the problem
+
+          Get a brief description of the issue from the user. If they haven't provided one, ask ONE question: "What's the problem you're seeing?"
+
+          Do NOT ask follow-up questions yet. Start investigating immediately.
+
+          > **Security-impact assessment** — After capturing the problem, assess and document: `Security impact: NONE / LOW / MEDIUM / HIGH / CRITICAL`. If HIGH or CRITICAL, assign bug severity HIGH and document the exploit path in findings. Document "no security exploit path identified" for NONE/LOW.
+
+          ### 2. Explore and diagnose (4-phase RCA)
+
+          Run the 4-phase root-cause analysis via the `diagnose-root` skill (Reproduce → Isolate → Hypothesize → Verify). That skill is the canonical RCA engine — do not re-implement the phases here.
+
+          Also look at:
+          - Recent changes to affected files (`git log --oneline <file>`)
+          - Existing tests (what's tested, what's missing)
+          - Similar patterns elsewhere in the codebase that work correctly
+
+          > **HARD GATE** — Do NOT proceed to Step 3 (Fix Approach) until `diagnose-root` Phase 4 produces a verified root cause. "It probably is X" is not verified.
+
+          ### 3. Identify the fix approach
+
+          Based on your investigation, determine:
+
+          - The minimal change needed to fix the root cause
+          - Which modules/interfaces are affected
+          - What behaviors need to be verified via tests
+          - Whether this is a regression, missing feature, or design flaw
+          - Risk level: Low / Medium / High
+
+          ### 4. Design TDD fix plan
+
+          Create a concrete, ordered list of RED-GREEN cycles. Each cycle is one vertical slice:
+
+          - **RED**: Describe a specific test that captures the broken/missing behavior
+          - **GREEN**: Describe the minimal code change to make that test pass
+
+          Rules:
+          - Tests verify behavior through public interfaces, not implementation details
+          - One test at a time, vertical slices (NOT all tests first, then all code)
+          - Each test should survive internal refactors
+          - Include a final refactor step if needed
+          - **Durability**: Only suggest fixes that would survive radical codebase changes. Tests assert on observable outcomes (API responses, UI state, user-visible effects), not internal state.
+
+          ### 5. Write the bug file
+
+          Save the investigation and fix plan to `specs/bugs/BUG-NNN-slug.md`. Create the `specs/bugs/` directory if it doesn't exist.
+
+          After writing, append a row to `specs/bugs/registry.yaml` with: bug_id (same timestamp), date, severity, priority, scope, summary, and file path. Create `specs/bugs/registry.yaml` if it doesn't exist.
+
+          <diagnosis-template>
+
+          # BUG-YYYY-MM-DDTHHMMSS: [short title]
+
+          ## Problem
+
+          A clear description of the bug or issue, including:
+          - What happens (actual behavior)
+          - What should happen (expected behavior)
+          - How to reproduce (if applicable)
+
+          ## Root Cause Analysis
+
+          Describe what you found during investigation:
+          - The code path involved
+          - Why the current code fails
+          - Any contributing factors
+          - Risk level: Low / Medium / High
+
+          Do NOT include specific file paths, line numbers, or implementation details that couple to current code layout. Describe modules, behaviors, and contracts instead.
+
+          ## TDD Fix Plan
+
+          A numbered list of RED-GREEN cycles:
+
+          1. **RED**: Write a test that [describes expected behavior]
+             **GREEN**: [Minimal change to make it pass]
+             **verify**: [runnable command]
+
+          2. **RED**: Write a test that [describes next behavior]
+             **GREEN**: [Minimal change to make it pass]
+             **verify**: [runnable command]
+
+          **REFACTOR**: [Any cleanup needed after all tests pass]
+
+          ## Acceptance Criteria
+
+          - [ ] Criterion 1
+          - [ ] Criterion 2
+          - [ ] All new tests pass
+          - [ ] Existing tests still pass
+
+          ## Resolution
+
+          <!-- filled in by validate-fix -->
+
+          </diagnosis-template>
+
+          After writing the bug file, print a one-line summary of the root cause and suggest creating a fix branch before implementing.
+        '';
+
+        diagnose-root = pkgs.writeText "diagnose-root-SKILL.md" ''
+          ---
+          name: diagnose-root
+          description: "Run 4-phase root cause analysis — reproduce, isolate, hypothesize, verify. Use when a bug is confirmed but root cause is unclear, after investigate-bug, or when user mentions root cause analysis."
+          ---
+
+          # Diagnose Root
+
+          **Boundary**: Canonical, reusable 4-phase RCA engine. Invoked by `investigate-bug` as step 2 of the end-to-end flow. Does not write the bug file — that is `investigate-bug`'s responsibility.
+
+          Four phases — do not skip. Update the active `specs/bugs/BUG-*.md` file at each phase (if one exists).
+
+          ## Phases
+
+          1. **Reproduce** — minimal steps; record environment; capture logs.
+          2. **Isolate** — narrow to module/function; binary-search commits or config.
+          3. **Hypothesize** — list ranked hypotheses with falsification test each.
+          4. **Verify** — run falsification; confirm single root cause; link to fix plan.
+
+          > **HARD GATE** — Do not propose a fix until phase 4 confirms one root cause with evidence.
+        '';
+
+        validate-fix = pkgs.writeText "validate-fix-SKILL.md" ''
+          ---
+          name: validate-fix
+          description: "Prove a fix works before declaring done — re-run the failing test, run the full suite, typecheck, lint, and harden against recurrence. Use after implementing a bug fix, when user says \"is this fixed?\", or before closing an investigation."
+          ---
+
+          # Validate Fix
+
+          > **HARD GATE** — Fix must not regress. Run full test suite and manual verification before declaring success.
+
+          Prove the fix works. "I think it works" is not evidence. Run the suite, show the output, then harden against recurrence.
+
+          > **Two-commit red/green policy** — Bug fixes follow two-commit discipline: first commit adds/adjusts the failing test (`test(<scope>): …`), second commit applies the fix (`fix(<scope>): …`). Do not squash RED and GREEN before review.
+
+          ## Checklist
+
+          ### 1. Re-run the originally failing test
+
+          ```bash
+          # Run the specific test that captured the bug
+          <test command for the failing test>
+          ```
+
+          - [ ] Previously failing test now passes
+
+          ### 2. Run the full test suite
+
+          ```bash
+          # Run all tests — no filtering
+          <full test command>
+          ```
+
+          - [ ] All tests pass (zero regressions)
+
+          ### 3. Type check
+
+          ```bash
+          <typecheck command>
+          ```
+
+          - [ ] No type errors introduced
+
+          ### 4. Lint
+
+          ```bash
+          <lint command>
+          ```
+
+          - [ ] No lint violations introduced
+
+          ### 5. Harden against recurrence
+
+          For every bug fixed, add at least one prevention layer:
+
+          | Mechanism | When to use |
+          |-----------|-------------|
+          | Type guard | Input could be the wrong shape |
+          | Schema validation | External data crossing a boundary |
+          | Invariant assertion | Internal state that must always hold |
+          | Lint rule | Pattern that's easy to repeat by mistake |
+          | Environment check at startup | Missing config causes silent failure |
+
+          - [ ] At least one hardening mechanism added
+          - [ ] Hardening mechanism is tested
+
+          ### 6. Generalize-fix
+
+          Sweep the **defect class** across the codebase after local hardening:
+
+          1. **Classify** — name the pattern (e.g. `unscoped query`, `fail-open verify`, `hardcoded path`).
+          2. **Sweep** — grep for sibling instances; record `match_count` and `grep_pattern`.
+          3. **Resolve** — patch all matches in this change **or** file one tracking item listing every remaining instance.
+
+          ### 7. Update the bug file
+
+          If `specs/bugs/BUG-*.md` exists for this fix, append the resolution:
+
+          ```markdown
+          ## Resolution
+
+          **Fixed:** [date]
+          **Root cause confirmed:** [one sentence]
+          **Fix applied:** [what was changed]
+          **Hardening added:** [type guard / schema / assertion / lint rule]
+          **Evidence:** all tests pass (`<verify command>`)
+          **Commit:** `fix(<scope>): <description>`
+          ```
+
+          ### 8. Behavioral Proof (HARD GATE)
+
+          Mechanical verification (tests passing) is only half the fix. You must prove **behavioral correctness**.
+
+          - [ ] Manually demonstrate the fixed behavior
+          - [ ] Compare the output/state against the expected behavior from the bug report
+          - [ ] Show the user evidence of the behavior, not just the test logs
+
+          ## Rules
+
+          - **Loop until behavioral correctness is verified**: if any checklist item fails, or if the behavior is still incorrect despite passing tests, return to step 1 and run all checks again from the top — do not declare done until every item is green and the behavior is proven correct in a single run.
+          - **Never use `@ts-ignore`, `as any`, or lint-disable comments** to "fix" a bug — these suppress the symptom without fixing the root cause
+          - **Never mark the task done if any test is still failing**
+
+          Suggest next skill: `commit-message`.
+        '';
+
+        organize-workspace = pkgs.writeText "organize-workspace-SKILL.md" ''
+          ---
+          name: organize-workspace
+          description: "Scans the active workspace for disposable artifacts—logs, caches, stale build output, and stray draft markdown—and proposes consolidation of scattered assets. Produces a reviewable list, asks for explicit confirmation before any delete or move, and optionally revises .gitignore. Use when the user says \"clean my room\", \"organize workspace\", \"workspace cleanup\", \"remove temp files\", \"organize assets\", \"gitignore\", or wants a safe tidy pass."
+          ---
+
+          # Organize Workspace
+
+          > **HARD GATE** — Workspace structure must reflect domain structure. If the codebase feels disorganized, flag it. Disorganization != 'just a style thing;' it is a signal of domain misalignment.
+
+          ## Principles
+
+          - **Read-only first**: inventory and size (`du`, `ls -la`) before any change.
+          - **Never delete or move** without a numbered list and **explicit user approval** (item-level or "approve all").
+          - **Prefer `fd` / `ripgrep` / `find`** in that order; avoid blind `rm -rf` on vague globs.
+          - **Do not** touch `.git/`, `node_modules/`, `venv/`, `.env*`, or SSH keys; flag them only if the user asked about them.
+          - Confirm prompts in the **user's language** if they are not writing in English.
+
+          ## 1. Establish scope
+
+          - Default: **current project root** (where the user is working) or the path they name.
+          - Record OS for ignore patterns (e.g. `.DS_Store`).
+
+          ## 2. Classify candidates (scan)
+
+          Group findings under these **buckets**:
+
+          | Bucket | Examples | Typical action |
+          |--------|----------|----------------|
+          | **Logs & temp** | `*.log`, `logs/`, `tmp/`, `temp/`, `*.pid` | Delete after confirm |
+          | **Build / cache** | `dist/`, `build/`, `.next/`, `coverage/`, `.turbo/` | Delete if rebuildable |
+          | **Package caches** | root `.cache/`, `__pycache__/` | Offer delete |
+          | **Stray drafts** | root-level `*.md` named `draft`, `scratch`, `temp` | User picks: delete, move, or keep |
+          | **Duplicate / dump dirs** | `old/`, `backup/`, `copy/`, `*_backup` | List + ask |
+
+          Use quick size hints: `du -sh` per top-level dir; sort large items first.
+
+          ## 3. Assets & data (organize, not only delete)
+
+          If the user wants **organization**:
+
+          1. Propose a **single convention**, e.g.:
+             - `assets/` — images, fonts, static media
+             - `data/` — JSON, CSV, fixtures, samples
+             - `specs/` — all planning and domain documents
+          2. For each cluster of loose files, suggest **one target path** and a short rationale.
+          3. Use **git-aware moves** when in a repo: `git mv` if tracked; otherwise `mv` and report.
+          4. Never move secrets or production DB dumps into `docs/` or public `assets/`.
+
+          ## 4. Present the plan
+
+          Output a table or numbered list:
+
+          - Path
+          - Kind (log / build / draft / asset / other)
+          - Approx size
+          - Proposed action: **delete** | **move to …** | **keep**
+
+          Ask: *"Delete items 1–3? Move 4–5? Skip 6?"*
+
+          ## 5. Execute after approval
+
+          - Deletes: prefer a Trash-capable tool if installed; else `rm` with paths echoed back.
+          - Moves: create dirs with `mkdir -p` first; one batch at a time.
+          - **Verify**: re-run listing on affected parents; if anything failed, report stderr.
+
+          ## 6. Post-cleanup and `.gitignore` revision
+
+          Do this when the repo is under Git and the cleanup surfaced **untracked** noise:
+
+          1. **Inventory ignore sources**: root `.gitignore`, `.git/info/exclude`, any subpackage `.gitignore` files.
+          2. **Map findings to rules**: for each deleted or recurring artifact class, check whether a pattern already exists; note gaps.
+          3. **Propose a patch**: list only **concrete** changes — `+` add / `-` remove / `~` reword — with one-line why.
+          4. **User must approve** the exact diff before editing the file.
+          5. **Verify**: run `git check-ignore -v <path>` on 2–3 representative paths.
+
+          ---
+
+          # Reference patterns
+
+          Optional commands. Adapt paths; **dry-run** before bulk delete.
+
+          ## Discover large top-level entries
+
+          ```sh
+          du -sh ./* .[!.]* 2>/dev/null | sort -hr | head -30
+          ```
+
+          ## Find common logs (respect .gitignore when using fd)
+
+          ```sh
+          fd -t f '\.log$' . 2>/dev/null
+          fd 'npm-debug' . 2>/dev/null
+          ```
+
+          ## Find build-like dirs (review list before rm -rf)
+
+          ```sh
+          fd -t d '^(dist|build|out|target|\.next|coverage)$' . --max-depth 3 2>/dev/null
+          ```
+
+          ## Stray markdown at repo root (heuristic)
+
+          ```sh
+          ls -1 ./*.md 2>/dev/null
+          fd -t f '^(draft|scratch|untitled|TODO|notes)' . --max-depth 1 2>/dev/null
+          ```
+
+          ## Git-safe moves
+
+          ```sh
+          git status -sb
+          git check-ignore -v <path>   # was ignored?
+          # Tracked: git mv old new
+          # Untracked: mkdir -p … && mv old new
+          ```
+
+          ## .gitignore revision (after cleanup)
+
+          **Goal:** stop regenerated junk from polluting `git status`, without hiding real source.
+
+          1. **Read** root `.gitignore` and, in monorepos, nested `.gitignore` files as needed. Check **`.git/info/exclude`** for machine-only rules that should *not* be committed.
+          2. **Per-path checks** (last match wins; shows which file defined the rule):
+
+             ```sh
+             git check-ignore -v path/to/artifact
+             git status -u --ignored    # optional: see ignored names (noisy)
+             ```
+
+          3. **Pattern style**
+             - Leading `/` = relative to the `.gitignore`'s directory (e.g. `/dist/` = only that folder at that level, not all nested `dist` unless intended).
+             - `**` for deep trees, e.g. `**/*.log`, when noise appears at many depths.
+             - **Negation** (`!`) is tricky: later rules, parent dirs, and `git add -f` interact—prefer narrow positive ignores over `!` unless you already use negation in this file.
+          4. **Do not** add rules that would ignore: application source, small JSON/YAML config the repo tracks, or important assets. When unsure, run `git check-ignore -v` on a *known good* file that must stay tracked.
+          5. **Tracked but should be ignored** (user already committed `build/` once): this skill does not silently fix history; flag `git rm -r --cached <path>` + `.gitignore` as a **separate** explicit step the user must approve.
+          6. **Global excludes** (optional heads-up for "why is this still ignored?"):
+
+             ```sh
+             git config --get core.excludesfile
+             ```
+
+          ## Safety: never pass through these in automated deletes
+
+          - `.git/`, `.svn/`, `.hg/`
+          - `node_modules/`, `vendor/`, `venv/`, `.venv/`, `__pypackages__/`
+          - Files matching `.env`, `.env.*` (except `.env.example` if intentional)
+          - `~/.ssh`, `id_rsa*`, `*.pem` inside project trees
+
+          ## Post-deploy / server-ish extras (name buckets to stack)
+
+          - Docker: dangling images/volumes (only if user asked for Docker cleanup; requires `docker` context).
+          - CI: `*.log` under `build/`, artifact dirs from previous runs.
+          - K8s: local `*.kube`, tmp kubeconfigs—list only; do not delete without confirmation.
+        '';
+
+        security-review = pkgs.writeText "security-review-SKILL.md" ''
+          ---
+          name: security-review
+          description: "AI-powered security analysis of code changes — traces data flow, detects injection, auth bypass, secrets exposure, and unsafe deserialization across files. Use when reviewing pending changes, before merging a feature branch, or when the user says \"security review\" or \"scan for vulns\"."
+          ---
+
+          # Security Review
+
+          > **HARD GATE** — Requires git context (branch with merge-base or diff). Findings below confidence 8/10 are suppressed. Pre-flight: `git rev-parse HEAD >/dev/null 2>&1`
+
+          ## 5-phase scan
+
+          | # | Phase | What |
+          |---|-------|------|
+          | 1 | **Scope Resolution** | Detect diff via `git diff --merge-base origin/HEAD`; resolve languages/frameworks from dependency files |
+          | 2 | **Context Research** | Identify existing security patterns, sanitization, auth model in the codebase |
+          | 3 | **Vulnerability Assessment** | Trace user input → sink; check auth boundaries, crypto, deserialization, path ops |
+          | 4 | **False-Positive Filtering** | Cross-check each finding against exclusion rules; reject confidence < 8 |
+          | 5 | **Report Generation** | Output structured markdown: file:line, severity, category, exploit scenario, fix |
+
+          ## Categories
+
+          Covered: SQLi, XSS, SSRF, command injection, auth bypass, unsafe deserialization, path traversal, IDOR, crypto flaws, secrets exposure, template injection, NoSQLi
+
+          ## SQL-safety doctrine
+
+          Formal rule for SQL injection classification:
+
+          | SQL source | Attacker-reachable input? | Verdict |
+          |------------|---------------------------|---------|
+          | Hardcoded / compile-time constant string | N/A | **Safe** — proven authorship |
+          | Developer-authored query with bound parameters only | No dynamic fragments from user input | **Safe** |
+          | String concatenation / template with user-controlled values | Yes | **Unsafe** — report as SQLi |
+          | ORM query builder with user input in WHERE/JOIN | Yes | **Unsafe** unless parameterized |
+          | Stored procedure call with bound args | Args from trusted constants only | **Safe** |
+          | Stored procedure with dynamic SQL inside | User input reaches EXEC | **Unsafe** |
+
+          **Provenance test:** If the agent cannot prove the query string was authored entirely by the developer (no attacker-reachable interpolation), treat as vulnerable. Hardcoded SQL in migrations, seeds, and admin scripts is safe; anything reachable from HTTP/CLI/user input is not.
+
+          ## Report format
+
+          Each finding: **`File:Line` — Severity — Category**
+          - Description: how the vulnerability manifests
+          - Exploit scenario: concrete attack path
+          - Recommendation: fix with code example
+
+          ---
+
+          # Confidence Scoring Rubric
+
+          Every finding that survives Phase 4 false-positive filtering receives a confidence score from 1 (speculative) to 10 (certain). Only findings ≥ 8 are reported.
+
+          ## Score 9–10: Certain Exploit Path
+
+          **Criteria:**
+          - Concrete, testable exploit with clear reproduction steps
+          - No assumptions about uncommon configurations
+          - No chain of multiple unlikely conditions
+          - Attacker has full control over the input vector
+
+          **Examples:**
+          - User-supplied SQL in a `SELECT` statement with no parameterization
+          - `os.system(f"rm {user_path}")` where user controls the path
+          - Pickle deserialization of user-supplied data without any wrapping
+
+          **Severity:** HIGH
+
+          ## Score 8: Clear Vulnerability Pattern
+
+          **Criteria:**
+          - Well-known vulnerability pattern with standard exploitation method
+          - Requires specific conditions but conditions are commonly met
+          - Exploitability is well-documented in OWASP / CVE databases
+
+          **Examples:**
+          - JWT without signature verification in authentication middleware
+          - SSRF where attacker controls the full URL including host
+          - Hardcoded AWS secret key in source code
+
+          **Severity:** HIGH or MEDIUM
+
+          ## Score 7: Suspicious Pattern
+
+          **Criteria:**
+          - Unusual code that may indicate a vulnerability
+          - Requires specific conditions that may not be present
+          - Alternative secure interpretation is equally likely
+          - Defense-in-depth concern rather than direct exploit
+
+          **Examples:**
+          - A function accepting user input that passes through multiple layers before reaching a sink (unclear if sanitized)
+          - Custom encryption implementation (likely weak, but may not process sensitive data)
+          - Path construction that looks safe but has a subtle bypass
+
+          **Severity:** LOW or suppress
+
+          ## Score < 7: Do Not Report
+
+          **Criteria:**
+          - Theoretical concern without exploit path
+          - Requires unrealistic attacker capabilities
+          - Violates one or more hard exclusion rules
+          - Better handled by separate tooling (dependency scanner, SAST, secret scanner)
+          - Purely stylistic or best-practice concern without security impact
+
+          **Action:** Suppress entirely. Do not include in report.
+
+          ## Severity Mapping
+
+          Once confidence ≥ 8 is confirmed, map to severity:
+
+          | Severity | Impact | Examples |
+          |----------|--------|----------|
+          | **CRITICAL** | Remote compromise, full data breach | RCE, auth bypass with admin escalation, SQLi with data exfiltration |
+          | **HIGH** | Significant security boundary crossed | SSRF to internal services, hardcoded cloud credentials, insecure deserialization |
+          | **MEDIUM** | Limited impact or requires conditions | Stored XSS behind auth, IDOR on non-sensitive data, weak but not broken crypto |
+          | **LOW** | Defense-in-depth, minimal blast radius | Missing security header, verbose error messages in non-production |
+
+          ## Quality Gate
+
+          The confidence rubric double-checks each finding against three lenses:
+
+          | Lens | Question |
+          |------|----------|
+          | **Exploitability** | Can a real attacker trigger this from a trust boundary? |
+          | **Actionability** | Would a security engineer accept a fix recommendation for this? |
+          | **Precedent** | Has this type of finding passed/failed human review before? |
+
+          ---
+
+          # False-Positive Exclusion Rules
+
+          Applied during Phase 4 of the scan. Findings matching any hard exclusion are automatically suppressed. Precedents from prior reviews guide borderline cases.
+
+          ## Hard Exclusions
+
+          Automatically exclude findings matching these patterns:
+
+          | # | Rule | Rationale |
+          |---|------|-----------|
+          | 1 | **Denial of Service (DOS)** — resource exhaustion, CPU/memory attacks | Handled separately; not actionable in code review |
+          | 2 | **Secrets on disk** if otherwise secured | Secrets management is a separate concern |
+          | 3 | **Rate limiting** concerns | Operational, not a code vulnerability |
+          | 4 | **Memory consumption / CPU exhaustion** | Not actionable in diff review |
+          | 5 | **Input validation on non-security-critical fields** without proven exploit path | Theoretical, not concrete |
+          | 6 | **GitHub Actions input sanitization** unless clearly triggerable via untrusted input | Most workflow vulns are not exploitable |
+          | 7 | **Lack of hardening measures** | Code is not expected to implement all best practices |
+          | 8 | **Race conditions / timing attacks** that are theoretical | Only report if concretely problematic |
+          | 9 | **Outdated third-party libraries** | Managed separately by dependency scanners |
+          | 10 | **Memory safety** in Rust or other memory-safe languages | Impossible by language guarantees |
+          | 11 | **Hardcoded SQL with proven authorship** — migrations, seeds, static admin queries with no user interpolation | Developer-authored SQL is safe per SQL-safety doctrine |
+          | 12 | **Unit test files only** | Not production risk |
+          | 13 | **Log spoofing** | Outputting unsanitized input to logs is not a vuln |
+          | 14 | **SSRF that only controls path** | Only host/protocol control is exploitable |
+          | 15 | **User-controlled content in AI system prompts** | Not a security vulnerability |
+          | 16 | **Regex injection** | Injecting untrusted content into regex is not a vuln |
+          | 17 | **Regex DOS** | Excluded alongside general DOS |
+          | 18 | **Documentation files** (.md, .txt) | Insecure docs are not code vulnerabilities |
+          | 19 | **Lack of audit logs** | Not a vulnerability |
+
+          ## Precedent Rules
+
+          These guide borderline cases based on prior human review decisions:
+
+          | # | Precedent | Reasoning |
+          |---|-----------|-----------|
+          | 1 | **Logging high-value secrets in plaintext IS a vuln.** Logging URLs is safe. | Secrets in logs = credential exposure; URLs are not secrets |
+          | 2 | **UUIDs are unguessable** — no validation needed | Cryptographic property of UUID v4/v7 |
+          | 3 | **Environment variables and CLI flags are trusted values** | Attackers cannot modify these in secure environments |
+          | 4 | **Resource management issues** (memory leaks, fd leaks) are NOT valid | Operational, not security |
+          | 5 | **Tabnabbing, XS-Leaks, prototype pollution, open redirects** — do NOT report unless extremely high confidence | Subtle, low-impact, high false-positive rate |
+          | 6 | **React/Angular XSS** — safe unless `dangerouslySetInnerHTML`, `bypassSecurityTrustHtml`, etc. | Framework auto-escapes |
+          | 7 | **GitHub Action workflow vulns** — verify concrete attack path before reporting | Most are theoretical |
+          | 8 | **Client-side JS/TS auth checks** — not a vuln; server is authoritative | Client code is untrusted |
+          | 9 | **IPython notebook vulns** — only report if concrete untrusted-input trigger | Most are not exploitable |
+          | 10 | **Logging non-PII data** — not a vuln even if sensitive. Only PII/secrets/passwords. | Intent: operational logging vs credential exposure |
+          | 11 | **Shell script command injection** — only report if concrete untrusted-input path | Most shell scripts don't process untrusted input |
+
+          ## Confidence Scoring
+
+          Findings that survive exclusions get a confidence score (1–10):
+
+          | Range | Meaning | Action |
+          |-------|---------|--------|
+          | 9–10 | Certain exploit path, testable | Report as HIGH |
+          | 8 | Clear vulnerability pattern | Report as HIGH/MEDIUM |
+          | 7 | Suspicious, needs conditions | Report as LOW or suppress |
+          | <7 | Too speculative | **Do not report** |
+
+          **Hard threshold:** Only report findings with confidence ≥ 8.
+
+          ## Signal Quality Criteria
+
+          For remaining findings, assess:
+          1. Is there a concrete, exploitable vulnerability with a clear attack path?
+          2. Does this represent a real security risk (vs theoretical best practice)?
+          3. Are there specific code locations and reproduction steps?
+          4. Would this finding be actionable for a security team?
+
+          ---
+
+          # Vulnerability Categories — Detection Guidance
+
+          Each category: vulnerable pattern → safe pattern → code example.
+
+          ## SQL Injection
+
+          | Aspect | Detail |
+          |--------|--------|
+          | **Vulnerable** | String interpolation in SQL queries: `f"SELECT * FROM users WHERE id = {uid}"` |
+          | **CWE** | CWE-89 (SQL Injection) |
+          | **Safe** | Parameterized queries / ORM: `cursor.execute("SELECT * FROM users WHERE id = %s", (uid,))` |
+          | **Look for** | f-strings, `+` concatenation, `format()` in query builders; raw SQL in ORM `.raw()` / `.execute()` |
+          | **False-positive guard** | Not a FP if the input is user-controlled (HTTP param, file, CLI arg). Env vars are trusted (see exclusion rules). |
+
+          ## Cross-Site Scripting (XSS)
+
+          | Aspect | Detail |
+          |--------|--------|
+          | **Vulnerable** | `element.innerHTML = userInput`, `dangerouslySetInnerHTML={{__html: userInput}}` |
+          | **CWE** | CWE-79 (Cross-site Scripting) |
+          | **Safe** | `element.textContent = userInput`, React JSX (auto-escaped), template engines with auto-escaping |
+          | **Look for** | `.innerHTML`, `document.write()`, `dangerouslySetInnerHTML`, `v-html` (Vue), `bypassSecurityTrustHtml` (Angular) |
+          | **False-positive guard** | React/Angular components without unsafe methods are NOT vulnerable (see exclusion rules). |
+
+          ## Server-Side Request Forgery (SSRF)
+
+          | Aspect | Detail |
+          |--------|--------|
+          | **Vulnerable** | User-controlled URL passed to server-side HTTP client: `requests.get(user_url)` |
+          | **Safe** | URL allowlist validation, internal-network blocking, protocol/host restriction |
+          | **Look for** | User input → `fetch`, `requests.get`, `axios.get`, `urllib`, `curl`, `http.get`; host control only (path-only is excluded) |
+
+          ## Command Injection
+
+          | Aspect | Detail |
+          |--------|--------|
+          | **Vulnerable** | User input in shell commands: `os.system(f"ping {host}")`, `subprocess.run(f"grep {pattern} file", shell=True)` |
+          | **Safe** | `subprocess.run(["ping", host])` with arguments as list; `shlex.quote()` |
+          | **Look for** | `shell=True`, `os.system`, `os.popen`, `exec()`, `eval()`, `$()`, backticks |
+          | **False-positive guard** | Shell scripts without untrusted user input are generally not exploitable. |
+
+          ## Authentication/Authorization Bypass
+
+          | Aspect | Detail |
+          |--------|--------|
+          | **Vulnerable** | Missing auth check on protected endpoint; JWT without signature verification; hardcoded admin tokens |
+          | **Safe** | Consistent auth middleware; JWT with `RS256`/`HS256` verification; role-based access control |
+          | **Look for** | Routes without auth decorators; `@login_required` / `@require_auth` missing; JWT without `.verify()`; client-side auth checks only |
+
+          ## Unsafe Deserialization
+
+          | Aspect | Detail |
+          |--------|--------|
+          | **Vulnerable** | `pickle.load(user_data)`, `yaml.load(user_input)`, `JSON.parse()` on untrusted tokens, `eval(input())` |
+          | **Safe** | `yaml.safe_load()`, `json.loads()` (safe for JSON), `pickle.load(weights_only=True)` (PyTorch), schema validation |
+          | **Look for** | `pickle.load`, `yaml.load` (not safe_load), `torch.load(weights_only=False)`, `eval`, `marshal.load`, `node-serialize` |
+
+          ## Path Traversal
+
+          | Aspect | Detail |
+          |--------|--------|
+          | **Vulnerable** | User input in file paths: `open(f"/data/{filename}")`, `path.join(base, user_path)` |
+          | **Safe** | Path normalization + prefix check: `os.path.realpath(path).startswith(BASE_DIR)`; allowlist of valid filenames |
+          | **Look for** | `open()`, `read_file()`, `os.path.join` with user input; `../` traversal without normalization |
+
+          ## Insecure Direct Object Reference (IDOR)
+
+          | Aspect | Detail |
+          |--------|--------|
+          | **Vulnerable** | API endpoint uses user-supplied ID without ownership check: `GET /api/order/{order_id}` — returns any user's order |
+          | **Safe** | Ownership verification: verify `order.user_id == current_user.id` before returning data |
+          | **Look for** | CRUD endpoints that accept IDs without authorization; horizontal/vertical privilege checks missing |
+
+          ## Weak Cryptography
+
+          | Aspect | Detail |
+          |--------|--------|
+          | **Vulnerable** | MD5/SHA1 for passwords; ECB mode; hardcoded keys; `random` module (not `secrets`); short key lengths |
+          | **Safe** | `bcrypt`/`argon2` for passwords; AES-GCM; `secrets` module; RSA 2048+; proper IV generation |
+          | **Look for** | `md5`, `sha1`, `DES`, `ECB`, `PKCS1_v1_5`, `random` for crypto, hardcoded `key=`, `Crypto.Cipher` without AEAD |
+
+          ## Secrets Exposure
+
+          | Aspect | Detail |
+          |--------|--------|
+          | **Vulnerable** | Hardcoded API keys, passwords, tokens in source code; secrets in logs; secrets in client-side code |
+          | **Safe** | Environment variables; secret manager (AWS Secrets Manager, HashiCorp Vault); `.env` excluded from VCS |
+          | **Look for** | `API_KEY=`, `password=`, `secret=`, `token=` in code; AWS keys, GitHub tokens, Stripe keys, JWTs in source |
+          | **False-positive guard** | Secrets stored on disk but otherwise secured ARE excluded. Logging high-value secrets IS a vuln. Logging URLs is safe. |
+
+          ## Template Injection (SSTI)
+
+          | Aspect | Detail |
+          |--------|--------|
+          | **Vulnerable** | User input in template rendering: `Template(user_input).render()`, `render_template_string(user_input)` |
+          | **Safe** | Static templates; input passed as context variable, not template string |
+          | **Look for** | `render_template_string`, `Template()()`, `eval` in template context; user input in JS template literals on server |
+
+          ## NoSQL Injection
+
+          | Aspect | Detail |
+          |--------|--------|
+          | **Vulnerable** | User input in MongoDB queries: `db.users.find({username: user_input})` where input is `{"$gt": ""}` |
+          | **Safe** | Schema validation; type checking on query params; ORM sanitization |
+          | **Look for** | MongoDB `$where`, `$gt`, `$regex` from user input; raw mongo queries without type coercion |
+        '';
+      };
+    in
+    {
+      options.programs.pi-coding-agent.skills = {
+        enable = lib.mkEnableOption "bundled curated pi skills (bug-fixing, commit, workspace, security)";
+      };
+
+      config = lib.mkIf cfg.skills.enable {
+        home.file = lib.mapAttrs'
+          (name: file: lib.nameValuePair "${cfg.configDir}/skills/${name}/SKILL.md" { source = file; })
+          skillFiles;
+      };
+    };
 }

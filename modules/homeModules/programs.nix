@@ -231,6 +231,7 @@
         inputs.self.homeModules.piDSH-Pet
         inputs.self.homeModules.pi-status-line
         inputs.self.homeModules.pi-agent-comma
+        inputs.self.homeModules.pi-agent-skills
       ];
       programs.pi-coding-agent = {
         enable = true;
@@ -249,8 +250,6 @@
             "npm:pi-background-tasks"
             "npm:rpiv-todo"
             "npm:pi-simplify"
-            "npm:bigpowers"
-            "npm:pi-dynamic-workflows"
             "npm:pi-loop-police"
             "npm:pi-death-loop-guard"
             "npm:pi-watchdog-supervisor"
@@ -299,6 +298,7 @@
         };
 
         comma.enable = true;
+        skills.enable = true;
 
         pet = {
           enable = true;
@@ -372,8 +372,10 @@
 
           ## Plugins/Extensions/Skills
 
-          Try to remember to make use of the different tools/skills/etc that you have available to you if it
-          would improve your productivity and speed (I.E subagents, pi-mesh-extension, background commands, etc.)
+          Before starting any non-trivial task, check the available skills list in
+          your system prompt. If a skill matches the task (even partially), load and
+          follow its SKILL.md before improvising a workflow. Mention when you skipped
+          a matching skill and why.
 
           ## Code Style Preferences
 
@@ -461,13 +463,43 @@
       home.file.".pi/agent/extensions/actual-finance".source = ../../assets/pi/actual-finance;
       home.file.".pi/agent/skills/actual-finance".source = ../../assets/pi/skills/actual-finance;
 
-      home.file.".pi/agent/modes.config.json".text = builtins.toJSON {
-        modes.ask.allowTools = [
-          "describe_image"
-          "tool_search"
-          "codemode"
-        ];
-      };
+      home.file.".pi/agent/modes.config.json".text =
+        let
+          readOnlyTools = [
+            "ask_user_question"
+            "bigpowers_skill"
+            "bg_delegate"
+            "bg_logs"
+            "bg_result"
+            "bg_status"
+            "bg_wait"
+            "codemode"
+            "describe_image"
+            "fetch_content"
+            "fusion_investigate"
+            "fusion_reason"
+            "fusion_research"
+            "fusion_validate"
+            "get_search_content"
+            "source_check"
+            "todo"
+            "tool_search"
+            "watchdog_alert_main"
+            "watchdog_detect_stuck"
+            "watchdog_list_targets"
+            "watchdog_read_events"
+            "watchdog_steer_subagent"
+            "web_enable"
+            "web_search"
+          ];
+        in
+        builtins.toJSON {
+          modes = {
+            ask.allowTools = readOnlyTools;
+            plan.allowTools = readOnlyTools ++ [ "pi_modes_plan_complete" ];
+            review.allowTools = readOnlyTools;
+          };
+        };
     };
 
   flake.homeModules.opencode =
