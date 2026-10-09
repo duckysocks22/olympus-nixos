@@ -290,10 +290,10 @@
         statusLine = {
           enable = true;
           theme = "auto";
-          usage = {
-            fiveHour = 12.0;
-            weekly = 30.0;
-            monthly = 60.0;
+          spend = {
+            provider = "fireworks";
+            accountIdFile = "${config.home.homeDirectory}/.config/sops-nix/secrets/fireworks/account-id";
+            apiKeyFile = "${config.home.homeDirectory}/.config/sops-nix/secrets/fireworks/api-key";
           };
         };
 

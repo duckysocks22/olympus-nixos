@@ -144,21 +144,17 @@
       statusLineFile = pkgs.writeText "pi-status-line-extension.ts" ''
         import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
         import { truncateToWidth, visibleWidth } from "@earendil-works/pi-tui";
-        import { existsSync, readdirSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
-        import { join } from "node:path";
+        import { existsSync, readFileSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+        import http2 from "node:http2";
 
         const SHOW_MODEL = ${boolStr cfg.statusLine.showModel};
         const SHOW_CONTEXT = ${boolStr cfg.statusLine.showContext};
         const SHOW_TOKENS = ${boolStr cfg.statusLine.showTokens};
         const SHOW_COST = ${boolStr cfg.statusLine.showCost};
         const SHOW_BRANCH = ${boolStr cfg.statusLine.showBranch};
-        const SESSION_DIR = "${cfg.configDir}/sessions";
-        const USAGE_FIVE_HOUR = ${toString cfg.statusLine.usage.fiveHour};
-        const USAGE_WEEKLY = ${toString cfg.statusLine.usage.weekly};
-        const USAGE_MONTHLY = ${toString cfg.statusLine.usage.monthly};
-        const USAGE_LIVE = ${boolStr cfg.statusLine.usage.live};
-        const USAGE_PROVIDER = ${builtins.toJSON cfg.statusLine.usage.provider};
-        const USAGE_ACCOUNT_BASE = ${builtins.toJSON cfg.statusLine.usage.accountBaseUrl};
+        const SPEND_PROVIDER = ${builtins.toJSON cfg.statusLine.spend.provider};
+        const SPEND_ACCOUNT_ID_FILE = ${builtins.toJSON cfg.statusLine.spend.accountIdFile};
+        const SPEND_API_KEY_FILE = ${builtins.toJSON cfg.statusLine.spend.apiKeyFile};
 
         interface Seg {
           id: string;
@@ -182,157 +178,186 @@
         const AUTO_THEME = "auto";
         const AUTO_SOFTEN = 0.3;
 
-        interface LiveWindow {
-          percent: number;
-          resetTs: number;
-        }
-        let liveUsage: { rolling: LiveWindow; weekly: LiveWindow; monthly: LiveWindow; fetchedAt: number } | null =
-          null;
+        let spend: { total: number; credits: number | null; fetchedAt: number } | null = null;
 
-        async function fetchUsage(ctx: any): Promise<void> {
+        function grpcVarint(n: number): Buffer {
+          const out: number[] = [];
+          let v = n;
+          do {
+            let b = v & 0x7f;
+            v = Math.floor(v / 128);
+            if (v > 0) b |= 0x80;
+            out.push(b);
+          } while (v > 0);
+          return Buffer.from(out);
+        }
+
+        function grpcFrame(msg: Buffer): Buffer {
+          const len = Buffer.alloc(4);
+          len.writeUInt32BE(msg.length);
+          return Buffer.concat([Buffer.from([0]), len, msg]);
+        }
+
+        function fetchCredits(apiKey: string, accountId: string): Promise<number | null> {
+          return new Promise((resolve) => {
+            try {
+              const nameBytes = Buffer.from("accounts/" + accountId);
+              const msg = grpcFrame(Buffer.concat([Buffer.from([0x0a]), grpcVarint(nameBytes.length), nameBytes]));
+              const sess = http2.connect("https://gateway.fireworks.ai:443");
+              let settled = false;
+              const done = (value: number | null): void => {
+                if (settled) return;
+                settled = true;
+                clearTimeout(timer);
+                try {
+                  sess.close();
+                } catch {}
+                resolve(value);
+              };
+              const timer = setTimeout(() => done(null), 8000);
+              const req = sess.request({
+                ":method": "POST",
+                ":path": "/gateway.Gateway/GetBalance",
+                "content-type": "application/grpc+proto",
+                te: "trailers",
+                "x-api-key": apiKey,
+              });
+              const chunks: Buffer[] = [];
+              let trailers: Record<string, string> = {};
+              req.on("response", () => {});
+              req.on("trailers", (t: Record<string, string>) => {
+                trailers = t;
+              });
+              req.on("error", () => done(null));
+              req.on("data", (c: Buffer) => chunks.push(c));
+              req.on("end", () => {
+                try {
+                  if (String(trailers["grpc-status"] ?? "") !== "0") return done(null);
+                  const buf = Buffer.concat(chunks);
+                  if (buf.length < 5) return done(null);
+                  const m = buf.subarray(5, 5 + buf.readUInt32BE(1));
+                  let money: Buffer | null = null;
+                  let i = 0;
+                  while (i < m.length) {
+                    const tag = m[i++];
+                    const field = tag >> 3;
+                    const wt = tag & 7;
+                    if (wt === 2) {
+                      let len = 0;
+                      let s = 0;
+                      do {
+                        len |= (m[i] & 0x7f) << s;
+                        s += 7;
+                      } while (m[i++] & 0x80);
+                      if (field === 1) money = m.subarray(i, i + len);
+                      i += len;
+                    } else if (wt === 0) {
+                      while (m[i++] & 0x80) {}
+                    } else break;
+                  }
+                  if (!money) return done(null);
+                  let units = 0;
+                  let nanos = 0;
+                  let j = 0;
+                  while (j < money.length) {
+                    const tag = money[j++];
+                    const field = tag >> 3;
+                    const wt = tag & 7;
+                    if (wt === 0) {
+                      let v = 0;
+                      let s = 0;
+                      do {
+                        v += (money[j] & 0x7f) * Math.pow(2, s);
+                        s += 7;
+                      } while (money[j++] & 0x80);
+                      if (field === 2) units = v;
+                      else if (field === 3) nanos = v;
+                    } else if (wt === 2) {
+                      let len = 0;
+                      let s = 0;
+                      do {
+                        len |= (money[j] & 0x7f) << s;
+                        s += 7;
+                      } while (money[j++] & 0x80);
+                      j += len;
+                    } else break;
+                  }
+                  done(units + nanos / 1e9);
+                } catch {
+                  done(null);
+                }
+              });
+              req.end(msg);
+            } catch {
+              resolve(null);
+            }
+          });
+        }
+
+        async function fetchSpend(ctx: any): Promise<void> {
           try {
-            const registry = ctx.modelRegistry;
-            if (!registry || typeof registry.getProviderAuth !== "function") return;
-            const resolved = await registry.getProviderAuth(USAGE_PROVIDER);
-            const a = resolved?.auth;
-            const apiKey = a?.apiKey ?? "";
-            const base = String(a?.baseUrl ?? USAGE_ACCOUNT_BASE).replace(/\/$/, "");
-            if (!apiKey || !base) return;
-            const res = await fetch(base + "/usage", {
-              headers: { Authorization: "Bearer " + apiKey },
-              signal: AbortSignal.timeout(8000),
-            });
-            if (!res.ok) return;
-            const data: any = await res.json();
-            const u = data && data.usage;
-            if (!u) return;
-            const win = (w: any): LiveWindow => ({
-              percent: typeof w?.percent === "number" ? w.percent : 0,
-              resetTs: Date.parse(w?.resetsAt ?? "") || 0,
-            });
-            liveUsage = {
-              rolling: win(u.rolling),
-              weekly: win(u.weekly),
-              monthly: win(u.monthly),
-              fetchedAt: Date.now(),
+            let apiKey = "";
+            if (SPEND_API_KEY_FILE) {
+              try {
+                apiKey = readFileSync(SPEND_API_KEY_FILE, "utf8").trim();
+              } catch {
+                apiKey = "";
+              }
+            }
+            if (!apiKey) {
+              const registry = ctx.modelRegistry;
+              if (!registry || typeof registry.getProviderAuth !== "function") return;
+              const resolved = await registry.getProviderAuth(SPEND_PROVIDER);
+              apiKey = resolved?.auth?.apiKey ?? "";
+            }
+            let accountId = "";
+            try {
+              accountId = readFileSync(SPEND_ACCOUNT_ID_FILE, "utf8").trim();
+            } catch {
+              return;
+            }
+            if (!apiKey || !accountId) return;
+            const nowMs = Date.now();
+            const start = new Date(nowMs - 29 * 86400000).toISOString();
+            const end = new Date(nowMs + 86400000).toISOString();
+            const walk = (node: any, inArray: boolean): void => {
+              if (Array.isArray(node)) {
+                for (const item of node) walk(item, true);
+              } else if (node && typeof node === "object") {
+                for (const [k, v] of Object.entries(node)) {
+                  if (inArray && k === "totalCost" && v && typeof v === "object") {
+                    spendTotal += (parseFloat(v.units) || 0) + (v.nanos || 0) / 1e9;
+                  } else if (k !== "nextPageToken") {
+                    walk(v, false);
+                  }
+                }
+              }
             };
+            let spendTotal = 0;
+            let pageToken: string | undefined = undefined;
+            do {
+              const url =
+                "https://api.fireworks.ai/v1/accounts/" + accountId + "/billing/summary" +
+                "?startTime=" + encodeURIComponent(start) +
+                "&endTime=" + encodeURIComponent(end) +
+                (pageToken ? "&pageToken=" + encodeURIComponent(pageToken) : "");
+              const res = await fetch(url, {
+                headers: { Authorization: "Bearer " + apiKey },
+                signal: AbortSignal.timeout(8000),
+              });
+              if (!res.ok) return;
+              const data: any = await res.json();
+              walk(data, false);
+              pageToken = typeof data?.nextPageToken === "string" && data.nextPageToken ? data.nextPageToken : undefined;
+            } while (pageToken);
+            const credits = await fetchCredits(apiKey, accountId);
+            spend = { total: spendTotal, credits: credits, fetchedAt: Date.now() };
           } catch {
             /* keep the last successful snapshot */
           }
         }
 
-        const usage = { d: 0, wk: 0, mo: 0 };
 
-        function scanUsage(): void {
-          const now = Date.now();
-          const fiveStart = now - 5 * 3600000;
-          const dayStart = fiveStart;
-          const weekStart = now - 7 * 86400000;
-          const monthDate = new Date(now);
-          const monthStart = now - 30 * 86400000;
-          const floor = Math.min(dayStart, weekStart, monthStart) - 3600000;
-          let files: string[] = [];
-          try {
-            files = readdirSync(SESSION_DIR, { recursive: true }).filter((f) => f.endsWith(".jsonl"));
-          } catch {
-            return;
-          }
-          let d = 0;
-          let wk = 0;
-          let mo = 0;
-          for (const rel of files) {
-            const p = join(SESSION_DIR, rel);
-            try {
-              if (statSync(p).mtimeMs < floor) continue;
-              const lines = readFileSync(p, "utf8").split("\n");
-              for (const line of lines) {
-                if (!line.trim()) continue;
-                let e: any;
-                try {
-                  e = JSON.parse(line);
-                } catch {
-                  continue;
-                }
-                if (e.type !== "message" || !e.message || e.message.role !== "assistant") continue;
-                const u = e.message.usage;
-                const raw = e.message.timestamp ?? e.timestamp ?? "";
-                const ts = typeof raw === "number" ? raw : Date.parse(String(raw));
-                if (!u || !Number.isFinite(ts)) continue;
-                const c = u.cost ? u.cost.total || 0 : 0;
-                if (ts >= dayStart) d += c;
-                if (ts >= weekStart) wk += c;
-                if (ts >= monthStart) mo += c;
-              }
-            } catch {
-              continue;
-            }
-          }
-          usage.d = d;
-          usage.wk = wk;
-          usage.mo = mo;
-        }
-
-        function nextMidnight(now: number): number {
-          const d = new Date(now);
-          d.setHours(24, 0, 0, 0);
-          return d.getTime();
-        }
-
-        function nextMonday(now: number): number {
-          const d = new Date(now);
-          const dow = (d.getDay() + 6) % 7;
-          const days = dow === 0 ? 7 : 7 - dow;
-          d.setDate(d.getDate() + days);
-          d.setHours(0, 0, 0, 0);
-          return d.getTime();
-        }
-
-        function nextMonthStart(now: number): number {
-          const d = new Date(now);
-          d.setDate(1);
-          d.setHours(0, 0, 0, 0);
-          d.setMonth(d.getMonth() + 1);
-          return d.getTime();
-        }
-
-        function meterLive(label: string, win: LiveWindow, now: number, theme: { fg: (color: string, text: string) => string }): string {
-          const pct = Math.min(100, Math.max(0, Math.round(win.percent)));
-          const color = pct < 50 ? "success" : pct < 75 ? "warning" : "error";
-          const filled = Math.min(10, Math.floor((pct + 5) / 10));
-          const bar = theme.fg(color, "█".repeat(filled)) + theme.fg("dim", "░".repeat(10 - filled));
-          const diff = win.resetTs > now ? win.resetTs - now : 0;
-          const days = Math.floor(diff / 86400000);
-          const hh = Math.floor((diff % 86400000) / 3600000);
-          const mm = Math.floor((diff % 3600000) / 60000);
-          let resetLabel = mm + "m";
-          if (days > 0) resetLabel = days + "d" + hh + "h";
-          else if (diff >= 3600000) resetLabel = hh + "h" + String(mm).padStart(2, "0") + "m";
-          return (
-            theme.fg("dim", label + " ") +
-            bar +
-            " " +
-            theme.fg(color, String(pct) + "%") +
-            theme.fg("dim", " ↺" + resetLabel)
-          );
-        }
-
-        function meterStr(label: string, cost: number, cap: number, resetTs: number, now: number, theme: { fg: (color: string, text: string) => string }): string {
-          const pct = Math.min(100, Math.round((cost / cap) * 100));
-          const color = pct < 50 ? "success" : pct < 75 ? "warning" : "error";
-          const filled = Math.min(10, Math.floor((pct + 5) / 10));
-          const bar = theme.fg(color, "█".repeat(filled)) + theme.fg("dim", "░".repeat(10 - filled));
-          const diff = Math.max(0, resetTs - now);
-          const hh = Math.floor(diff / 3600000);
-          const mm = Math.floor((diff % 3600000) / 60000);
-          const resetLabel = diff >= 3600000 ? hh + "h" + String(mm).padStart(2, "0") + "m" : mm + "m";
-          return (
-            theme.fg("dim", label + " ") +
-            bar +
-            " " +
-            theme.fg(color, String(pct) + "%") +
-            theme.fg("dim", " ↺" + resetLabel)
-          );
-        }
 
         function hexToRgb(hex: string): number[] {
           const h = hex.replace("#", "");
@@ -587,30 +612,34 @@
           };
         }
 
-        function contextBar(pct: number | null): { filled: number; color: string } | null {
+        const PARTIAL_BLOCKS = ["", "▏", "▎", "▍", "▌", "▋", "▊", "▉"];
+
+        function contextColor(pct: number | null): string | null {
           if (pct === null) return null;
-          const color = pct < 50 ? "success" : pct < 75 ? "warning" : "error";
-          return { filled: Math.min(10, Math.floor((pct + 5) / 10)), color: color };
+          return pct < 50 ? "success" : pct < 75 ? "warning" : "error";
         }
 
-        function usageText(theme: any): string {
-          if (USAGE_LIVE && liveUsage) {
-            const now = Date.now();
-            return [
-              meterLive("5h", liveUsage.rolling, now, theme),
-              meterLive("wk", liveUsage.weekly, now, theme),
-              meterLive("mo", liveUsage.monthly, now, theme),
-            ].join(" ");
+        function blockBar(pct: number, width: number, emptyChar: string): { filled: string; empty: string } {
+          const clamped = Math.min(100, Math.max(0, pct));
+          const exact = (clamped / 100) * width;
+          let full = Math.floor(exact);
+          let pIdx = Math.floor((exact - full) * 8);
+          if (pIdx >= 8) {
+            full++;
+            pIdx = 0;
           }
-          if (USAGE_FIVE_HOUR > 0 || USAGE_WEEKLY > 0 || USAGE_MONTHLY > 0) {
-            const now = Date.now();
-            const meters: string[] = [];
-            if (USAGE_FIVE_HOUR > 0) meters.push(meterStr("5h", usage.d, USAGE_FIVE_HOUR, now, now, theme));
-            if (USAGE_WEEKLY > 0) meters.push(meterStr("wk", usage.wk, USAGE_WEEKLY, now, now, theme));
-            if (USAGE_MONTHLY > 0) meters.push(meterStr("mo", usage.mo, USAGE_MONTHLY, now, now, theme));
-            return meters.filter(Boolean).join(" ");
+          const emptyLen = Math.max(0, width - full - (pIdx > 0 ? 1 : 0));
+          return { filled: "█".repeat(full) + PARTIAL_BLOCKS[pIdx], empty: emptyChar.repeat(emptyLen) };
+        }
+
+        function spendText(theme: any): string {
+          if (!spend) return "";
+          let text = theme.fg("dim", "spent ") + theme.fg("warning", "$" + spend.total.toFixed(2));
+          if (spend.credits !== null) {
+            const color = spend.credits < 2 ? "error" : spend.credits < 10 ? "warning" : "success";
+            text += theme.fg("dim", " · credits ") + theme.fg(color, "$" + spend.credits.toFixed(2));
           }
-          return "";
+          return text;
         }
 
         const noopTheme = { fg: (_c: string, t: string): string => t };
@@ -625,29 +654,24 @@
             parts.push(theme.fg("accent", "◆ " + d.model) + " " + theme.fg(levelColor, d.level));
           }
           if (SHOW_CONTEXT) {
-            const bar = contextBar(d.pct);
-            if (!bar) {
+            const color = contextColor(d.pct);
+            if (!color) {
               parts.push(theme.fg("dim", "ctx --"));
             } else {
-              const filledStr = "█".repeat(bar.filled);
-              const emptyStr = "░".repeat(10 - bar.filled);
+              const bar = blockBar(d.pct, 10, "░");
               parts.push(
                 theme.fg("dim", "ctx ") +
-                  theme.fg(bar.color, filledStr) +
-                  theme.fg("dim", emptyStr) +
+                  theme.fg(color, bar.filled) +
+                  theme.fg("dim", bar.empty) +
                   " " +
-                  theme.fg(bar.color, String(d.pct) + "%"),
+                  theme.fg(color, String(d.pct) + "%"),
               );
             }
           }
-          if (SHOW_TOKENS || SHOW_COST) {
-            const bits: string[] = [];
-            if (SHOW_TOKENS) bits.push("↑" + fmtTokens(d.input) + " ↓" + fmtTokens(d.output));
-            if (SHOW_COST) bits.push("$" + d.cost.toFixed(2));
-            if (bits.length > 0) parts.push(theme.fg("dim", bits.join(" ")));
-          }
+          if (SHOW_TOKENS) parts.push(theme.fg("dim", "↑" + fmtTokens(d.input) + " ↓" + fmtTokens(d.output)));
+          if (SHOW_COST) parts.push(theme.fg("dim", "💵 $" + d.cost.toFixed(2)));
           if (d.branch) parts.push(theme.fg("warning", d.branch));
-          const u = usageText(theme);
+          const u = spendText(theme);
           if (u) parts.push(u);
           return parts.join(theme.fg("dim", " | "));
         }
@@ -656,15 +680,11 @@
           const parts: string[] = [];
           if (d.path) parts.push(d.path);
           if (SHOW_MODEL) parts.push(d.model + " " + d.level);
-          if (SHOW_CONTEXT) parts.push(d.pct === null ? "--" : String(d.pct) + "%");
-          if (SHOW_TOKENS || SHOW_COST) {
-            const bits: string[] = [];
-            if (SHOW_TOKENS) bits.push("↑" + fmtTokens(d.input) + " ↓" + fmtTokens(d.output));
-            if (SHOW_COST) bits.push("$" + d.cost.toFixed(2));
-            if (bits.length > 0) parts.push(bits.join(" "));
-          }
+          if (SHOW_CONTEXT) parts.push(d.pct === null ? "--" : blockBar(d.pct, 10, "·").filled + " " + d.pct + "%");
+          if (SHOW_TOKENS) parts.push("↑" + fmtTokens(d.input) + " ↓" + fmtTokens(d.output));
+          if (SHOW_COST) parts.push("💵 $" + d.cost.toFixed(2));
           if (d.branch) parts.push(d.branch);
-          const u = usageText(noopTheme);
+          const u = spendText(noopTheme);
           if (u) parts.push(u);
           return parts.join("  ");
         }
@@ -675,17 +695,17 @@
           if (d.branch) segs.push({ id: "branch", text: d.branch });
           if (SHOW_MODEL) segs.push({ id: "model", text: d.model + " " + d.level });
           if (SHOW_TOKENS) segs.push({ id: "tokens", text: "↑" + fmtTokens(d.input) + " ↓" + fmtTokens(d.output) });
-          if (SHOW_COST) segs.push({ id: "cost", text: "$" + d.cost.toFixed(2) });
           if (SHOW_CONTEXT) {
-            const bar = contextBar(d.pct);
+            const bar = d.pct === null ? null : blockBar(d.pct, 10, " ");
             segs.push({
               id: "context",
               text: bar
-                ? "█".repeat(bar.filled) + "░".repeat(10 - bar.filled) + " " + d.pct + "%"
-                : "--",
+                ? "📁 ctx " + bar.filled + bar.empty + " " + d.pct + "%"
+                : "📁 ctx --",
             });
           }
-          const u = usageText(noopTheme);
+          if (SHOW_COST) segs.push({ id: "cost", text: "💵 $" + d.cost.toFixed(2) });
+          const u = spendText(noopTheme);
           if (u) segs.push({ id: "usage", text: u });
           return segs;
         }
@@ -715,16 +735,20 @@
             const fgCode = fgAnsi(fgHex, mode);
             const bold = "\x1b[1m";
             let text = seg.text;
-            const bar = seg.id === "context" ? contextBar(d.pct) : null;
+            const bar = seg.id === "context" && d.pct !== null ? blockBar(d.pct, 10, "░") : null;
             if (bar) {
               const emptyHex = mixHex(fgHex, c.bg, 0.45);
               text =
-                fgCode +
-                bold +
-                "█".repeat(bar.filled) +
+                "📁 " +
                 fgAnsi(emptyHex, mode) +
                 bold +
-                "░".repeat(10 - bar.filled) +
+                "ctx " +
+                fgCode +
+                bold +
+                bar.filled +
+                fgAnsi(emptyHex, mode) +
+                bold +
+                bar.empty +
                 fgCode +
                 bold +
                 " " +
@@ -859,11 +883,7 @@
           });
 
           pi.on("turn_end", async () => {
-            if (USAGE_LIVE) {
-              void fetchUsage(lastCtx).then(() => footerTui?.requestRender());
-            } else {
-              scanUsage();
-            }
+            void fetchSpend(lastCtx).then(() => footerTui?.requestRender());
             footerTui?.requestRender();
           });
 
@@ -880,12 +900,8 @@
             try {
             if (!ctx.hasUI) return;
 
-            if (USAGE_LIVE) {
-              void fetchUsage(ctx).then(() => footerTui?.requestRender());
-              lastCtx = ctx;
-            } else {
-              scanUsage();
-            }
+            void fetchSpend(ctx).then(() => footerTui?.requestRender());
+            lastCtx = ctx;
             ctx.ui.setFooter((tui, theme, footerData) => {
               footerTui = tui;
               const unsub = footerData.onBranchChange(() => tui.requestRender());
@@ -916,11 +932,7 @@
             }
             usageTimer = setInterval(() => {
               if (!footerTui || !lastCtx) return;
-              if (USAGE_LIVE) {
-                void fetchUsage(lastCtx).then(() => footerTui?.requestRender());
-              } else {
-                scanUsage();
-              }
+              void fetchSpend(lastCtx).then(() => footerTui?.requestRender());
               footerTui.requestRender();
             }, 60000);
           } catch (e: any) {
@@ -981,36 +993,21 @@
           description = "Show the current git branch.";
         };
 
-        usage = {
-          fiveHour = lib.mkOption {
-            type = lib.types.float;
-            default = 12.0;
-            description = "5-hour rolling spend cap in USD (OpenCode Go GLM-5.3-Flash quota: $12 / 5 hr).";
-          };
-          weekly = lib.mkOption {
-            type = lib.types.float;
-            default = 30.0;
-            description = "Rolling 7-day spend cap in USD (OpenCode Go GLM-5.3-Flash quota: $30 / week).";
-          };
-          monthly = lib.mkOption {
-            type = lib.types.float;
-            default = 60.0;
-            description = "Rolling 30-day spend cap in USD (OpenCode Go GLM-5.3-Flash quota: $60 / month).";
-          };
-          live = lib.mkOption {
-            type = lib.types.bool;
-            default = true;
-            description = "Fetch live usage percentages from the provider's account API (falls back to local session aggregation).";
-          };
+        spend = {
           provider = lib.mkOption {
             type = lib.types.str;
-            default = "opencode-go";
-            description = "Provider id used to resolve the API credential for live usage fetching.";
+            default = "fireworks";
+            description = "Provider id used to resolve the Fireworks API credential when apiKeyFile is unset.";
           };
-          accountBaseUrl = lib.mkOption {
-            type = lib.types.str;
-            default = "https://opencode.ai/zen/go/v1";
-            description = "Account API base the /usage endpoint is fetched from (provider auth often omits it).";
+          accountIdFile = lib.mkOption {
+            type = lib.types.path;
+            default = "${config.home.homeDirectory}/.config/sops-nix/secrets/fireworks/account-id";
+            description = "File containing the Fireworks account id (sops secret); read at runtime by the status line.";
+          };
+          apiKeyFile = lib.mkOption {
+            type = lib.types.nullOr lib.types.path;
+            default = null;
+            description = "Optional file containing the Fireworks API key (sops secret); read at runtime. When null, the pi provider auth key is used.";
           };
         };
       };
