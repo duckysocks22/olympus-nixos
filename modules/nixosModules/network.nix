@@ -26,6 +26,36 @@
         "dionysus-nixos" = "null";
         "ariadne-nixos" = "enp5s0";
       };
+      wifiRecover = pkgs.writeShellScript "wifi-recover" ''
+        mode="$1"
+        nm=${config.networking.networkmanager.package}/bin/nmcli
+        if [ "$mode" = resume ]; then
+          "$nm" networking off || true
+          systemctl try-restart iwd.service || true
+          for i in $(seq 1 10); do
+            [ "$(systemctl is-active iwd.service)" = active ] && break
+            sleep 1
+          done
+        fi
+        "$nm" networking on || true
+        forced=0
+        for i in $(seq 1 30); do
+          if "$nm" -t -f DEVICE,TYPE,STATE device status 2>/dev/null | \
+            awk -F: '$2 == "wifi" && $3 ~ /^connected/ { found = 1 } END { exit !found }'; then
+            exit 0
+          fi
+          if [ "$forced" = 0 ] && [ "$i" -ge 10 ]; then
+            forced=1
+            dev=$("$nm" -t -f DEVICE,TYPE device status 2>/dev/null | awk -F: '$2 == "wifi" { print $1; exit }')
+            if [ -n "$dev" ]; then
+              "$nm" device connect "$dev" || true
+            fi
+          fi
+          sleep 2
+        done
+        echo "wifi-recover[$mode]: wifi did not reconnect within timeout" >&2
+        exit 1
+      '';
       dnsPin = pkgs.writeShellScript "dns-pin" ''
         case "$ACTION" in
           up|dhcp4-change|dhcp6-change|reapply) ;;
@@ -48,6 +78,7 @@
       networking = {
         networkmanager = {
           enable = true;
+          logLevel = "INFO";
           wifi = {
             backend = "iwd";
             powersave = false;
@@ -92,6 +123,53 @@
         firewall = {
           allowedTCPPorts = [ 4646 8384 ];
           allowedUDPPorts = [ 4646 8384 ];
+        };
+      };
+
+      systemd.services.NetworkManager = {
+        after = [ "iwd.service" ];
+        wants = [ "iwd.service" ];
+      };
+      systemd.services.NetworkManager-ensure-profiles = {
+        after = [ "sops-install-secrets.service" ];
+        wants = [ "sops-install-secrets.service" ];
+      };
+
+      systemd.services.wifi-recover-boot = lib.mkIf (autoconnect.${config.networking.hostName} == "true") {
+        description = "Ensure wifi autoconnect completes after declarative profiles are ensured";
+        wantedBy = [ "multi-user.target" ];
+        after = [
+          "NetworkManager.service"
+          "NetworkManager-ensure-profiles.service"
+          "iwd.service"
+        ];
+        wants = [ "NetworkManager-ensure-profiles.service" ];
+        path = [ pkgs.coreutils pkgs.gawk ];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${wifiRecover} boot";
+          TimeoutStartSec = "3min";
+        };
+      };
+      systemd.services.wifi-recover-resume = lib.mkIf (autoconnect.${config.networking.hostName} == "true") {
+        description = "Re-establish wifi after suspend/resume (iwd/NM state desync)";
+        wantedBy = [
+          "suspend.target"
+          "hibernate.target"
+          "hybrid-sleep.target"
+          "suspend-then-hibernate.target"
+        ];
+        after = [
+          "suspend.target"
+          "hibernate.target"
+          "hybrid-sleep.target"
+          "suspend-then-hibernate.target"
+        ];
+        path = [ pkgs.coreutils pkgs.gawk ];
+        serviceConfig = {
+          Type = "oneshot";
+          ExecStart = "${wifiRecover} resume";
+          TimeoutStartSec = "3min";
         };
       };
 
