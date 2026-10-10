@@ -91,7 +91,7 @@
             }
           ];
           ensureProfiles = {
-            environmentFiles = [ config.sops.secrets."bazinga/pass".path ];
+            environmentFiles = [ "/run/wifi-recover/bazinga.env" ];
             profiles.bazinga = {
               connection = {
                 id = "bazinga";
@@ -130,9 +130,32 @@
         after = [ "iwd.service" ];
         wants = [ "iwd.service" ];
       };
-      systemd.services.NetworkManager-ensure-profiles = {
+
+      systemd.services.wifi-psk-env = {
+        description = "Render bazinga PSK environment file for NetworkManager profile generation";
+        wantedBy = [ "multi-user.target" ];
         after = [ "sops-install-secrets.service" ];
         wants = [ "sops-install-secrets.service" ];
+        before = [ "NetworkManager-ensure-profiles.service" ];
+        serviceConfig = {
+          Type = "oneshot";
+          RuntimeDirectory = "wifi-recover";
+          RuntimeDirectoryMode = "0700";
+          UMask = "0077";
+        };
+        script = ''
+          content="$(cat ${config.sops.secrets."bazinga/pass".path})"
+          case "$content" in
+            BAZINGA_PSK=*) ;;
+            *) content="BAZINGA_PSK=$content" ;;
+          esac
+          printf '%s\n' "$content" > /run/wifi-recover/bazinga.env
+        '';
+      };
+
+      systemd.services.NetworkManager-ensure-profiles = {
+        after = [ "wifi-psk-env.service" ];
+        wants = [ "wifi-psk-env.service" ];
       };
 
       systemd.services.wifi-recover-boot = lib.mkIf (autoconnect.${config.networking.hostName} == "true") {
