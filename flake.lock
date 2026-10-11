@@ -1052,15 +1052,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1790705958,
-        "narHash": "sha256-KZcsqKYf2wjpiV5YM2XyGdJ7dN71jtEyud9SsA/dwL0=",
+        "lastModified": 1791679215,
+        "narHash": "sha256-z1D0a2oTt9dTPWszPFvvlnxDLhgqowtygoJwZLA9bgA=",
         "owner": "duckysocks22",
         "repo": "Jovian-NixOS",
-        "rev": "022c153e5e0cbf2056b3b9b9f4dffb80e986c691",
+        "rev": "39e300b14a8f299775545604d834ea168df75976",
         "type": "github"
       },
       "original": {
         "owner": "duckysocks22",
+        "ref": "hdmi_cec",
         "repo": "Jovian-NixOS",
         "type": "github"
       }

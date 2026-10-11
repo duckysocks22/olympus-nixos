@@ -10,6 +10,9 @@
 
     sops.secrets."atuin/key" = { };
     sops.secrets."syncthing/pass" = { };
+    
+    sops.secrets."fireworks/account-id" = { };
+    sops.secrets."fireworks/api-key" = { };
   };
 
   flake.homeModules.serverSops = { inputs, config, ... }: {
@@ -21,6 +24,9 @@
     sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
 
     sops.secrets."atuin/key" = { };
+
+    sops.secrets."fireworks/account-id" = { };
+    sops.secrets."fireworks/api-key" = { };
   };
 
   flake.homeModules.deckSops = { inputs, config, ... }: {
@@ -33,5 +39,8 @@
 
     sops.secrets."atuin/key" = { };
     sops.secrets."syncthing/pass" = { };
+
+    sops.secrets."fireworks/account-id" = { };
+    sops.secrets."fireworks/api-key" = { };
   };
 }
