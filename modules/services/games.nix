@@ -30,21 +30,16 @@
         user = "server";
       };
 
-      users.users.minecraft = {
-        isSystemUser = true;
-        group = "minecraft";
-      };
-
       systemd.services.mc-forever = util.functions.mkSimpleService {
         description = "Minecraft Vanilla";
         ExecStart = pkgs.writeShellScript "start.sh" ''
-          cd /home/server/game-servers/minecraft/ntnh-server
+          cd /home/server/game-servers/minecraft/forever_vanilla
 
           set -e
 
           SERVER_JAR="server.jar"
 
-          exec ${pkgs.jdk21}/bin/java -Xms4G -Xmx8G -jar "$SERVER_JAR" nogui
+          exec ${pkgs.jdk25}/bin/java -Xms4G -Xmx8G -jar "$SERVER_JAR" nogui
 
         '';
         user = "server";
@@ -53,7 +48,7 @@
       users.users.minecraft = {
         isSystemUser = true;
         group = "minecraft";
-      }
+      };
 
       users.groups.minecraft = { };
     };

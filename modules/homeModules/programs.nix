@@ -237,10 +237,7 @@
           defaultProvider = "fireworks";
           defaultModel = "accounts/fireworks/routers/glm-flash-latest";
           enabledModels = [
-<<<<<<< HEAD
-=======
             "accounts/fireworks/routers/glm-flash-latest"
->>>>>>> 8ea7eff720cd444b0c513737cdde604518dd59b8
             "accounts/fireworks/routers/glm-*"
             "llama.cpp/*"
           ];
