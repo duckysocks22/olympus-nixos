@@ -564,7 +564,7 @@
     };
 
   flake.wireguardPublicKeys = {
-    "athena-nixos" = "urmom";
+    "athena-nixos" = "QGeP2d3b81Wg0HCbwACiN1knDRnkPoomYUF4qIMJESI=";
     "circe-nixos" = "lBu6K0aoE95f9h/t1jB9Rgr9BTM8X9X0SYVE7hh6sxs=";
     "dionysus-nixos" = "OaaSw3LeEGFuiycxMWhz0i2UALIZnV8JZ1fl3nWpmlc=";
     "ariadne-nixos" = "ecyjWz3Fg8nsIwwL0MDpjr1/+U435ORR3YpVKgEeBiQ=";
