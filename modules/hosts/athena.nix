@@ -91,16 +91,6 @@
   flake.nixosModules.athenaDisko = { inputs, lib, ... }: {
     imports = [ inputs.disko.nixosModules.disko ];
     disko.devices = {
-      nodev = {
-        "/" = {
-          fsType = "tmpfs";
-          mountOptions = [
-            "size=25%"
-            "mode=755"
-          ];
-        };
-      };
-
       disk = {
         main = {
           device = "/dev/disk/by-id/nvme-CT500P1SSD8_2012E296277B";
