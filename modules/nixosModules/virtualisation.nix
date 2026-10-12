@@ -24,5 +24,13 @@
         virtiofsd
         wl-clipboard
       ];
+
+      virtualisation.podman = {
+        enable = true;
+        dockerCompat = true;
+        dockerSocket.enable = true;
+        defaultNetwork.settings.dns_enabled = true;
+      };
+      users.users.foxtrot.extraGroups = [ "podman" ];
     };
 }
