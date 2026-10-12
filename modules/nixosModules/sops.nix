@@ -142,6 +142,7 @@
     sops.secrets."adguardhome/environment" = { };
     sops.secrets."attic/server-token" = { };
     sops.secrets."attic/client-config".owner = config.users.users.server.name;
+    sops.secrets."deadlock/db-password" = { };
     sops.secrets."vaultwarden/env" = { };
     sops.secrets."forgejo-runner/environment" = { };
     sops.secrets."navidrome/environment" = { };

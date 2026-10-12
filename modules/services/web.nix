@@ -5,6 +5,7 @@
       inputs.self.nixosModules.adguardhome
       inputs.self.nixosModules.avahi
       inputs.self.nixosModules.atticd
+      inputs.self.nixosModules.deadlockPostgres
       inputs.self.nixosModules.ntfy
       inputs.self.nixosModules.mollysocket
       inputs.self.nixosModules.vaultwarden
@@ -433,6 +434,63 @@
           ProtectSystem = lib.mkForce "full";
         };
       };
+    };
+
+  flake.nixosModules.deadlockPostgres =
+    { config, pkgs, lib, ... }:
+    let
+      enabled = {
+        "nyx-nixos" = true;
+      };
+    in
+    {
+      # Shares the existing nyx postgres instance (already PG17, also serving
+      # atticd and vaultwarden) and adds pgvector, mirroring the
+      # pgvector/pgvector:pg17 container from deadlock-mod-manager compose.yml.
+      services.postgresql = {
+        enable = lib.mkIf (enabled.${config.networking.hostName} or false) true;
+        package = lib.mkIf (enabled.${config.networking.hostName} or false) (
+          pkgs.postgresql_17.withPackages (ps: [ ps.pgvector ])
+        );
+        enableTCPIP = lib.mkIf (enabled.${config.networking.hostName} or false) true;
+        # Prepend VPN-only rules for the turborepo DB; defaults (peer/trust on
+        # loopback) are preserved so atticd/vaultwarden keep working.
+        authentication = lib.mkBefore (
+          lib.optionalString (enabled.${config.networking.hostName} or false) ''
+            host turborepo turborepo 192.168.10.0/24 scram-sha-256
+            host turborepo turborepo fd31:bf08:57cb::/64 scram-sha-256
+          ''
+        );
+      };
+
+      networking.firewall.interfaces."wg0".allowedTCPPorts = lib.mkIf (enabled.${config.networking.hostName} or false) [ 5432 ];
+
+      sops.secrets."deadlock/db-password".owner = lib.mkIf (enabled.${config.networking.hostName} or false) "postgres";
+
+      systemd.services.deadlock-db-setup =
+        lib.mkIf (enabled.${config.networking.hostName} or false) {
+          description = "Bootstrap deadlock PostgreSQL database, role, and pgvector extension";
+          after = [ "postgresql.service" "sops-nix.service" ];
+          wantedBy = [ "multi-user.target" ];
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            User = "postgres";
+          };
+          path = [ config.services.postgresql.package ];
+          script = ''
+            psql -tc "SELECT 1 FROM pg_roles WHERE rolname = 'turborepo'" \
+              | grep -q 1 || psql -c "CREATE ROLE turborepo LOGIN"
+
+            printf "ALTER ROLE turborepo WITH PASSWORD :'pw';\n" \
+              | psql -v pw="$(cat ${config.sops.secrets."deadlock/db-password".path})"
+
+            psql -tc "SELECT 1 FROM pg_database WHERE datname = 'turborepo'" \
+              | grep -q 1 || psql -c "CREATE DATABASE turborepo OWNER turborepo"
+
+            psql -d turborepo -c "CREATE EXTENSION IF NOT EXISTS vector"
+          '';
+        };
     };
 
   flake.nixosModules.caddy =
