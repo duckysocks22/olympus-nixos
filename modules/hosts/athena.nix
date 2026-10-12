@@ -68,6 +68,11 @@
       nixpkgs.config.allowUnfree = true;
       system.stateVersion = "26.05";
 
+      nix.settings.trusted-users = [
+        "root"
+        "foxtrot"
+      ];
+
       security.protectKernelImage = false;
 
       virtualisation.vmVariantWithDisko = {
