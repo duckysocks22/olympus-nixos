@@ -20,7 +20,7 @@
             "/var/lib/systemd/coredump"
             "/var/lib/systemd/rfkill"
             "/var/lib/systemd/timers"
-            "/var/lib/waydroid"
+            "/var/lib/containers"
             {
               directory = "/var/lib/iwd/";
               mode = "700";
@@ -91,6 +91,7 @@
                 ".config/filezilla"
                 ".config/fish"
                 ".config/Lunatask"
+                ".config/containers"
                 ".local/state/nvim"
                 ".local/state/neovim"
                 ".local/state/wireplumber"

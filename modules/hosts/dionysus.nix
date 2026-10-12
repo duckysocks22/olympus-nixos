@@ -14,6 +14,7 @@
       self.nixosModules.mouseModifiers
       self.nixosModules.common
       self.nixosModules.systemHarden
+      self.nixosModules.preservation
       self.nixosModules.defaultNetwork
       self.nixosModules.deck
       self.nixosModules.deckSops
@@ -145,6 +146,7 @@
                     subvolumes = {
                       "/root" = {
                         mountOptions = [
+                          "compress=zstd"
                           "subvol=root"
                           "noatime"
                         ];
@@ -165,6 +167,13 @@
                           "noatime"
                         ];
                         mountpoint = "/home";
+                      };
+                      "/persistent" = {
+                        mountOptions = [
+                          "subvol=persistent"
+                          "noatime"
+                        ];
+                        mountpoint = "/persistent";
                       };
                     };
                   };
@@ -196,6 +205,30 @@
     };
     boot.initrd.systemd.enable = lib.mkForce true;
     fileSystems."/nix".neededForBoot = true;
+    fileSystems."/persistent".neededForBoot = true;
+
+
+    boot.initrd.systemd.services.wipe-root = {
+      description = "Reset btrfs root subvol for stateless boot";
+      wantedBy = [ "initrd-root-device.target" ];
+      before = [ "sysroot.mount" ];
+      after = [ "dev-mapper-crypted.device" "local-fs-pre.target" ];
+      unitConfig.DefaultDependencies = "no";
+      serviceConfig.Type = "oneshot";
+      script = ''
+        mount --mkdir -o subvol=/ /dev/mapper/crypted /btrfs_tmp
+        if [[ -e /btrfs_tmp/root ]]; then
+          mkdir -p /btrfs_tmp/old_roots
+          timestamp=$(date --date="@$(stat -c %Y /btrfs_tmp/root)" "+%Y-%m-%d_%H:%M:%S")
+          mv /btrfs_tmp/root "/btrfs_tmp/old_roots/$timestamp"
+        fi
+        for old_root in $(find /btrfs_tmp/old_roots/ -maxdepth 1 -mindepth 1 -mtime +7); do
+          btrfs subvolume delete --recursive "$old_root"
+        done
+        btrfs subvolume create /btrfs_tmp/root
+        umount /btrfs_tmp
+     '';
+    };
   };
 
   flake.nixosModules.dionysusHardware =
