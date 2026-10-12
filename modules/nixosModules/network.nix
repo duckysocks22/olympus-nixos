@@ -140,6 +140,7 @@
         serviceConfig = {
           Type = "oneshot";
           RuntimeDirectory = "wifi-recover";
+          RuntimeDirectoryPreserve = true;
           RuntimeDirectoryMode = "0700";
           UMask = "0077";
         };
