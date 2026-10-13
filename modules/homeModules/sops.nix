@@ -13,6 +13,12 @@
     
     sops.secrets."fireworks/account-id" = { };
     sops.secrets."fireworks/api-key" = { };
+
+    sops.secrets."syncthing/athena-nixos/cert" = { };
+    sops.secrets."syncthing/athena-nixos/key" = { };
+
+    sops.secrets."syncthing/circe-nixos/cert" = { };
+    sops.secrets."syncthing/circe-nixos/key" = { };
   };
 
   flake.homeModules.serverSops = { inputs, config, ... }: {
@@ -42,5 +48,12 @@
 
     sops.secrets."fireworks/account-id" = { };
     sops.secrets."fireworks/api-key" = { };
+
+    sops.secrets."syncthing/dionysus-nixos/cert" = { };
+    sops.secrets."syncthing/dionysus-nixos/key" = { };
+
+    sops.secrets."syncthing/ariadne-nixos/cert" = { };
+    sops.secrets."syncthing/ariadne-nixos/key" = { };
+
   };
 }

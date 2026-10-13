@@ -581,9 +581,53 @@
   in {
     services.syncthing = {
       enable = true;
+      overrideFolders = true;
       openDefaultPorts = true;
 
-      guiAddress = "192.168.10.253:8384";
+      cert = config.sops.secrets."syncthing/${config.networking.hostName}/cert".path;
+      key = config.sops,secrets."syncthing/${config.networking.hostName}/key".path;
+
+      settings = {
+        devices = {
+          circe-nixos = {
+            id = "ECLW26H-2JWNNZX-YUWT42U-CYNARNX-SJRMMXA-XA2I7KD-ATCMTX2-4JXJNAP";
+          };
+          dionysus-nixos = {
+            id = "AQSHDSY-3I6HO7B-XJTWCSU-5MBSCSL-AU4BWKN-PQUDFE2-YVBZT6R-25G7RAI";
+          };
+          nyx-nixos = {
+            id = "T5XG4ZF-FYS5II7-JJH5274-CZF2CDG-QDDTASR-FZH7FCO-TQA6UV2-KDFTYQB";
+          };
+        };
+        folders = {
+          "FFXIV" = {
+            id = "FFXIV";
+            path = "/media/hdd1/services/syncthing/ffxiv";
+            devices = [ "circe-nixos" "nyx-nixos" ];
+            ignorePatterns = [
+              "!.stignore"
+              "!accounts.json"
+              "!secrets.json"
+              "!cfgcopy"
+              "!ffxivConfig"
+              "ffxivConfig/FFXIV.cfg"
+              "ffxivConfig/FFXIV.cfg.old"
+              "!pluginConfigs"
+              "!installedPlugins"
+              "!dalamudConfig.json"
+              "!dalamudUI.ini"
+              "!launcherUI.ini"
+              "pluginConfigs/LightlessSync/tracelog"
+              "*"
+            ];
+          };
+        };
+      };
+      guiAddress = "${address.${config.networking.hostName}}:8384";
+      guiCredentials = {
+        username = "foxtrot";
+        passwordFile = ${config.sops.secrets."synthing/pass".path}";"
+      };
     };
   };
 }

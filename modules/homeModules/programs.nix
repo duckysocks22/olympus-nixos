@@ -1588,16 +1588,84 @@
       };
     };
 
-    flake.homeModules.syncthing = { config, osConfig, ... }: let
+    flake.homeModules.syncthing = {
+      config,
+      osConfig,
+      lib,
+      ...
+    }: let
       address = {
         "circe-nixos" = "192.168.10.2";
         "dionysus-nixos" = "192.168.10.3";
         "ariadne-nixos" = "192.168.10.4";
         "athena-nixos" = "192.168.10.1";
       };
+
+      ffxivIgnorePatterns = [
+        "!.stignore"
+        "!accounts.json"
+        "!secrets.json"
+        "!cfgcopy"
+        "!ffxivConfig"
+        "ffxivConfig/FFXIV.cfg"
+        "ffxivConfig/FFXIV.cfg.old"
+        "!pluginConfigs"
+        "!installedPlugins"
+        "!dalamudConfig.json"
+        "!dalamudUI.ini"
+        "!launcherUI.ini"
+        "pluginConfigs/LightlessSync/tracelog"
+        "*"
+      ];
     in {
+      home.file.".xlcore/.stignore" = {
+        text = lib.concatStringsSep "\n" (ffxivIgnorePatterns ++ [ "" ]);
+        force = true;
+      };
       services.syncthing = {
         enable = true;
+        overrideFolders = true;
+
+        cert = config.sops.secrets."syncthing/${osConfig.networking.hostName}/cert".path;
+        key = config.sops.secrets."syncthing/${osConfig.networking.hostName}/key".path;
+
+        settings = {
+          devices = {
+            circe-nixos = {
+              id = "ECLW26H-2JWNNZX-YUWT42U-CYNARNX-SJRMMXA-XA2I7KD-ATCMTX2-4JXJNAP";
+            };
+            dionysus-nixos = {
+              id = "AQSHDSY-3I6HO7B-XJTWCSU-5MBSCSL-AU4BWKN-PQUDFE2-YVBZT6R-25G7RAI";
+            };
+            nyx-nixos = {
+              id = "T5XG4ZF-FYS5II7-JJH5274-CZF2CDG-QDDTASR-FZH7FCO-TQA6UV2-KDFTYQB";
+            };
+          };
+          folders = {
+            "${config.home.homeDirectory}/.xlcore" = {
+              id = "FFXIV";
+              devices = [ "circe-nixos" ];
+              ignorePatterns = [
+                "!.stignore"
+                "!accounts.json"
+                "!secrets.json"
+                "!cfgcopy"
+                "!ffxivConfig"
+                "ffxivConfig/FFXIV.cfg"
+                "ffxivConfig/FFXIV.cfg.old"
+                "!pluginConfigs"
+                "!installedPlugins"
+                "!dalamudConfig.json"
+                "!dalamudUI.ini"
+                "!launcherUI.ini"
+                "pluginConfigs/LightlessSync/tracelog"
+                "*"
+              ];
+              path = "${config.home.homeDirectory}/.xlcore";
+              devices = [ "circe-nixos" "nyx-nixos" "dionysus-nixos" "athena-nixos" ];
+            };
+          };
+        };
 
         guiAddress = "${address.${osConfig.networking.hostName}}:8384";
         guiCredentials = {
