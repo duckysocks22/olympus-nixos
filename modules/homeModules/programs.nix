@@ -1642,9 +1642,10 @@
             };
           };
           folders = {
-            "${config.home.homeDirectory}/.xlcore" = {
+            "FFXIV" = {
               id = "FFXIV";
-              devices = [ "circe-nixos" ];
+              path = "${config.home.homeDirectory}/.xlcore";
+              devices = [ "circe-nixos" "nyx-nixos" ];
               ignorePatterns = [
                 "!.stignore"
                 "!accounts.json"

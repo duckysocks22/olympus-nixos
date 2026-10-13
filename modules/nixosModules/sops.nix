@@ -231,6 +231,13 @@
     #sops.secrets."netbird/routing-key".owner = "netbird";
     #sops.secrets."netbird/routing-key".group = "netbird";
 
+    sops.secrets."syncthing/pass" = {
+      owner = "syncthing";
+    };
+
+    sops.secrets."syncthing/nyx-nixos/cert" = { };
+    sops.secrets."syncthing/nyx-nixos/key" = { };
+
   };
 
   flake.nixosModules.deckSops = { inputs, config, ... }: {

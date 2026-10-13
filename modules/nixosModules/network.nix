@@ -585,7 +585,7 @@
       openDefaultPorts = true;
 
       cert = config.sops.secrets."syncthing/${config.networking.hostName}/cert".path;
-      key = config.sops,secrets."syncthing/${config.networking.hostName}/key".path;
+      key = config.sops.secrets."syncthing/${config.networking.hostName}/key".path;
 
       settings = {
         devices = {
@@ -624,10 +624,9 @@
         };
       };
       guiAddress = "${address.${config.networking.hostName}}:8384";
-      guiCredentials = {
-        username = "foxtrot";
-        passwordFile = ${config.sops.secrets."synthing/pass".path}";"
-      };
+      guiPasswordFile = "${config.sops.secrets."syncthing/pass".path}";
+
+      settings.gui.user = "foxtrot";
     };
   };
 }

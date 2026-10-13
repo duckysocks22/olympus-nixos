@@ -14,6 +14,11 @@
         "server"
       ];
 
+      users.groups.podman.members = [
+        "foxtrot"
+        "server"
+      ];
+
       virtualisation = {
         libvirtd.enable = true;
         spiceUSBRedirection.enable = true;
@@ -31,6 +36,5 @@
         dockerSocket.enable = true;
         defaultNetwork.settings.dns_enabled = true;
       };
-      users.users.foxtrot.extraGroups = [ "podman" ];
     };
 }
