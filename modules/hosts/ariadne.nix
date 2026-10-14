@@ -32,6 +32,7 @@
     {
       environment.systemPackages =
         (with pkgs; [
+          ffmpeg
           git
           wget
           vim
