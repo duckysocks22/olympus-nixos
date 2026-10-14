@@ -304,7 +304,7 @@
 
             routingPolicyRules = [
               {
-                Priority = 97;
+                Priority = 94;
                 FirewallMark = 42;
                 Table = "main";
               }
