@@ -95,6 +95,7 @@
 
     sops.defaultSopsFile = ../../secrets/secrets.yaml;
     sops.defaultSopsFormat = "yaml";
+    sops.useSystemdActivation = true;
 
     sops.age.keyFile = "${config.users.users.server.home}/.config/sops/age/keys.txt";
 
@@ -117,6 +118,7 @@
 
     sops.defaultSopsFile = ../../secrets/secrets.yaml;
     sops.defaultSopsFormat = "yaml";
+    sops.useSystemdActivation = true;
 
     sops.age.keyFile = "${config.users.users.server.home}/.config/sops/age/keys.txt";
 

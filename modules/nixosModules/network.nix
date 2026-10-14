@@ -304,7 +304,7 @@
 
             routingPolicyRules = [
               {
-                Priority = 94;
+                Priority = 50;
                 FirewallMark = 42;
                 Table = "main";
               }
@@ -565,7 +565,7 @@
     };
 
   flake.wireguardPublicKeys = {
-    "athena-nixos" = "QGeP2d3b81Wg0HCbwACiN1knDRnkPoomYUF4qIMJESI=";
+    "athena-nixos" = "7jLu/Np/uxZ4vNa7oFm7fBYTcO9hiuVFLM4jJWuadAs=";
     "circe-nixos" = "lBu6K0aoE95f9h/t1jB9Rgr9BTM8X9X0SYVE7hh6sxs=";
     "dionysus-nixos" = "OaaSw3LeEGFuiycxMWhz0i2UALIZnV8JZ1fl3nWpmlc=";
     "ariadne-nixos" = "ecyjWz3Fg8nsIwwL0MDpjr1/+U435ORR3YpVKgEeBiQ=";

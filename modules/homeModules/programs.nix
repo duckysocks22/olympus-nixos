@@ -1665,8 +1665,6 @@
                 "pluginConfigs/LightlessSync/tracelog"
                 "*"
               ];
-              path = "${config.home.homeDirectory}/.xlcore";
-              devices = [ "circe-nixos" "nyx-nixos" "dionysus-nixos" "athena-nixos" ];
             };
           };
         };

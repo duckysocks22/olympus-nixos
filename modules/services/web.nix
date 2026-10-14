@@ -43,6 +43,7 @@
         mode = "640";
         owner = "systemd-network";
         group = "systemd-network";
+        restartUnits = [ "systemd-networkd.service" ];
       };
 
       networking.nat = {
@@ -121,16 +122,14 @@
           };
 
           wireguardPeers = [
-            /*
-              {
-                # athena-nixos
-                PublicKey = "";
-                AllowedIPs = [
-                  "fd31:bf08:57cb::1/128"
-                  "192.168.10.1/32"
-                ];
-              }
-            */
+            {
+              # athena-nixos
+              PublicKey = publicKey."athena-nixos";
+              AllowedIPs = [
+                "fd31:bf08:57cb::1/128"
+                "192.168.10.1/32"
+              ];
+            }
             {
               # circe-nixos
               PublicKey = publicKey."circe-nixos";
@@ -186,6 +185,11 @@
             }
           ];
         };
+      };
+
+      systemd.services.systemd-networkd = {
+        after = [ "sops-install-secrets.service" ];
+        wants = [ "sops-install-secrets.service" ];
       };
     };
 
