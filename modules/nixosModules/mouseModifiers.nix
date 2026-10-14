@@ -1,10 +1,10 @@
 { inputs, self, ... }: {
-  flake.nixosModules.mouseModifiers = { pkgs, ... }: {
+  flake.nixosModules.mouseModifiers = { pkgs, lib, config, ... }: {
     services.udev.extraRules = ''
       KERNEL=="uinput", GROUP="input", MODE="0660", OPTIONS+="static_node=uinput"
     '';
 
-    systemd.services.mouse-modifiers = {
+    systemd.services.mouse-modifiers = lib.mkIf (config.users.users ? foxtrot) {
       description = "Remap mouse side buttons to Ctrl/Shift via evsieve";
       after = [ "systemd-udevd.service" ];
       wantedBy = [ "multi-user.target" ];

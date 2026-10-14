@@ -592,6 +592,9 @@
           circe-nixos = {
             id = "ECLW26H-2JWNNZX-YUWT42U-CYNARNX-SJRMMXA-XA2I7KD-ATCMTX2-4JXJNAP";
           };
+          athena-nixos = {
+            id = "JKIY2Y5-V62NP54-PUGNOIZ-N3VQ4QY-7LJ4T4T-WEQWEDX-B7RIP74-J24IGQM";
+          };
           dionysus-nixos = {
             id = "AQSHDSY-3I6HO7B-XJTWCSU-5MBSCSL-AU4BWKN-PQUDFE2-YVBZT6R-25G7RAI";
           };
@@ -603,7 +606,7 @@
           "FFXIV" = {
             id = "FFXIV";
             path = "/media/hdd1/services/syncthing/ffxiv";
-            devices = [ "circe-nixos" "nyx-nixos" ];
+            devices = [ "circe-nixos" "nyx-nixos" "dionysus-nixos" "athena-nixos" ];
             ignorePatterns = [
               "!.stignore"
               "!accounts.json"
