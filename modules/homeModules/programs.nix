@@ -1614,6 +1614,7 @@
         "!dalamudConfig.json"
         "!dalamudUI.ini"
         "!launcherUI.ini"
+        "!FFXIV_CHR004000174C7A37AE"
         "pluginConfigs/LightlessSync/tracelog"
         "*"
       ];
@@ -1640,6 +1641,9 @@
             dionysus-nixos = {
               id = "AQSHDSY-3I6HO7B-XJTWCSU-5MBSCSL-AU4BWKN-PQUDFE2-YVBZT6R-25G7RAI";
             };
+            ariadne-nixos = {
+              id = "Z6NPUDI-PZ46LWD-6WJ2AN4-TFTS3ST-VSR4TBS-JSU73RB-MYOPXP7-2ISDWAR";
+            };
             nyx-nixos = {
               id = "T5XG4ZF-FYS5II7-JJH5274-CZF2CDG-QDDTASR-FZH7FCO-TQA6UV2-KDFTYQB";
             };
@@ -1648,7 +1652,7 @@
             "FFXIV" = {
               id = "FFXIV";
               path = "${config.home.homeDirectory}/.xlcore";
-              devices = [ "circe-nixos" "nyx-nixos" "dionysus-nixos" "athena-nixos" ];
+              devices = [ "circe-nixos" "nyx-nixos" "dionysus-nixos" "athena-nixos" "ariadne-nixos" ];
               ignorePatterns = [
                 "!.stignore"
                 "!accounts.json"
@@ -1662,6 +1666,7 @@
                 "!dalamudConfig.json"
                 "!dalamudUI.ini"
                 "!launcherUI.ini"
+                "!FFXIV_CHR004000174C7A37AE"
                 "pluginConfigs/LightlessSync/tracelog"
                 "*"
               ];
