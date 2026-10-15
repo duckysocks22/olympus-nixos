@@ -73,6 +73,7 @@
         "foxtrot"
       ];
 
+      # protectKernelImage breaks Jovian/SteamOS-style boot on this host
       security.protectKernelImage = false;
 
       virtualisation.vmVariantWithDisko = {

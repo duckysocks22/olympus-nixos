@@ -61,6 +61,7 @@
 
     environment.memoryAllocator.provider = "graphene-hardened";
 
+    # kpti breaks some games/proton; kept off intentionally
     security.forcePageTableIsolation = false;
 
     security.apparmor.enable = true;
