@@ -100,10 +100,6 @@
       systemd.services.waydroid-container.wantedBy = lib.mkForce [ ];
       systemd.services.libvirtd.wantedBy = lib.mkForce [ ];
 
-      services.udev.extraRules = ''
-        ACTION=="add", SUBSYSTEM=="pci", ATTR{power/control}="auto"
-      '';
-
       services.tuned = {
         profiles.circe-balanced-battery = {
           main.include = "balanced-battery";
