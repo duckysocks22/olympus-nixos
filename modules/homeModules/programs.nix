@@ -599,7 +599,6 @@
         (wrapNoHardened pkgs.vacuum-tube "VacuumTube")
         (pkgs.olympus.override { celesteWrapper = "steam-run"; })
         pkgs.r2modman
-        pkgs.deadlock-mod-manager
       ];
 
       programs.mangohud = {
