@@ -353,12 +353,6 @@
       config,
       ...
     }:
-    let
-      modelRules = pkgs.fetchurl {
-        url = "https://raw.githubusercontent.com/sisyphusse1-ops/claude-code-pro-pack/refs/heads/main/CLAUDE.md";
-        hash = "sha256-wayXk5qtd+mmKNUPlqKRjyHQGml92kqbng+LTy26GJs=";
-      };
-    in
     {
       imports = [
         (inputs.home-manager-unstable + "/modules/programs/pi-coding-agent.nix")
@@ -378,19 +372,12 @@
             "accounts/fireworks/routers/glm-*"
             "llama.cpp/*"
           ];
-          defaultThinkingLevel = "high";
+          defaultThinkingLevel = "low";
           packages = [
-            "npm:pi-web-access"
-            "npm:pi-subagents"
-            "npm:pi-background-tasks"
-            "npm:rpiv-todo"
-            "npm:pi-simplify"
-            "npm:pi-loop-police"
             "npm:pi-death-loop-guard"
-            "npm:pi-watchdog-supervisor"
-            "npm:pi-btw"
+            "npm:pi-web-access"
+            "npm:@juicesharp/rpiv-todo"
             "npm:@juicesharp/rpiv-ask-user-question"
-            "npm:@getpipher/vision"
             "${inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.pi-agent-modes}"
           ];
           enableInstallTelemetry = false;
@@ -399,10 +386,6 @@
           hideThinkingBlock = true;
           terminal.images = "kitty";
           customUI = true;
-          compaction = {
-            reserveTokens = 2048;
-            keepRecentTokens = 1024;
-          };
         };
 
         models = {
@@ -495,103 +478,49 @@
           notifications.enable = false;
         };
         context = ''
-          ${builtins.readFile modelRules}
+          ## HARD RULES (all repos)
 
-          ## HARD RULES ##
+          - NEVER commit PII to any repository. Secrets are managed exclusively via sops-nix.
+          - NEVER read, modify, or decrypt files under ~/olympus-nixos/secrets/ — sops files
+            are handled by the user alone.
 
-          NEVER include any PII (personally identifiable information) within ANY repository. Secrets MUST be managed via 'sops-nix'.
+          ## Git workflow (all repos)
 
-          NEVER touch any files within the 'secrets\' directory in the repo, modification OR decryption/reading of the sops files is strictly PROHIBITED and will me managed by the user alone.
+          - Run `git pull` at session start, before touching files.
+          - `git add` is fine when needed (e.g. staging new files so flakes can see them).
+            NEVER run `git commit`, `git commit --amend`, or `git push` unless the user asks
+            in that message — stage and stop instead.
+          - Commit messages: Conventional Commits, unless the repo's history shows otherwise.
 
-          # Memory / Persistent Context
+          ## Code style (all repos)
 
-          ## Plugins/Extensions/Skills
+          - No inline comments; explain changes in the commit message.
+          - olympus-nixos: use flake-parts, follow the dendritic layout.
 
-          Before starting any non-trivial task, check the available skills list in
-          your system prompt. If a skill matches the task (even partially), load and
-          follow its SKILL.md before improvising a workflow. Mention when you skipped
-          a matching skill and why.
+          ## Portability
 
-          ## Code Style Preferences
+          - Use the current user's home directory, whoever that is — never hardcode /home/foxtrot.
+            Nix: `config.home.homeDirectory` · Shell: `$HOME`/`~`
 
-          Do not add inline comments to code. Explain changes in commit messages instead.
+          ## olympus-nixos specifics
 
-          When working within the 'olympus-nixos' repo, prefer to use 'flake-parts' and follow allong with the
-          dendritic system layout.
+          - All system/service config lives in repo .nix files; imperative changes won't persist.
+          - Never write to ~/.pi/ or other home-manager-managed paths — they are nix store
+            symlinks. pi-coding-agent config changes go in modules/homeModules/programs.nix.
+          - New files must be `git add`ed — flakes only see tracked files.
+          - Update single flake inputs individually (`nix flake update <input>`), never all at once.
+          - Rebuild with `sudo nixos-rebuild switch --flake ~/olympus-nixos`.
+          - Changes targeting a host other than the current one: dry-build only
+            (`sudo nixos-rebuild dry-build` or `nh os switch --dry`). Never fully build;
+            the user handles real builds.
 
-          ## Session Workflow
+          ## Remote hosts
 
-          At the start of every session, before reading or modifying any files,
-          check that the current repository is up to date:
-
-              git pull
-
-          Do this for any repo being worked in, not just olympus-nixos.
-          This avoids working on stale code and prevents conflicts on push.
-
-          `git add` is allowed when required (e.g. staging a new file before a
-          rebuild). But `git commit`, `git commit --amend`, and `git push` must
-          NEVER be run unless the user has explicitly asked for it in that message.
-          When in doubt, stage the files and stop — describe what would be committed
-          and wait for the instruction.
-
-          ## User Context
-
-          Always use the **current user's** home directory — whoever is running
-          pi-coding-agent at the time. Do NOT hardcode /home/foxtrot.
-
-          - In Nix expressions: use `config.home.homeDirectory`
-          - In shell commands: use $HOME or ~
-          - In reasoning: infer from `whoami` / the active session
-
-          The current deploying user happens to be "foxtrot" (/home/foxtrot),
-          but this should be treated as an example, not a constant.
-
-          ## Nix / Flake Gotchas (olympus-nixos)
-
-          Any configuration of programs/services installed on the system MUST happen via '.nix' files within the repo, nothing can be handled imperatively as those changes will NOT hold.
-
-          Any changes to pi-coding-agents's own permissions, context, agent definition,
-          or settings must be made in the pi-agent-coding module in:
-
-              ~/olympus-nixos/modules/homeModules/programs.nix 
-
-          Do NOT write to ~/.pi/ directly — those are nix store
-          symlinks and writes will fail or be lost on the next rebuild.
-
-          ALL .pi/ files managed by home-manager are symlinks into
-          the nix store and cannot be written to directly.
-
-          After any config change, rebuild:
-
-              sudo nixos-rebuild switch --flake ~/olympus-nixos
-
-          Brand-new files must be `git add`ed before rebuild can see them.
-          Nix flakes only evaluate files tracked by git.
-
-          When updating a flake input, only update that specific input:
-
-              nix flake update <input-name>   # correct
-              nix flake update                # wrong — updates everything
-
-
-          After making changes within the olympus-nixos repo to another system that is not the current host system,
-          run a dry-build for those configurations to make sure they all evaluate properly. MAKE SURE IT"S A DRY BUILD          USING sudo nixos-rebuild dry-build or nh os switch --dry, do NOT fully build ANY systems, the user will handle that.
-
-          When asked for a commit message suggestions, use the 'conventional commits' format unless previous commits
-          in the repo show otherwise.
-
-          ## System/Host Specific Notes
-
-          When performing a task/debugging a system that isn't the current host that you're running on, if needed you can SSH into the various systems via the following:
-            - Athena = 'foxtrot@athena-nixos.vpn.olympus.moe'
-            - Circe = 'foxtrot@circe-nixos.vpn.olympus.moe'
-            - Dionysus = 'deck@dionysus-nixos.vpn.olympus.moe'
-            - Ariadne = 'deck@ariadne-nixos.vpn.olympus.moe'
-            - Nyx = 'server@nyx-nixos.vpn.olympus.moe'
-            - Aether = 'server@aether-nixos.vpn.olympus.moe'
-
-          If the SSH is unsuccessful, that most likely means that the destination machine is offline. If you can try to continue whatever you're doing without needed access to said machine.
+          First check which host you're on; SSH if the target differs:
+          Athena foxtrot@athena-nixos.vpn.olympus.moe · Circe foxtrot@circe-nixos.vpn.olympus.moe ·
+          Dionysus deck@dionysus-nixos.vpn.olympus.moe · Ariadne deck@ariadne-nixos.vpn.olympus.moe ·
+          Nyx server@nyx-nixos.vpn.olympus.moe · Aether server@aether-nixos.vpn.olympus.moe
+          SSH failure usually means the machine is offline — continue without it if possible.
         '';
       };
 
@@ -602,196 +531,31 @@
         let
           readOnlyTools = [
             "ask_user_question"
-            "bigpowers_skill"
-            "bg_delegate"
-            "bg_logs"
-            "bg_result"
-            "bg_status"
-            "bg_wait"
             "codemode"
-            "describe_image"
             "fetch_content"
-            "fusion_investigate"
-            "fusion_reason"
-            "fusion_research"
-            "fusion_validate"
             "get_search_content"
             "source_check"
             "todo"
             "tool_search"
-            "watchdog_alert_main"
-            "watchdog_detect_stuck"
-            "watchdog_list_targets"
-            "watchdog_read_events"
-            "watchdog_steer_subagent"
             "web_enable"
             "web_search"
           ];
+          gitReadOnlyInstructions =
+            "bash IS available in this mode for read-only commands, including read-only git: git log, git status, git diff, git show, git blame. You can and should use these to inspect commit history. Run git commands directly (the repository is the working directory) — never use 'cd ... && ...' chains, semicolon-separated command lists, 'git -C <path>', or output redirects like '2>/dev/null'; the read-only guard rejects those forms. Mutating git commands (add, commit, push, pull, fetch, checkout, restore, etc.) are blocked.";
         in
         builtins.toJSON {
           modes = {
             ask.allowTools = readOnlyTools;
+            ask.thinkingLevel = null;
+            ask.extraInstructions = gitReadOnlyInstructions;
             plan.allowTools = readOnlyTools ++ [ "pi_modes_plan_complete" ];
+            plan.thinkingLevel = null;
+            plan.extraInstructions = gitReadOnlyInstructions;
             review.allowTools = readOnlyTools;
+            review.thinkingLevel = null;
+            review.extraInstructions = gitReadOnlyInstructions;
           };
         };
-    };
-
-  flake.homeModules.opencode =
-    {
-      lib,
-      pkgs,
-      pkgs-unstable,
-      config,
-      ...
-    }:
-    let
-      claudeRules = pkgs.fetchurl {
-        url = "https://raw.githubusercontent.com/sisyphusse1-ops/claude-code-pro-pack/refs/heads/main/CLAUDE.md";
-        hash = "sha256-wayXk5qtd+mmKNUPlqKRjyHQGml92kqbng+LTy26GJs=";
-      };
-
-      homeDir = config.home.homeDirectory;
-    in
-    {
-      programs.opencode = {
-        enable = true;
-        package = pkgs-unstable.opencode;
-
-        settings = {
-          model = "openrouter/z-ai/glm-5.3-flash";
-          small_model = "openrouter/z-ai/glm-5.3-flash";
-          default_agent = "code-reviewer";
-
-          permission = {
-            bash = {
-              "ls *" = "allow";
-              "grep *" = "allow";
-              "find *" = "allow";
-              "git *" = "allow";
-              "stat *" = "allow";
-              "readlink *" = "allow";
-              "ps *" = "allow";
-              "busctl *" = "allow";
-              "curl *" = "allow";
-              "which *" = "allow";
-              "nix *" = "allow";
-              "sudo nix *" = "allow";
-              "nix-instantiate *" = "allow";
-              "nix-store *" = "allow";
-              "nix-build *" = "allow";
-              "nix-shell *" = "allow";
-              "nix-env *" = "allow";
-              "nixos-rebuild *" = "allow";
-              "sudo nixos-rebuild *" = "allow";
-              "home-manager *" = "allow";
-              "systemctl *" = "allow";
-              "sudo systemctl *" = "allow";
-              "journalctl *" = "allow";
-              "sudo journalctl *" = "allow";
-            };
-            read = {
-              "${homeDir}/olympus-nixos/**" = "allow";
-              "/etc/**" = "allow";
-              "/run/**" = "allow";
-              "/nix/store/**" = "allow";
-            };
-            grep = {
-              "${homeDir}/olympus-nixos/**" = "allow";
-            };
-          };
-        };
-
-        context = ''
-          ${builtins.readFile claudeRules}
-
-          # Memory / Persistent Context
-
-          ## Code Style Preferences
-
-          Do not add inline comments to code. Explain changes in commit messages instead.
-
-          ## Session Workflow
-
-          At the start of every session, before reading or modifying any files,
-          check that the current repository is up to date:
-
-              git pull
-
-          Do this for any repo being worked in, not just olympus-nixos.
-          This avoids working on stale code and prevents conflicts on push.
-
-          `git add` is allowed when required (e.g. staging a new file before a
-          rebuild). But `git commit`, `git commit --amend`, and `git push` must
-          NEVER be run unless the user has explicitly asked for it in that message.
-          When in doubt, stage the files and stop — describe what would be committed
-          and wait for the instruction.
-
-          ## User Context
-
-          Always use the **current user's** home directory — whoever is running
-          opencode at the time. Do NOT hardcode /home/foxtrot.
-
-          - In Nix expressions: use `config.home.homeDirectory`
-          - In shell commands: use $HOME or ~
-          - In reasoning: infer from `whoami` / the active session
-
-          The current deploying user happens to be "foxtrot" (/home/foxtrot),
-          but this should be treated as an example, not a constant.
-
-          ## Nix / Flake Gotchas (olympus-nixos)
-
-          Any changes to opencode's own permissions, context, agent definition,
-          or settings must be made in:
-
-              ~/olympus-nixos/home/programs/opencode.nix
-
-          Do NOT write to ~/.config/opencode/ directly — those are nix store
-          symlinks and writes will fail or be lost on the next rebuild.
-
-          ALL .config/opencode/ files managed by home-manager are symlinks into
-          the nix store and cannot be written to directly.
-
-          After any config change, rebuild:
-
-              sudo nixos-rebuild switch --flake ~/olympus-nixos
-
-          Brand-new files must be `git add`ed before rebuild can see them.
-          Nix flakes only evaluate files tracked by git.
-
-          When updating a flake input, only update that specific input:
-
-              nix flake update <input-name>   # correct
-              nix flake update                # wrong — updates everything
-        '';
-
-        agents = {
-          code-reviewer = ''
-            ---
-            description: Plan mode - think and propose a plan, then hand off to build for execution
-            mode: primary
-            model: openrouter/z-ai/glm-5.3-flash
-            permission:
-              edit: deny
-              read:
-                "${homeDir}/**": allow
-                "/home/server/**": allow
-                "/nix/store/**": allow
-              external_directory:
-                "${homeDir}/**": allow
-                "/home/server/**": allow
-                "/nix/store/**": allow
-            ---
-
-            You are a planner. Think step by step and come up with a plan.
-            Ask the user questions if anything is unclear. Do not edit
-            files. Do not write code. Present your plan for approval
-            before doing any work.
-
-            You are a lesbian and have a wonderful wife whom you love.
-          '';
-        };
-      };
     };
 
   flake.homeModules.launchers =
