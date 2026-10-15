@@ -11,10 +11,10 @@
         group = "remotebuild";
         extraGroups = [ "nixbld" ];
         openssh.authorizedKeys.keys = [
-          (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAVF7dMsquwXmzdfKtFuD5KJ7SLeftFhl5Ezh1Rf0Aej root@dionysus-nixos")
-          (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMFCqhCYgJNuZ0+3oJFFmEjmUNSBPhLSzZfuHWjY2ivc root@ariadne-nixos")
-          (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP0iFfMsPQAbz7QOqgBnZQsJPjVXXq9djMm23+2mnETB root@aether-nixos")
-          (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIKfMy/c6fka9VpW0hv6eJ7sMKOjDgSblpRcBUxDUvDlo root@circe-nixos")
+          (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHc4hvx56beKhVEEPfvYHv+GgojvVXOXzfIybXDIJXr0 remotebuild@circe-nixos")
+          (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPtK5hZn0N17fhETLFPaJfiCD/1/a/zsjBKHA+I+wLOT remotebuild@ariadne-nixos")
+          (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGR9cfncJ8YliZZ6RXd1oEgnqKBmldZ9XTyFG3pHUj5i remotebuild@aether-nixos")
+          (nixServeKey "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGtfsezbfyGE2hzH8Crp9ve8z6uypz7g1//sOLF9lP+j remotebuild@circe-nixos")
         ];
       };
       users.groups.remotebuild = { };
@@ -31,6 +31,12 @@
         if builtins.elem config.networking.hostName [ "aether-nixos" "circe-nixos" ] then "192.168.10.253" else "172.17.100.1";
     in
     {
+      sops.secrets."remotebuild/privateKey" = {
+        sopsFile = ../../secrets/${config.networking.hostName}.yaml;
+        mode = "0600";
+        restartUnits = [ "nix-daemon.service" ];
+      };
+
       nix.distributedBuilds = true;
       nix.settings.builders-use-substitutes = true;
 
@@ -47,7 +53,7 @@
           mkMachine = hostName: speedFactor: {
             inherit hostName speedFactor;
             sshUser = "remotebuild";
-            sshKey = "/etc/ssh/ssh_host_ed25519_key";
+            sshKey = config.sops.secrets."remotebuild/privateKey".path;
             systems = [ "x86_64-linux" ];
             maxJobs = 8;
             supportedFeatures = [

@@ -1,32 +1,34 @@
 { inputs, self, ... }:
 {
-  flake.homeModules.foxtrotSops = { inputs, config, ... }: {
-    imports = [ inputs.sops-nix.homeModules.sops ];
+  flake.homeModules.foxtrotSops =
+    { inputs, config, osConfig, ... }:
+    let
+      hostName = osConfig.networking.hostName;
+    in
+    {
+      imports = [ inputs.sops-nix.homeModules.sops ];
 
-    sops.defaultSopsFile = ../../secrets/homeSecrets.yaml;
-    sops.defaultSopsFormat = "yaml";
-    
-    sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
+      sops.defaultSopsFile = ../../secrets/homeSecrets.yaml;
+      sops.defaultSopsFormat = "yaml";
 
-    sops.secrets."atuin/key" = { };
-    sops.secrets."syncthing/pass" = { };
-    
-    sops.secrets."fireworks/account-id" = { };
-    sops.secrets."fireworks/api-key" = { };
+      sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
 
-    sops.secrets."syncthing/athena-nixos/cert" = { };
-    sops.secrets."syncthing/athena-nixos/key" = { };
+      sops.secrets."atuin/key" = { };
+      sops.secrets."syncthing/pass" = { };
 
-    sops.secrets."syncthing/circe-nixos/cert" = { };
-    sops.secrets."syncthing/circe-nixos/key" = { };
-  };
+      sops.secrets."fireworks/account-id" = { };
+      sops.secrets."fireworks/api-key" = { };
+
+      sops.secrets."syncthing/${hostName}/cert".sopsFile = ../../secrets/${hostName}.yaml;
+      sops.secrets."syncthing/${hostName}/key".sopsFile = ../../secrets/${hostName}.yaml;
+    };
 
   flake.homeModules.serverSops = { inputs, config, ... }: {
     imports = [ inputs.sops-nix.homeModules.sops ];
 
     sops.defaultSopsFile = ../../secrets/homeSecrets.yaml;
     sops.defaultSopsFormat = "yaml";
-    
+
     sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
 
     sops.secrets."atuin/key" = { };
@@ -35,25 +37,26 @@
     sops.secrets."fireworks/api-key" = { };
   };
 
-  flake.homeModules.deckSops = { inputs, config, ... }: {
-    imports = [ inputs.sops-nix.homeModules.sops ];
+  flake.homeModules.deckSops =
+    { inputs, config, osConfig, ... }:
+    let
+      hostName = osConfig.networking.hostName;
+    in
+    {
+      imports = [ inputs.sops-nix.homeModules.sops ];
 
-    sops.defaultSopsFile = ../../secrets/homeSecrets.yaml;
-    sops.defaultSopsFormat = "yaml";
-    
-    sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
+      sops.defaultSopsFile = ../../secrets/homeSecrets.yaml;
+      sops.defaultSopsFormat = "yaml";
 
-    sops.secrets."atuin/key" = { };
-    sops.secrets."syncthing/pass" = { };
+      sops.age.keyFile = "${config.home.homeDirectory}/.config/sops/age/keys.txt";
 
-    sops.secrets."fireworks/account-id" = { };
-    sops.secrets."fireworks/api-key" = { };
+      sops.secrets."atuin/key" = { };
+      sops.secrets."syncthing/pass" = { };
 
-    sops.secrets."syncthing/dionysus-nixos/cert" = { };
-    sops.secrets."syncthing/dionysus-nixos/key" = { };
+      sops.secrets."fireworks/account-id" = { };
+      sops.secrets."fireworks/api-key" = { };
 
-    sops.secrets."syncthing/ariadne-nixos/cert" = { };
-    sops.secrets."syncthing/ariadne-nixos/key" = { };
-
-  };
+      sops.secrets."syncthing/${hostName}/cert".sopsFile = ../../secrets/${hostName}.yaml;
+      sops.secrets."syncthing/${hostName}/key".sopsFile = ../../secrets/${hostName}.yaml;
+    };
 }

@@ -7,7 +7,7 @@
     users.users.foxtrot = {
       isNormalUser = true;
       home = "/home/foxtrot";
-      hashedPassword = "$y$j9T$2hwNZDEGyC/9B2eXztvxA0$HBU2ahHjb1FVCQjGIBbAEoqJlBe1/yzCq/DdSIfyg36";
+      hashedPasswordFile = config.sops.secrets."users/foxtrot".path;
       extraGroups = [
         "audio"
         "dailout"
@@ -77,6 +77,7 @@
           run ${pkgs.systemd}/bin/systemctl --user restart xdg-desktop-portal.service
         fi
       '';
+      };
     };
   };
 
@@ -95,7 +96,7 @@
       users.users.server = {
         isNormalUser = true;
         home = "/home/server";
-        initialHashedPassword = "$y$j9T$0OK5hvt8iD98PRltJfZPa.$8dFOtgIgkxdI6roz6yQoxg.NdJV95rheMlIo/FhSgT.";
+        hashedPasswordFile = config.sops.secrets."users/server".path;
         extraGroups = [
           "audio"
           "input"
@@ -179,7 +180,7 @@
       ];
     };
 
-  flake.nixosModules.deck = { inputs, pkgs, ... }: {
+  flake.nixosModules.deck = { inputs, pkgs, config, ... }: {
     imports = [
       inputs.home-manager-unstable.nixosModules.home-manager
     ];
@@ -187,7 +188,7 @@
     users.users.deck = {
       isNormalUser = true;
       home = "/home/deck";
-      hashedPassword = "$y$j9T$2hwNZDEGyC/9B2eXztvxA0$HBU2ahHjb1FVCQjGIBbAEoqJlBe1/yzCq/DdSIfyg36";
+      hashedPasswordFile = config.sops.secrets."users/deck".path;
       extraGroups = [
         "audio"
         "input"

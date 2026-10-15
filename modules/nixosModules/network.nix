@@ -145,7 +145,7 @@
           UMask = "0077";
         };
         script = ''
-          content="$(cat ${config.sops.secrets."bazinga/pass".path})"
+          content="$(cat ${config.sops.secrets."networks/bazinga/pass".path})"
           case "$content" in
             BAZINGA_PSK=*) ;;
             *) content="BAZINGA_PSK=$content" ;;
@@ -270,6 +270,7 @@
     {
       config = lib.mkIf (builtins.elem config.networking.hostName (builtins.attrNames IPv4Address)) {
         sops.secrets."wireguard/${config.networking.hostName}/privateKey" = {
+          sopsFile = ../../secrets/${config.networking.hostName}.yaml;
           mode = "640";
           owner = "systemd-network";
           group = "systemd-network";
@@ -574,18 +575,21 @@
     "hermes" = "DWvPMpjBkUsCUshoL8BlIlKc/l2j7u2I8Up9b09UvA0=";
   };
 
-  flake.nixosModules.syncthing = { config, ... }: let
-    address = {
-      "nyx-nixos" = "192.168.10.253";
-    };
-  in {
-    services.syncthing = {
-      enable = true;
-      overrideFolders = true;
-      openDefaultPorts = true;
+  flake.nixosModules.syncthing = { config, ... }:
+    let
+      address = {
+        "nyx-nixos" = "192.168.10.253";
+      };
+      hostSecrets = ../../secrets/${config.networking.hostName}.yaml;
+    in
+    {
+      services.syncthing = {
+        enable = true;
+        overrideFolders = true;
+        openDefaultPorts = true;
 
-      cert = config.sops.secrets."syncthing/${config.networking.hostName}/cert".path;
-      key = config.sops.secrets."syncthing/${config.networking.hostName}/key".path;
+        cert = config.sops.secrets."syncthing/${config.networking.hostName}/cert".path;
+        key = config.sops.secrets."syncthing/${config.networking.hostName}/key".path;
 
       settings = {
         devices = {
@@ -634,6 +638,19 @@
       guiPasswordFile = "${config.sops.secrets."syncthing/pass".path}";
 
       settings.gui.user = "foxtrot";
+    };
+
+    sops.secrets."syncthing/${config.networking.hostName}/cert" = {
+      owner = "syncthing";
+      sopsFile = hostSecrets;
+    };
+    sops.secrets."syncthing/${config.networking.hostName}/key" = {
+      owner = "syncthing";
+      sopsFile = hostSecrets;
+    };
+    sops.secrets."syncthing/pass" = {
+      owner = "syncthing";
+      sopsFile = ../../secrets/common.yaml;
     };
   };
 }
