@@ -1,5 +1,32 @@
-{ inputs, self, ... }: {
-  flake.nixosModules.foxtrot = { inputs, pkgs, ... }: {
+{ inputs, self, ... }:
+let
+  homeManagerCommon = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    extraSpecialArgs = {
+      inherit inputs;
+      pkgs-unstable = import inputs.nixpkgs-unstable {
+        localSystem = "x86_64-linux";
+        config.allowUnfree = true;
+      };
+    };
+  };
+
+  mkSessionVariables =
+    config:
+    {
+      EDITOR = "nvim";
+      VISUAL = "nvim";
+      SCREENDIR = "${config.xdg.dataHome}/screen";
+      _JAVA_OPTIONS = "-Djava.util.prefs.userRoot=${config.xdg.dataHome}/java";
+      XDG_CONFIG_HOME = config.xdg.configHome;
+      XDG_CACHE_HOME = config.xdg.cacheHome;
+      XDG_DATA_HOME = config.xdg.dataHome;
+      XDG_STATE_HOME = config.xdg.stateHome;
+    };
+in
+{
+  flake.nixosModules.foxtrot = { inputs, pkgs, config, ... }: {
     imports = [
       inputs.home-manager.nixosModules.home-manager
     ];
@@ -24,17 +51,9 @@
 
     services.displayManager.sessionPackages = [ pkgs.niri inputs.doors.packages.${pkgs.stdenv.hostPlatform.system}.doors ];
 
-    home-manager.useGlobalPkgs = true;
-    home-manager.useUserPackages = true;
-    home-manager.extraSpecialArgs = {
-      inherit inputs;
-      pkgs-unstable = import inputs.nixpkgs-unstable {
-        localSystem = "x86_64-linux";
-        config.allowUnfree = true;
-      };
-    };
+    home-manager = homeManagerCommon // {
 
-    home-manager.users.foxtrot = { config, ... }: {
+      users.foxtrot = { config, ... }: {
       imports = [
         inputs.self.homeModules.functions
         inputs.self.homeModules.common
@@ -58,16 +77,7 @@
         username = "foxtrot";
         homeDirectory = "/home/foxtrot";
         stateVersion = "26.05";
-        sessionVariables = {
-          EDITOR = "nvim";
-          VISUAL = "nvim";
-          SCREENDIR = "${config.xdg.dataHome}/screen";
-          _JAVA_OPTIONS = "-Djava.util.prefs.userRoot=${config.xdg.dataHome}/java";
-          XDG_CONFIG_HOME = config.xdg.configHome;
-          XDG_CACHE_HOME = config.xdg.cacheHome;
-          XDG_DATA_HOME = config.xdg.dataHome;
-          XDG_STATE_HOME = config.xdg.stateHome;
-        };
+        sessionVariables = mkSessionVariables config;
       };
 
       systemd.user.startServices = "sd-switch";
@@ -126,17 +136,9 @@
 
       users.groups.share = { };
 
-      home-manager.useGlobalPkgs = true;
-      home-manager.useUserPackages = true;
-      home-manager.extraSpecialArgs = {
-        inherit inputs;
-        pkgs-unstable = import inputs.nixpkgs-unstable {
-          localSystem = "x86_64-linux";
-          config.allowUnfree = true;
-        };
-      };
+      home-manager = homeManagerCommon // {
 
-      home-manager.users.server = { config, ... }: {
+        users.server = { config, ... }: {
         imports = [
           inputs.self.homeModules.functions
           inputs.self.homeModules.common
@@ -153,18 +155,10 @@
           username = "server";
           homeDirectory = "/home/server";
           stateVersion = "26.05";
-          sessionVariables = {
-            EDITOR = "nvim";
-            VISUAL = "nvim";
-            SCREENDIR = "${config.xdg.dataHome}/screen";
-            _JAVA_OPTIONS = "-Djava.util.prefs.userRoot=${config.xdg.dataHome}/java";
-            XDG_CONFIG_HOME = config.xdg.configHome;
-            XDG_CACHE_HOME = config.xdg.cacheHome;
-            XDG_DATA_HOME = config.xdg.dataHome;
-            XDG_STATE_HOME = config.xdg.stateHome;
-          };
+          sessionVariables = mkSessionVariables config;
         };
         systemd.user.startServices = "sd-switch";
+        };
       };
 
       security.sudo.extraRules = [
@@ -203,23 +197,22 @@
       ];
     };
 
-    home-manager.useGlobalPkgs = true;
-    home-manager.useUserPackages = true;
-    home-manager.extraSpecialArgs = {
-      inputs = inputs // {
-        nixpkgs = inputs.nixpkgs-unstable;
-        nixvim = inputs.nixvim-unstable;
-      };
-      pkgs-unstable = import inputs.nixpkgs-unstable {
-        localSystem = "x86_64-linux";
-        config.allowUnfree = true;
-      };
-    };
-
     programs.fish.enable = true;
 
-    home-manager.users.deck = { config, ... }: {
-      imports = [
+    home-manager = homeManagerCommon // {
+      extraSpecialArgs = {
+        inputs = inputs // {
+          nixpkgs = inputs.nixpkgs-unstable;
+          nixvim = inputs.nixvim-unstable;
+        };
+        pkgs-unstable = import inputs.nixpkgs-unstable {
+          localSystem = "x86_64-linux";
+          config.allowUnfree = true;
+        };
+      };
+
+      users.deck = { config, ... }: {
+        imports = [
         inputs.self.homeModules.functions
         inputs.self.homeModules.browsers
         inputs.self.homeModules.launchers
@@ -275,18 +268,11 @@
         username = "deck";
         homeDirectory = "/home/deck";
         stateVersion = "26.05";
-        sessionVariables = {
-          EDITOR = "nvim";
-          VISUAL = "nvim";
-          SCREENDIR = "${config.xdg.dataHome}/screen";
-          XDG_CONFIG_HOME = config.xdg.configHome;
-          XDG_CACHE_HOME = config.xdg.cacheHome;
-          XDG_DATA_HOME = config.xdg.dataHome;
-          XDG_STATE_HOME = config.xdg.stateHome;
-        };
+        sessionVariables = mkSessionVariables config;
       };
 
       systemd.user.startServices = "sd-switch";
+      };
     };
   };
 }
