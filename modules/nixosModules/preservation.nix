@@ -37,6 +37,11 @@
               directory = "/var/lib/nixos";
               inInitrd = true;
             }
+            {
+              directory = "/var/lib/sops-nix";
+              inInitrd = true;
+              mode = "0700";
+            }
             "/var/cache/mullvad-vpn"
             "/var/log"
             "/etc/mullvad-vpn"

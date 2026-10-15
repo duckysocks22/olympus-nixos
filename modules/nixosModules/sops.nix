@@ -25,7 +25,9 @@
       sops.defaultSopsFormat = "yaml";
       sops.useSystemdActivation = true;
 
-      sops.age.keyFile = "${config.users.users.foxtrot.home}/.config/sops/age/keys.txt";
+      sops.age.keyFile = if config.preservation.enable or false
+        then "/var/lib/sops-nix/key.txt"
+        else "${config.users.users.foxtrot.home}/.config/sops/age/keys.txt";
 
       sops.secrets."samba/local" = {
         sopsFile = common;
@@ -159,7 +161,9 @@
       sopsFile = serverShared;
       neededForUsers = true;
     };
-    sops.secrets."users/foxtrot" = { };
+    sops.secrets."users/foxtrot" = {
+      neededForUsers = true;
+    };
     sops.secrets."caddy/environment" = {
       sopsFile = serverShared;
     };
@@ -258,7 +262,9 @@
     sops.defaultSopsFormat = "yaml";
     sops.useSystemdActivation = true;
 
-    sops.age.keyFile = "${config.users.users.deck.home}/.config/sops/age/keys.txt";
+    sops.age.keyFile = if config.preservation.enable or false
+      then "/var/lib/sops-nix/key.txt"
+      else "${config.users.users.deck.home}/.config/sops/age/keys.txt";
 
     sops.secrets."samba/local" = {
       mode = "0440";
