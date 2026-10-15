@@ -14,37 +14,41 @@
         awk '/^-----BEGIN CERTIFICATE-----$/,/^-----END CERTIFICATE-----$/' \
           ${pkgs.cacert}/etc/ssl/certs/ca-bundle.crt > $out
       '';
+      common = ../../secrets/common.yaml;
     in
     {
       imports = [
         inputs.sops-nix.nixosModules.sops
       ];
 
-      sops.defaultSopsFile = ../../secrets/secrets.yaml;
+      sops.defaultSopsFile = ../../secrets/${config.networking.hostName}.yaml;
       sops.defaultSopsFormat = "yaml";
       sops.useSystemdActivation = true;
 
       sops.age.keyFile = "${config.users.users.foxtrot.home}/.config/sops/age/keys.txt";
 
-      sops.secrets."samba/local".mode = "0440";
-      sops.secrets."samba/local".owner = config.users.users.foxtrot.name;
-      sops.secrets."samba/local".group = config.users.users.foxtrot.group;
-
-      #sops.secrets."syncthing/circe/cert" = { owner = "syncthing"; path = "/run/secrets/syncthing/circe/cert.pem"; };
-      #sops.secrets."syncthing/circe/key" = { owner = "syncthing"; path = "/run/secrets/syncthing/circe/key.pem"; };
-
-      sops.secrets."netbird/client-key" = {
-        owner = "foxtrot";
+      sops.secrets."samba/local" = {
+        sopsFile = common;
+        mode = "0440";
+        owner = config.users.users.foxtrot.name;
+        group = config.users.users.foxtrot.group;
       };
 
-      sops.secrets."work/network" = { };
-      sops.secrets."work/user" = { };
-      sops.secrets."work/pass" = { };
-      sops.secrets."work/domain" = { };
+      sops.secrets."users/foxtrot" = {
+        neededForUsers = true;
+      };
 
-      sops.secrets."bazinga/pass" = { };
+      sops.secrets."networks/work/network".sopsFile = common;
+      sops.secrets."networks/work/user".sopsFile = common;
+      sops.secrets."networks/work/pass".sopsFile = common;
+      sops.secrets."networks/work/domain".sopsFile = common;
 
-      sops.secrets."attic/client-config".owner = config.users.users.foxtrot.name;
+      sops.secrets."networks/bazinga/pass".sopsFile = common;
+
+      sops.secrets."attic/client-config" = {
+        owner = config.users.users.foxtrot.name;
+        sopsFile = common;
+      };
 
       systemd.services.iwd-hidden-profile = {
         description = "Dynamically generate IWD profile for Work Network";
@@ -60,10 +64,10 @@
         };
 
         script = ''
-                SSID=$(cat ${config.sops.secrets."work/network".path})
-                USER=$(cat ${config.sops.secrets."work/user".path})
-                PASS=$(cat ${config.sops.secrets."work/pass".path})
-                DOMAIN=$(cat ${config.sops.secrets."work/domain".path})
+                SSID=$(cat ${config.sops.secrets."networks/work/network".path})
+                USER=$(cat ${config.sops.secrets."networks/work/user".path})
+                PASS=$(cat ${config.sops.secrets."networks/work/pass".path})
+                DOMAIN=$(cat ${config.sops.secrets."networks/work/domain".path})
 
                 TARGET_FILE="/var/lib/iwd/$SSID.8021x"
 
@@ -88,12 +92,17 @@
       };
     };
 
-  flake.nixosModules.aetherSops = { inputs, config, ... }: {
-    imports = [
-      inputs.sops-nix.nixosModules.sops
-    ];
+  flake.nixosModules.aetherSops = { inputs, config, ... }:
+    let
+      serverShared = ../../secrets/server-shared.yaml;
+      common = ../../secrets/common.yaml;
+    in
+    {
+      imports = [
+        inputs.sops-nix.nixosModules.sops
+      ];
 
-    sops.defaultSopsFile = ../../secrets/secrets.yaml;
+      sops.defaultSopsFile = ../../secrets/aether-nixos.yaml;
     sops.defaultSopsFormat = "yaml";
     sops.useSystemdActivation = true;
 
@@ -101,51 +110,65 @@
 
     sops.secrets."users/server" = {
       neededForUsers = true;
+      sopsFile = serverShared;
     };
 
-    sops.secrets."caddy/environment" = { };
+    sops.secrets."caddy/environment".sopsFile = serverShared;
     sops.secrets."caddy/ca-cert" = {
       owner = "caddy";
     };
 
-    sops.secrets."attic/client-config".owner = config.users.users.server.name;
+    sops.secrets."attic/client-config" = {
+      owner = config.users.users.server.name;
+      sopsFile = common;
+    };
   };
 
-  flake.nixosModules.serverSops = { inputs, config, ... }: {
+  flake.nixosModules.serverSops = { inputs, config, ... }:
+    let
+      serverShared = ../../secrets/server-shared.yaml;
+      common = ../../secrets/common.yaml;
+    in
+    {
     imports = [
       inputs.sops-nix.nixosModules.sops
     ];
 
-    sops.defaultSopsFile = ../../secrets/secrets.yaml;
+    sops.defaultSopsFile = ../../secrets/nyx-nixos.yaml;
     sops.defaultSopsFormat = "yaml";
     sops.useSystemdActivation = true;
 
     sops.age.keyFile = "${config.users.users.server.home}/.config/sops/age/keys.txt";
-
-    #sops.secrets."webdav/copyparty" = {
-    #  path = "/etc/davfs2/secrets";
-    #};
 
     sops.secrets."atuin/env" = { };
     sops.secrets."atuin/ai-env" = { };
 
     sops.secrets."homepage/secrets" = { };
 
-    sops.secrets."llama-cpp/api-key" = { mode = "644"; };
+    sops.secrets."llama-cpp/api-key" = {
+      mode = "0440";
+      owner = config.users.users.server.name;
+      group = config.users.users.server.group;
+    };
     sops.secrets."finance-summary/env" = { };
 
     sops.secrets."samba-nyx/socks" = { };
     sops.secrets."samba-nyx/serena" = { };
     sops.secrets."samba-nyx/zia" = { };
-    sops.secrets."users/server" = { };
+    sops.secrets."users/server" = {
+      sopsFile = serverShared;
+      neededForUsers = true;
+    };
     sops.secrets."users/foxtrot" = { };
-    sops.secrets."netbird/routing-key" = { };
-    sops.secrets."caddy/environment" = { };
+    sops.secrets."caddy/environment" = {
+      sopsFile = serverShared;
+    };
     sops.secrets."adguardhome/environment" = { };
     sops.secrets."attic/server-token" = { };
-    sops.secrets."attic/client-config".owner = config.users.users.server.name;
-    sops.secrets."deadlock/db-password" = { };
-    sops.secrets."vaultwarden/env" = { };
+    sops.secrets."attic/client-config" = {
+      owner = config.users.users.server.name;
+      sopsFile = common;
+    };
     sops.secrets."forgejo-runner/environment" = { };
     sops.secrets."navidrome/environment" = { };
     sops.secrets."media/freshrss" = {
@@ -163,37 +186,20 @@
     sops.secrets."mollysocket/vapid_privkey" = {
       owner = "mollysocket";
     };
-
-    sops.secrets."media/tdarr/server_env" = {
-      owner = "tdarr";
-    };
-    sops.secrets."media/tdarr/node_env" = {
-      owner = "tdarr";
-    };
-
-    sops.secrets."adguardhome/domain_cert" = {
-      owner = "server";
-      path = "/media/hdd1/certs/dns.puppygirls.net/dns.puppygirls.net.crt";
-    };
-    sops.secrets."adguardhome/domain_key" = {
-      owner = "server";
-      path = "/media/hdd1/certs/dns.puppygirls.net/dns.puppygirls.net.key";
-    };
-
     sops.secrets."factorio_user" = {
-      sopsFile = ../../secrets/otherSecrets.json;
+      sopsFile = ../../secrets/nyx-nixos.json;
 
       format = "json";
     };
 
     sops.secrets."factorio_token" = {
-      sopsFile = ../../secrets/otherSecrets.json;
+      sopsFile = ../../secrets/nyx-nixos.json;
 
       format = "json";
     };
 
     sops.secrets."factorio_game_password" = {
-      sopsFile = ../../secrets/otherSecrets.json;
+      sopsFile = ../../secrets/nyx-nixos.json;
 
       format = "json";
     };
@@ -211,30 +217,27 @@
       restartUnits = [ "ofsm.service" ];
     };
 
-    sops.secrets."users/server".neededForUsers = true;
+    sops.secrets."samba-nyx/socks" = {
+      mode = "0440";
+      owner = config.users.users.server.name;
+      group = config.users.users.server.group;
+    };
 
-    #sops.secrets."copyparty/foxtrot" = {
-    #  mode = "0440";
-    #  owner = "copyparty";
-    #};
+    sops.secrets."samba-nyx/serena" = {
+      mode = "0440";
+      owner = config.users.users.server.name;
+      group = config.users.users.server.group;
+    };
 
-    sops.secrets."samba-nyx/socks".mode = "0440";
-    sops.secrets."samba-nyx/socks".owner = config.users.users.server.name;
-    sops.secrets."samba-nyx/socks".group = config.users.users.server.group;
-
-    sops.secrets."samba-nyx/serena".mode = "0440";
-    sops.secrets."samba-nyx/serena".owner = config.users.users.server.name;
-    sops.secrets."samba-nyx/serena".group = config.users.users.server.group;
-
-    sops.secrets."samba-nyx/zia".mode = "0440";
-    sops.secrets."samba-nyx/zia".owner = config.users.users.server.name;
-    sops.secrets."samba-nyx/zia".group = config.users.users.server.group;
-
-    #sops.secrets."netbird/routing-key".owner = "netbird";
-    #sops.secrets."netbird/routing-key".group = "netbird";
+    sops.secrets."samba-nyx/zia" = {
+      mode = "0440";
+      owner = config.users.users.server.name;
+      group = config.users.users.server.group;
+    };
 
     sops.secrets."syncthing/pass" = {
       owner = "syncthing";
+      sopsFile = common;
     };
 
     sops.secrets."syncthing/nyx-nixos/cert" = { };
@@ -242,23 +245,39 @@
 
   };
 
-  flake.nixosModules.deckSops = { inputs, config, ... }: {
+  flake.nixosModules.deckSops = { inputs, config, ... }:
+    let
+      common = ../../secrets/common.yaml;
+    in
+    {
     imports = [
       inputs.sops-nix.nixosModules.sops
     ];
 
-    sops.defaultSopsFile = ../../secrets/secrets.yaml;
+    sops.defaultSopsFile = ../../secrets/${config.networking.hostName}.yaml;
     sops.defaultSopsFormat = "yaml";
     sops.useSystemdActivation = true;
 
     sops.age.keyFile = "${config.users.users.deck.home}/.config/sops/age/keys.txt";
 
-    sops.secrets."samba/local".mode = "0440";
-    sops.secrets."samba/local".owner = config.users.users.deck.name;
-    sops.secrets."samba/local".group = config.users.users.deck.group;
+    sops.secrets."samba/local" = {
+      mode = "0440";
+      owner = config.users.users.deck.name;
+      group = config.users.users.deck.group;
+      sopsFile = common;
+    };
 
-    sops.secrets."bazinga/pass" = { };
+    sops.secrets."networks/bazinga/pass" = {
+      sopsFile = common;
+    };
 
-    sops.secrets."attic/client-config".owner = config.users.users.deck.name;
+    sops.secrets."attic/client-config" = {
+      owner = config.users.users.deck.name;
+      sopsFile = common;
+    };
+
+    sops.secrets."users/deck" = {
+      neededForUsers = true;
+    };
   };
 }

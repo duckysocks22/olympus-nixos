@@ -4,9 +4,53 @@ keys:
   - &server_nyx age1upa07ee3tlz5saqlfl5qhzjjrxeq28yprpuw2qjs4v6xrc890gtq56xkr5
   - &server_aether age1jjhhy42q9tvm8n7jhdg2lutf55ekp2yxh3277fenuu97cwar2qwskjuz9y
   - &laptop_circe age147r3y7lukp6set6f8kpsf50x28gusx8qtutl7jezvnwwk2hwqgrqa723lv
-  - &console_ariadne age1ul2wd49a3q79fg60mwsregskykvmvpenvf5wd6xamt4akznrmc5qv8tv8l
-  - &console_dionysus age1fskrcvck7v6tgsvm98fj6fmjeyn2c40vv9m4kj2vv29hlav8kumszwvgtc
+  - &console_ariadne age1e590rdac5fsg3tx48ms79qg6lc27pr58zvf88mc389lsk8t273gq4pzdam
+  - &console_dionysus age1jqjklfm2g7pfv0t70whqh5l589ltscc3eugg88ntecf63qe4g42stxl34s
 creation_rules:
+  # Shared by every host
+  - path_regex: secrets/common\.yaml$
+    key_groups:
+    - age:
+      - *desktop_athena
+      - *desktop_athena_host
+      - *server_nyx
+      - *server_aether
+      - *laptop_circe
+      - *console_ariadne
+      - *console_dionysus
+  # Shared only by the two servers
+  - path_regex: secrets/server-shared\.yaml$
+    key_groups:
+    - age:
+      - *server_nyx
+      - *server_aether
+  # Single-host files: only that host's key can decrypt
+  - path_regex: secrets/athena-nixos\.yaml$
+    key_groups:
+    - age:
+      - *desktop_athena
+      - *desktop_athena_host
+  - path_regex: secrets/circe-nixos\.yaml$
+    key_groups:
+    - age:
+      - *laptop_circe
+  - path_regex: secrets/ariadne-nixos\.yaml$
+    key_groups:
+    - age:
+      - *console_ariadne
+  - path_regex: secrets/dionysus-nixos\.yaml$
+    key_groups:
+    - age:
+      - *console_dionysus
+  - path_regex: secrets/nyx-nixos\.(yaml|json)$
+    key_groups:
+    - age:
+      - *server_nyx
+  - path_regex: secrets/aether-nixos\.yaml$
+    key_groups:
+    - age:
+      - *server_aether
+  # Legacy fallback: homeSecrets.yaml and any remaining root-level secret files
   - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:
     - age:
