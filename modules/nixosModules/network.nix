@@ -20,12 +20,13 @@
         "ariadne-nixos" = "true";
         "dionysus-nixos" = "true";
       };
-      ethDevice = {
-        "athena-nixos" = "";
-        "circe-nixos" = "null";
-        "dionysus-nixos" = "null";
+      ethDevice = lib.filterAttrs (_: v: v != null) {
         "ariadne-nixos" = "enp5s0";
+        "athena-nixos" = null;
+        "circe-nixos" = null;
+        "dionysus-nixos" = null;
       };
+      hasWiredEth = builtins.hasAttr config.networking.hostName ethDevice;
       wifiRecover = pkgs.writeShellScript "wifi-recover" ''
         mode="$1"
         nm=${config.networking.networkmanager.package}/bin/nmcli
@@ -118,7 +119,7 @@
               };
             };
           };
-          unmanaged = [ ethDevice.${config.networking.hostName} ];
+          unmanaged = lib.optionals hasWiredEth [ ethDevice.${config.networking.hostName} ];
         };
         firewall = {
           allowedTCPPorts = [ 4646 8384 ];
@@ -199,6 +200,8 @@
 
       systemd.network = {
         enable = true;
+      }
+      // lib.optionalAttrs hasWiredEth {
         networks."30-wired" = {
           matchConfig.Name = ethDevice.${config.networking.hostName};
           address = [ staticIp.${config.networking.hostName} ];
@@ -424,7 +427,6 @@
           8082
           8123
           8384
-          8443
           853
           854
           25565
@@ -492,6 +494,9 @@
           overalljails = true;
         };
         jails = {
+          sshd.settings = {
+            enabled = true;
+          };
         };
       };
     };
