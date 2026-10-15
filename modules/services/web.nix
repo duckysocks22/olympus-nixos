@@ -5,10 +5,8 @@
       inputs.self.nixosModules.adguardhome
       inputs.self.nixosModules.avahi
       inputs.self.nixosModules.atticd
-      inputs.self.nixosModules.deadlockPostgres
       inputs.self.nixosModules.ntfy
       inputs.self.nixosModules.mollysocket
-      inputs.self.nixosModules.vaultwarden
     ];
   };
 
@@ -40,6 +38,7 @@
     in
     {
       sops.secrets."wireguard/${config.networking.hostName}/privateKey" = {
+        sopsFile = ../../secrets/${config.networking.hostName}.yaml;
         mode = "640";
         owner = "systemd-network";
         group = "systemd-network";
@@ -190,40 +189,6 @@
       systemd.services.systemd-networkd = {
         after = [ "sops-install-secrets.service" ];
         wants = [ "sops-install-secrets.service" ];
-      };
-    };
-
-  flake.nixosModules.vaultwarden =
-    { config, pkgs, ... }:
-    let
-      enabled = {
-        "nyx-nixos" = true;
-      };
-    in
-    {
-      services.vaultwarden = {
-        enable = enabled.${config.networking.hostName} or false;
-        package = pkgs.vaultwarden-postgresql;
-        dbBackend = "postgresql";
-
-        configurePostgres = true;
-        domain = "vault.olympus.moe";
-
-        backupDir = null;
-        environmentFile = "${config.sops.secrets."vaultwarden/env".path}";
-
-        config = {
-          SIGNUPS_ALLOWED = false;
-
-          ROCKET_ADDRESS = "192.168.10.253";
-          ROCKET_PORT = 8222;
-          ROCKET_LOG = "critical";
-
-          SMTP_HOST = "mail.olympus.moe";
-          SMTP_SECURITY = "force_tls";
-          SMTP_FROM = "admin@bitwarden.olympus.moe";
-          SMTP_FROM_NAME = "Olympus.moe Bitwarden Server";
-        };
       };
     };
 
@@ -440,63 +405,6 @@
       };
     };
 
-  flake.nixosModules.deadlockPostgres =
-    { config, pkgs, lib, ... }:
-    let
-      enabled = {
-        "nyx-nixos" = true;
-      };
-    in
-    {
-      # Shares the existing nyx postgres instance (already PG17, also serving
-      # atticd and vaultwarden) and adds pgvector, mirroring the
-      # pgvector/pgvector:pg17 container from deadlock-mod-manager compose.yml.
-      services.postgresql = {
-        enable = lib.mkIf (enabled.${config.networking.hostName} or false) true;
-        package = lib.mkIf (enabled.${config.networking.hostName} or false) (
-          pkgs.postgresql_17.withPackages (ps: [ ps.pgvector ])
-        );
-        enableTCPIP = lib.mkIf (enabled.${config.networking.hostName} or false) true;
-        # Prepend VPN-only rules for the turborepo DB; defaults (peer/trust on
-        # loopback) are preserved so atticd/vaultwarden keep working.
-        authentication = lib.mkBefore (
-          lib.optionalString (enabled.${config.networking.hostName} or false) ''
-            host turborepo turborepo 192.168.10.0/24 scram-sha-256
-            host turborepo turborepo fd31:bf08:57cb::/64 scram-sha-256
-          ''
-        );
-      };
-
-      networking.firewall.interfaces."wg0".allowedTCPPorts = lib.mkIf (enabled.${config.networking.hostName} or false) [ 5432 ];
-
-      sops.secrets."deadlock/db-password".owner = lib.mkIf (enabled.${config.networking.hostName} or false) "postgres";
-
-      systemd.services.deadlock-db-setup =
-        lib.mkIf (enabled.${config.networking.hostName} or false) {
-          description = "Bootstrap deadlock PostgreSQL database, role, and pgvector extension";
-          after = [ "postgresql.service" "sops-nix.service" ];
-          wantedBy = [ "multi-user.target" ];
-          serviceConfig = {
-            Type = "oneshot";
-            RemainAfterExit = true;
-            User = "postgres";
-          };
-          path = [ config.services.postgresql.package ];
-          script = ''
-            psql -tc "SELECT 1 FROM pg_roles WHERE rolname = 'turborepo'" \
-              | grep -q 1 || psql -c "CREATE ROLE turborepo LOGIN"
-
-            printf "ALTER ROLE turborepo WITH PASSWORD :'pw';\n" \
-              | psql -v pw="$(cat ${config.sops.secrets."deadlock/db-password".path})"
-
-            psql -tc "SELECT 1 FROM pg_database WHERE datname = 'turborepo'" \
-              | grep -q 1 || psql -c "CREATE DATABASE turborepo OWNER turborepo"
-
-            psql -d turborepo -c "CREATE EXTENSION IF NOT EXISTS vector"
-          '';
-        };
-    };
-
   flake.nixosModules.caddy =
     { config, pkgs, ... }:
     let
@@ -521,6 +429,20 @@
               }
             }
           }
+
+          (bunny) {
+            import bunny
+          }
+
+          (arrcors) {
+            header Access-Control-Allow-Origin "https://stream.puppygirls.net"
+            header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
+            header Access-Control-Allow-Headers "Content-Type, Authorization, X-Api-Key"
+            header Access-Control-Allow-Credentials "true"
+
+            @options method OPTIONS
+            respond @options 204
+          }
         '';
         virtualHosts."puppygirls.net, www.puppygirls.net".extraConfig = ''
           root * ${puppygirls}
@@ -528,9 +450,7 @@
             precompressed br gzip
           }
 
-          tls {
-            dns bunny {$BUNNY_API}
-          }
+          import bunny
 
         '';
         virtualHosts."cache.puppygirls.net".extraConfig = ''
@@ -543,21 +463,14 @@
             }
           }
 
-          tls {
-            dns bunny {$BUNNY_API}
-          }
+          import bunny
         '';
         virtualHosts."dns.puppygirls.net".extraConfig = ''
           reverse_proxy /dns-query* 192.168.10.253:854 {
             header_up X-Real-IP {remote_host}
-            transport http {
-              tls_insecure_skip_verify
-            }
           }
 
-          tls {
-            dns bunny {$BUNNY_API}
-          }
+          import bunny
         '';
         virtualHosts."stream.puppygirls.net".extraConfig = ''
           reverse_proxy 192.168.10.253:8096 {
@@ -568,35 +481,21 @@
             flush_interval -1
           }
 
-          tls {
-            dns bunny {$BUNNY_API}
-          }
+          import bunny
         '';
         virtualHosts."https://seerr.puppygirls.net".extraConfig = ''
-          header Access-Control-Allow-Origin "https://stream.puppygirls.net"
-          header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-          header Access-Control-Allow-Headers "Content-Type, Authorization, X-Api-Key"
-          header Access-Control-Allow-Credentials "true"
-
-          @options method OPTIONS
-          respond @options 204
+          import mtls
+          import arrcors
 
           reverse_proxy 192.168.10.253:5055 {
             header_up X-Real-IP {remote_host}
           }
 
-          tls {
-            dns bunny {$BUNNY_API}
-          }
+          import bunny
         '';
         virtualHosts."https://radarr.puppygirls.net".extraConfig = ''
-          header Access-Control-Allow-Origin "https://stream.puppygirls.net"
-          header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-          header Access-Control-Allow-Headers "Content-Type, Authorization, X-Api-Key"
-          header Access-Control-Allow-Credentials "true"
-
-          @options method OPTIONS
-          respond @options 204
+          import mtls
+          import arrcors
 
           reverse_proxy 192.168.10.253:5056 {
             header_up X-Real-IP {remote_host}
@@ -606,13 +505,8 @@
           }
         '';
         virtualHosts."https://sonarr.puppygirls.net".extraConfig = ''
-          header Access-Control-Allow-Origin "https://stream.puppygirls.net"
-          header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-          header Access-Control-Allow-Headers "Content-Type, Authorization, X-Api-Key"
-          header Access-Control-Allow-Credentials "true"
-
-          @options method OPTIONS
-          respond @options 204
+          import mtls
+          import arrcors
 
           reverse_proxy 192.168.10.253:5057 {
             header_up X-Real-IP {remote_host}
@@ -622,13 +516,8 @@
           }
         '';
         virtualHosts."https://prowlarr.puppygirls.net".extraConfig = ''
-          header Access-Control-Allow-Origin "https://stream.puppygirls.net"
-          header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-          header Access-Control-Allow-Headers "Content-Type, Authorization, X-Api-Key"
-          header Access-Control-Allow-Credentials "true"
-
-          @options method OPTIONS
-          respond @options 204
+          import mtls
+          import arrcors
 
           reverse_proxy 192.168.10.253:5058 {
             header_up X-Real-IP {remote_host}
@@ -637,54 +526,19 @@
             }
           }
         '';
-        virtualHosts."https://tdarr.puppygirls.net".extraConfig = ''
-          header Access-Control-Allow-Origin "https://stream.puppygirls.net"
-          header Access-Control-Allow-Methods "GET, POST, PUT, DELETE, OPTIONS"
-          header Access-Control-Allow-Headers "Content-Type, Authorization, X-Api-Key"
-          header Access-Control-Allow-Credentials "true"
-
-          @options method OPTIONS
-          respond @options 204
-
-          reverse_proxy 192.168.10.253:5059 {
-            header_up X-Real-IP {remote_host}
-            transport http {
-              versions 1.1
-            }
-          }
-        '';
-
         virtualHosts."music.puppygirls.net".extraConfig = ''
           reverse_proxy 192.168.10.253:4533
 
-          tls {
-            dns bunny {$BUNNY_API}
-          }
+          import bunny
         '';
         virtualHosts."audio.puppygirls.net".extraConfig = ''
           reverse_proxy 192.168.10.253:8000
 
-          tls {
-            dns bunny {$BUNNY_API}
-          }
+          import bunny
         '';
         virtualHosts."https://ofsm.puppygirls.net".extraConfig = ''
           import mtls
           reverse_proxy 192.168.10.253:42702
-        '';
-        virtualHosts."https://crafty.puppygirls.net".extraConfig = ''
-          import mtls
-          reverse_proxy 192.168.10.253:8443 {
-            header_up Host {host}
-            header_up X-Real-IP {remote_host}
-            header_up X-Forwarded-For {remote_host}
-            header_up X-Forwarded-Proto {scheme}
-            flush_interval -1
-            transport http {
-              tls_insecure_skip_verify
-              versions 1.1
-            }
-          }
         '';
 
         #olympus.moe
@@ -692,16 +546,14 @@
           import mtls
           reverse_proxy 192.168.10.253:8082
 
-          tls {
-            dns bunny {$BUNNY_API}
-          }
+          import bunny
         '';
         virtualHosts."https://rsshub.olympus.moe".extraConfig = ''
+          import mtls
+
           reverse_proxy 192.168.10.253:1200
 
-          tls {
-            dns bunny {$BUNNY_API}
-          }
+          import bunny
         '';
         virtualHosts."https://copy.olympus.moe".extraConfig = ''
           import mtls
@@ -744,24 +596,18 @@
           import mtls
         '';
         virtualHosts."https://ntfy.olympus.moe".extraConfig = ''
+          import mtls
+
           reverse_proxy 192.168.10.253:1147
 
-          tls {
-            dns bunny {$BUNNY_API}
-          }
+          import bunny
         '';
         virtualHosts."https://molly.olympus.moe".extraConfig = ''
           reverse_proxy 192.168.10.253:8020 {
             header_up Host {host}
           }
 
-          tls {
-            dns bunny {$BUNNY_API}
-          }
-        '';
-        virtualHosts."https://vault.olympus.moe".extraConfig = ''
-          import mtls
-          reverse_proxy 192.168.10.253:8222
+          import bunny
         '';
         virtualHosts."dash.olympus.moe".extraConfig = ''
           import mtls
@@ -970,7 +816,7 @@
         };
       };
 
-      # Mange cert to allow DNS encryption :3
+      # Manage cert to allow DNS encryption :3
       security.acme = {
         acceptTerms = true;
         defaults.email = "code@olympus.moe";
@@ -1086,14 +932,6 @@
       services = [
         {
           "Tools" = [
-            {
-              "Vaultwarden" = {
-                description = "Self-Hosted Vaultwarden Instance | Requires mTLS";
-                icon = "vaultwarden.png";
-                href = "https://vault.olympus.moe";
-                ping = "http://localhost:8222";
-              };
-            }
             {
               "ActualBudget" = {
                 description = "Self-Hosted budgeting service. | Requires mTLS";
@@ -1212,7 +1050,7 @@
           "Game Servers" = [
             {
               "Factorio" = {
-                description = "Facotrio";
+                description = "Factorio";
                 icon = "https://cdn2.steamgriddb.com/icon/6ca4e9af5ea662a095c3243dc591bf54/32/256x256.png";
                 href = "https://factory.puppygirls.net";
                 ping = "http://localhost:42702";
@@ -1251,7 +1089,7 @@
               };
             }
             {
-              "Home Assistent" = {
+              "Home Assistant" = {
                 description = "Home Assistant | Requires mTLS";
                 icon = "home-assistant.png";
                 href = "https://home.olympus.moe";
