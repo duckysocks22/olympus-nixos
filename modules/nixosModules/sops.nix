@@ -124,6 +124,13 @@
       owner = config.users.users.server.name;
       sopsFile = common;
     };
+
+    sops.secrets."wireguard/mullvad/privkey" = { 
+      mode = "640";
+      owner = "systemd-network";
+      group = "systemd-network";
+      restartUnits = [ "systemd-networkd.service" ];
+    };
   };
 
   flake.nixosModules.serverSops = { inputs, config, ... }:
@@ -246,7 +253,6 @@
 
     sops.secrets."syncthing/nyx-nixos/cert" = { };
     sops.secrets."syncthing/nyx-nixos/key" = { };
-
   };
 
   flake.nixosModules.deckSops = { inputs, config, ... }:
