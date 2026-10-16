@@ -18,6 +18,7 @@
       self.nixosModules.reverseProxy
       self.nixosModules.aetherSops
       self.nixosModules.buildClient
+      self.nixosModules.routeVPNMullvad
     ];
   };
 

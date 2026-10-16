@@ -138,7 +138,7 @@
               ];
             }
             {
-              PublicKey = publicKey."hermes";
+              PublicKey = publicKey."hermes-graphene";
               AllowedIPs = [
                 "fd31:bf08:57cb::30/128"
                 "192.168.10.30/32"
@@ -191,6 +191,51 @@
         wants = [ "sops-install-secrets.service" ];
       };
     };
+
+  flake.nixosModules.routeVPNMullvad = { config, ... }: {
+    systemd.network = {
+      netdevs."60-wg-mullvad1" = {
+        netdevConfig = { Kind = "wireguard"; Name = "wg-mullvad1"; };
+        wireguardConfig = {
+          PrivateKeyFile = config.sops.secrets."wireguard/mullvad/privkey".path;
+          FirewallMark = 51820;
+          RouteTable = 51820;
+        };
+        wireguardPeers = [{
+          PublicKey = "HjcUGVDXWdrRkaKNpc/8494RM5eICO6DPyrhCtTv9Ws=";
+          AllowedIPs = [ "0.0.0.0/0" "::/0" ];
+          Endpoint = "143.244.47.78:3489";
+        }];
+      };
+
+      networks."60-wg-mullvad1" = {
+        matchConfig.Name = "wg-mullvad1";
+        address = [
+          "10.72.161.131/32"
+          "fc00:bbbb:bbbb:bb01::9:a182/128"
+        ];
+      };
+
+      networks."50-wg0".routingPolicyRules = [
+        { Priority = 100; From = "192.168.10.30/32";       Table = 51820; }
+        { Priority = 100; From = "fd31:bf08:57cb::30/128"; Table = 51820; }
+      ];
+    };
+
+    networking.nat = {
+      extraCommands = ''
+        # hermes -> mullvad exit masquerade
+        iptables  -w -t nat -A nixos-nat-post -o wg-mullvad1 -s 192.168.10.30/32       -j MASQUERADE
+        ip6tables -w -t nat -A nixos-nat-post -o wg-mullvad1 -s fd31:bf08:57cb::30/128 -j MASQUERADE
+      '';
+
+      extraStopCommands = ''
+        # hermes
+        iptables  -w -t nat -D nixos-nat-post -o wg-mullvad1 -s 192.168.10.30/32       -j MASQUERADE || true
+        ip6tables -w -t nat -D nixos-nat-post -o wg-mullvad1 -s fd31:bf08:57cb::30/128 -j MASQUERADE || true
+      '';
+    };
+  };
 
   flake.nixosModules.forgejo-runner =
     {
