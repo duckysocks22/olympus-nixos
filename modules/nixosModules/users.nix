@@ -35,6 +35,7 @@ in
       isNormalUser = true;
       home = "/home/foxtrot";
       hashedPasswordFile = config.sops.secrets."users/foxtrot".path;
+      initialHashedPassword = "$y$j9T$EOxAFD9l0qIXDVJ1XGG7P0$OhvzNuUJXJB2TWRShPxz6Z6KkpMQvB2dqnOETQHQae5";
       extraGroups = [
         "audio"
         "dailout"
@@ -107,6 +108,7 @@ in
         isNormalUser = true;
         home = "/home/server";
         hashedPasswordFile = config.sops.secrets."users/server".path;
+        initialHashedPassword = "$y$j9T$EOxAFD9l0qIXDVJ1XGG7P0$OhvzNuUJXJB2TWRShPxz6Z6KkpMQvB2dqnOETQHQae5";
         extraGroups = [
           "audio"
           "input"
@@ -183,6 +185,7 @@ in
       isNormalUser = true;
       home = "/home/deck";
       hashedPasswordFile = config.sops.secrets."users/deck".path;
+      initialHashedPassword = "$y$j9T$EOxAFD9l0qIXDVJ1XGG7P0$OhvzNuUJXJB2TWRShPxz6Z6KkpMQvB2dqnOETQHQae5";
       extraGroups = [
         "audio"
         "input"
