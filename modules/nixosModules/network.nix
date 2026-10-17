@@ -200,6 +200,7 @@
 
       systemd.network = {
         enable = true;
+        wait-online.enable = false;
       }
       // lib.optionalAttrs hasWiredEth {
         networks."30-wired" = {
