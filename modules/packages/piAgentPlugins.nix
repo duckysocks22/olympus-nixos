@@ -1686,7 +1686,7 @@
 
       nixCommaFile = pkgs.fetchurl {
         url = "https://raw.githubusercontent.com/reedrw/nix-config/main/home-modules/extra/pi/plugins/nix-comma.ts";
-        hash = "sha256-/OSMjoMgRslGlwe1a8meHyOkK0KmsSbu3MqoRGwku5k=";
+        hash = "sha256-eBakgPsdaeWIZtB1SvEGeUbcxnSu+2HpxuGBu/uN+Bs=";
       };
 
       bashSpawnHookFile = pkgs.writeText "pi-bash-spawn-hook-extension.ts" ''
