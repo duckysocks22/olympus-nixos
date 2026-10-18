@@ -42,6 +42,11 @@
               inInitrd = true;
               mode = "0700";
             }
+            {
+              directory = "/media/ffxiv";
+              mode = "755";
+              group = "users";
+            }
             "/var/cache/mullvad-vpn"
             "/var/log"
             "/etc/mullvad-vpn"
