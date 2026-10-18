@@ -12,6 +12,9 @@
       packages.xlm =
         let
           unstable = inputs.nixpkgs-unstable.legacyPackages.${system};
+          sdl2Prelaunch = unstable.writeText "00-sdl2.sh" ''
+            export LD_LIBRARY_PATH=${unstable.lib.makeLibraryPath [ unstable.sdl2-compat ]}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+          '';
         in
         unstable.stdenvNoCC.mkDerivation (finalAttrs: {
           pname = "xlm";
@@ -55,6 +58,9 @@
 
             substituteInPlace "$steamcompattool/xlm.sh" \
               --replace-fail '$tooldir/xlcore' '$HOME/.local/share/xlcore'
+
+            mkdir -p $steamcompattool/prelaunch.d
+            install -m644 ${sdl2Prelaunch} $steamcompattool/prelaunch.d/00-sdl2.sh
 
             runHook postInstall
           '';

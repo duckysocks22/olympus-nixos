@@ -187,12 +187,16 @@
       pkgs,
       pkgs-unstable,
       inputs,
+      lib,
       ...
     }:
     {
       programs.steam = {
         enable = true;
         package = pkgs.steam.override {
+          extraProfile = ''
+            export LD_LIBRARY_PATH=${lib.makeLibraryPath [ pkgs.sdl2-compat ]}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+          '';
           extraBwrapArgs = [
             "--bind"
             "/dev/null"

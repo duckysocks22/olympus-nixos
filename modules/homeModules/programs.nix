@@ -1,8 +1,24 @@
 { inputs, self, ... }:
 {
 
-  flake.homeModules.common = { pkgs, ... }: {
-    xdg.mimeApps = {
+  flake.homeModules.common =
+    {
+      config,
+      pkgs,
+      ...
+    }: {
+      home.activation.ffxivWinebusSdl = config.lib.dag.entryAfter [ "writeBoundary" ] ''
+        reg="${config.home.homeDirectory}/.xlcore/wineprefix/system.reg"
+        if [ -f "$reg" ] && ${pkgs.gnugrep}/bin/grep -q '"Enable SDL"=' "$reg"; then
+          if ${pkgs.procps}/bin/pgrep -x wineserver > /dev/null; then
+            echo "ffxivWinebusSdl: wineserver running, not touching $reg"
+          else
+            ${pkgs.gnused}/bin/sed -i '/"Enable SDL"=/d' "$reg"
+            echo "ffxivWinebusSdl: removed Enable SDL from $reg"
+          fi
+        fi
+      '';
+      xdg.mimeApps = {
       enable = true;
       defaultApplications = {
         "x-scheme-handler/unityhub" = "unityhub.desktop";
