@@ -13,7 +13,7 @@
         steam = {
           enable = true;
           autoStart = true;
-          desktopSession = "plasmax11";
+          desktopSession = "plasma";
           user = "deck";
           environment.STEAM_EXTRA_COMPAT_TOOLS_PATHS =
             lib.makeSearchPathOutput "steamcompattool" ""
