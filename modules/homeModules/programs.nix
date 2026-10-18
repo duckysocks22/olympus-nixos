@@ -1387,16 +1387,16 @@
         "!accounts.json"
         "!secrets.json"
         "!cfgcopy"
+        "!ffxivConfig"
         "ffxivConfig/FFXIV.cfg"
         "ffxivConfig/FFXIV.cfg.old"
-        "pluginConfigs/LightlessSync/tracelog"
-        "!ffxivConfig"
         "!pluginConfigs"
         "!installedPlugins"
         "!dalamudConfig.json"
         "!dalamudUI.ini"
         "!launcherUI.ini"
         "!FFXIV_CHR004000174C7A37AE"
+        "pluginConfigs/LightlessSync/tracelog"
         "*"
       ];
     in {
@@ -1434,7 +1434,23 @@
               id = "FFXIV";
               path = "${config.home.homeDirectory}/.xlcore";
               devices = [ "circe-nixos" "nyx-nixos" "dionysus-nixos" "athena-nixos" "ariadne-nixos" ];
-              ignorePatterns = ffxivIgnorePatterns;
+              ignorePatterns = [
+                "!.stignore"
+                "!accounts.json"
+                "!secrets.json"
+                "!cfgcopy"
+                "!ffxivConfig"
+                "ffxivConfig/FFXIV.cfg"
+                "ffxivConfig/FFXIV.cfg.old"
+                "!pluginConfigs"
+                "!installedPlugins"
+                "!dalamudConfig.json"
+                "!dalamudUI.ini"
+                "!launcherUI.ini"
+                "!FFXIV_CHR004000174C7A37AE"
+                "pluginConfigs/LightlessSync/tracelog"
+                "*"
+              ];
             };
           };
         };
