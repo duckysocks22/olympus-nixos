@@ -21,6 +21,14 @@
 
       sops.secrets."syncthing/${hostName}/cert".sopsFile = ../../secrets/${hostName}.yaml;
       sops.secrets."syncthing/${hostName}/key".sopsFile = ../../secrets/${hostName}.yaml;
+
+      sops.secrets."aiApiKey/openrouter/apiKey" = {
+        sopsFile = ../../secrets/common.yaml;
+      };
+
+      sops.secrets."aiApiKey/fireworks/apiKey" = {
+        sopsFile = ../../secrets/common.yaml;
+      };
     };
 
   flake.homeModules.serverSops = { inputs, config, ... }: {
@@ -35,6 +43,14 @@
 
     sops.secrets."fireworks/account-id" = { };
     sops.secrets."fireworks/api-key" = { };
+
+    sops.secrets."aiApiKey/openrouter/apiKey" = {
+      sopsFile = ../../secrets/common.yaml;
+    };
+
+    sops.secrets."aiApiKey/fireworks/apiKey" = {
+      sopsFile = ../../secrets/common.yaml;
+    };
   };
 
   flake.homeModules.deckSops =
@@ -58,5 +74,13 @@
 
       sops.secrets."syncthing/${hostName}/cert".sopsFile = ../../secrets/${hostName}.yaml;
       sops.secrets."syncthing/${hostName}/key".sopsFile = ../../secrets/${hostName}.yaml;
+
+      sops.secrets."aiApiKey/openrouter/apiKey" = {
+        sopsFile = ../../secrets/common.yaml;
+      };
+
+      sops.secrets."aiApiKey/fireworks/apiKey" = {
+        sopsFile = ../../secrets/common.yaml;
+      };
     };
 }
