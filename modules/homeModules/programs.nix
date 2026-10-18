@@ -540,9 +540,10 @@
           SSH failure usually means the machine is offline — continue without it if possible.
         '';
       };
-
+      /*
       home.file.".pi/agent/extensions/actual-finance".source = ../../assets/pi/actual-finance;
       home.file.".pi/agent/skills/actual-finance".source = ../../assets/pi/skills/actual-finance;
+      */
 
       home.file.".pi/agent/modes.config.json".text =
         let
