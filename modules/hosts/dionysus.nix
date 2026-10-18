@@ -29,6 +29,7 @@
       config,
       pkgs,
       inputs,
+      lib,
       ...
     }:
     {
@@ -100,6 +101,8 @@
         boot.initrd.luks.devices."crypted".keyFile = "/tmp/luks-vm.key";
         users.users.root.initialPassword = "root";
       };
+
+      nix.package = lib.mkForce pkgs.lixPackageSets.lix_2_96.lix;
     };
 
   flake.nixosModules.dionysusDisko = { inputs, lib, ... }: {
