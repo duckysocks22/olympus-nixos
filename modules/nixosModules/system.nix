@@ -123,15 +123,7 @@
           in
           kernel.${config.networking.hostName} or (
             if config ? jovian then
-              pkgs.linuxPackages_jovian.extend (
-                self: super: {
-                  kernel = super.kernel.overrideAttrs (old: {
-                    postInstall = (old.postInstall or "") + ''
-                      cp -v "$buildRoot/arch/x86/boot/bzImage" "$out/bzImage"
-                    '';
-                  });
-                }
-              )
+              pkgs.linuxPackages_jovian
             else
               throw "system.nix: no kernelPackages entry for host ${config.networking.hostName}"
           );
