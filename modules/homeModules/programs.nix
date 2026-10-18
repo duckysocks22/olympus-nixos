@@ -360,16 +360,33 @@
         inputs.self.homeModules.pi-status-line
         inputs.self.homeModules.pi-agent-comma
         inputs.self.homeModules.pi-agent-skills
+        inputs.sops-nix.homeModules.sops
       ];
+      
+      sops.templates."pi-auth" = {
+        path = "${config.home.homeDirectory}/.pi/agent/auth.json";
+        content = ''
+          {
+            "fireworks": {
+              "type": "api_key",
+              "key": "${config.sops.placeholder."aiApiKey/fireworks/apiKey"}"
+            },
+            "openrouter": {
+              "type": "api_key",
+              "key": "${config.sops.placeholder."aiApiKey/openrouter/apiKey"}"
+            }
+          }
+        '';
+      };
+
       programs.pi-coding-agent = {
         enable = true;
         package = pkgs-unstable.pi-coding-agent;
         settings = {
           defaultProvider = "fireworks";
-          defaultModel = "accounts/fireworks/routers/glm-flash-latest";
+          defaultModel = "deepseek/deepseek-v4.1-flash";
           enabledModels = [
-            "accounts/fireworks/routers/glm-flash-latest"
-            "accounts/fireworks/routers/glm-*"
+            "deepseek/deepseek-v4.1-flash"
             "llama.cpp/*"
           ];
           defaultThinkingLevel = "low";
