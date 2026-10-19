@@ -416,6 +416,7 @@
             "npm:pi-web-access"
             "npm:@juicesharp/rpiv-todo"
             "npm:@juicesharp/rpiv-ask-user-question"
+            "npm:pi-bansos"
             "${inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.pi-agent-modes}"
           ];
           enableInstallTelemetry = false;
@@ -593,13 +594,13 @@
 
           - Run `git pull` at session start, before touching files.
           - `git add` is fine when needed (e.g. staging new files so flakes can see them).
-            NEVER run `git commit`, `git commit --amend`, or `git push` unless the user asks
-            in that message — stage and stop instead.
+            NEVER run `git commit`, `git commit --amend`, or `git push` without asking the user.
           - Commit messages: Conventional Commits, unless the repo's history shows otherwise.
+            Additionally, make sure to add your Co-Authored By footer based on the current model being used.
 
           ## Code style (all repos)
 
-          - No inline comments; explain changes in the commit message.
+          - No inline comments unless specifics are stated later; explain changes in the commit message.
           - olympus-nixos: use flake-parts, follow the dendritic layout.
 
           ## Portability
@@ -618,6 +619,7 @@
           - Changes targeting a host other than the current one: dry-build only
             (`sudo nixos-rebuild dry-build` or `nh os switch --dry`). Never fully build;
             the user handles real builds.
+          - Feel free to leave in-line comments but keep them short and sweet.
 
           ## Remote hosts
 
