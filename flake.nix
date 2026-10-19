@@ -83,7 +83,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     jovian = {
-      url = "github:duckysocks22/Jovian-NixOS/hdmi_cec";
+      url = "github:duckysocks22/Jovian-NixOS/rebase";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     copyparty = {

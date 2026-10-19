@@ -123,7 +123,7 @@
           in
           kernel.${config.networking.hostName} or (
             if config ? jovian then
-              pkgs.linuxPackages_jovian
+              pkgs.jovianPackages.linuxPackages
             else
               throw "system.nix: no kernelPackages entry for host ${config.networking.hostName}"
           );
@@ -176,6 +176,7 @@
 
   flake.nixosModules.common =
     {
+      config,
       pkgs,
       pkgs-unstable,
       inputs,
@@ -185,16 +186,18 @@
     {
       programs.steam = {
         enable = true;
-        package = pkgs.steam.override {
-          extraProfile = ''
-            export LD_LIBRARY_PATH=${lib.makeLibraryPath [ pkgs.sdl2-compat ]}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
-          '';
-          extraBwrapArgs = [
-            "--bind"
-            "/dev/null"
-            "/etc/ld-nix.so.preload"
-          ];
-        };
+        package = lib.mkIf (!(config ? jovian)) (
+          pkgs.steam.override {
+            extraProfile = ''
+              export LD_LIBRARY_PATH=${lib.makeLibraryPath [ pkgs.sdl2-compat ]}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+            '';
+            extraBwrapArgs = [
+              "--bind"
+              "/dev/null"
+              "/etc/ld-nix.so.preload"
+            ];
+          }
+        );
         extraCompatPackages =
           (with pkgs; [
             proton-ge-bin

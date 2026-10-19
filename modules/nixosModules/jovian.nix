@@ -30,7 +30,7 @@
         decky-loader = {
           enable = true;
           user = "deck";
-          package = pkgs.decky-loader-prerelease;
+          package = pkgs.jovianPackages.decky-loader-prerelease;
         };
       };
 
