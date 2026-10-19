@@ -399,10 +399,10 @@
         enable = true;
         package = pkgs-unstable.pi-coding-agent;
         settings = {
-          defaultProvider = "fireworks";
-          defaultModel = "deepseek/deepseek-v4.1-flash";
+          defaultProvider = "openrouter";
+          defaultModel = "deepseek/deepseek-v4.1-flash-1017";
           enabledModels = [
-            "deepseek/deepseek-v4.1-flash"
+            "openrouter/deepseek/deepseek-v4.1-flash-1017"
             "llama.cpp/*"
           ];
           defaultThinkingLevel = "low";
@@ -434,6 +434,55 @@
                   maxTokens = 16384;
                 };
               };
+            };
+            openrouter = {
+              models = [
+                {
+                  id = "deepseek/deepseek-v4.1-flash-1017";
+                  name = "DeepSeek: DeepSeek V4.1 Flash 1017";
+                  api = "openai-completions";
+                  baseUrl = "https://openrouter.ai/api/v1";
+                  reasoning = true;
+                  input = [
+                    "text"
+                    "image"
+                  ];
+                  cost = {
+                    input = 0.15;
+                    output = 0.6;
+                    cacheRead = 0.003;
+                    cacheWrite = 0;
+                  };
+                  contextWindow = 1048576;
+                  maxTokens = 393216;
+                  thinkingLevelMap = {
+                    off = "none";
+                    minimal = null;
+                    low = "low";
+                    medium = null;
+                    high = "high";
+                    xhigh = null;
+                    max = "max";
+                  };
+                  inputLimits = {
+                    images = {
+                      resize = {
+                        maxWidth = 2000;
+                        maxHeight = 2000;
+                        maxBytes = 4718592;
+                        jpegQuality = 80;
+                      };
+                    };
+                  };
+                  compat = {
+                    supportsDeveloperRole = false;
+                    thinkingFormat = "openrouter";
+                    supportsStrictMode = true;
+                    sendSessionAffinityHeaders = true;
+                    requiresReasoningContentOnAssistantMessages = true;
+                  };
+                }
+              ];
             };
           };
         };
