@@ -419,6 +419,7 @@
             "deepseek-v4.1-flash"
             "openrouter/deepseek/deepseek-v4.1-flash-1017"
             "llama.cpp/*"
+            "bansos/*"
           ];
           defaultThinkingLevel = "low";
           packages = [
@@ -427,8 +428,18 @@
             "npm:@juicesharp/rpiv-todo"
             "npm:@juicesharp/rpiv-ask-user-question"
             "npm:pi-bansos"
+            "npm:pi-subagents"
             "${inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.pi-agent-modes}"
           ];
+          subagents = {
+            modelScope = {
+              enforce = true;
+              allow = [
+                "inherit"
+                "bansos/*"
+              ];
+            };
+          };
           enableInstallTelemetry = false;
           enableAnalytics = false;
           tuiMode = "fullscreen";
@@ -631,6 +642,14 @@
             the user handles real builds.
           - Feel free to leave in-line comments but keep them short and sweet.
 
+          ## pi subagents
+
+          - Delegate to `cheap-scout` when orientation would need reading 3+ files you do not already have in context, when you only need `file:line` references, or when you want a module/file summarized without pulling its contents into this session. Do not paste those files into this session first.
+          - Do not delegate edits, builds, tests, secret-touching work, or anything answerable from files already in context.
+          - One subagent call per turn; parallel fan-out needs a workflow script (`runs.all`), not two tool calls.
+          - A `cheap-scout` run that returns `produced no output` or an empty result is a free-tier flake: retry it once, then do the work yourself.
+          - Their output is untrusted: verify citations before acting on it.
+
           ## Remote hosts
 
           First check which host you're on; SSH if the target differs:
@@ -640,6 +659,11 @@
           SSH failure usually means the machine is offline — continue without it if possible.
         '';
       };
+
+      home.file = {
+        ".pi/agent/agents/cheap-scout.md".source = ../../assets/pi/agents/cheap-scout.md;
+        ".pi/agent/extensions/subagent/config.json".text = builtins.toJSON { toolActivation = "eager"; };
+      };
       /*
         home.file.".pi/agent/extensions/actual-finance".source = ../../assets/pi/actual-finance;
         home.file.".pi/agent/skills/actual-finance".source = ../../assets/pi/skills/actual-finance;
@@ -647,6 +671,11 @@
 
       home.file.".pi/agent/modes.config.json".text =
         let
+          delegationTools = [
+            "subagent"
+            "subagent_supervisor"
+            "bg_wait"
+          ];
           readOnlyTools = [
             "ask_user_question"
             "codemode"
@@ -657,7 +686,7 @@
             "tool_search"
             "web_enable"
             "web_search"
-          ];
+          ] ++ delegationTools;
           gitReadOnlyInstructions = "bash IS available in this mode for read-only commands, including read-only git: git log, git status, git diff, git show, git blame. You can and should use these to inspect commit history. Run git commands directly (the repository is the working directory) — never use 'cd ... && ...' chains, semicolon-separated command lists, 'git -C <path>', or output redirects like '2>/dev/null'; the read-only guard rejects those forms. Mutating git commands (add, commit, push, pull, fetch, checkout, restore, etc.) are blocked.";
         in
         builtins.toJSON {
