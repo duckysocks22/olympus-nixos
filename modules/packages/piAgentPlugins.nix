@@ -155,6 +155,7 @@
         const SPEND_PROVIDER = ${builtins.toJSON cfg.statusLine.spend.provider};
         const SPEND_ACCOUNT_ID_FILE = ${builtins.toJSON cfg.statusLine.spend.accountIdFile};
         const SPEND_API_KEY_FILE = ${builtins.toJSON cfg.statusLine.spend.apiKeyFile};
+        const LIVE_PRICING = ${boolStr cfg.statusLine.livePricing};
 
         interface Seg {
           id: string;
@@ -172,13 +173,40 @@
           segments?: Record<string, SegColors>;
         }
 
+        interface CostRates {
+          input: number;
+          output: number;
+          cacheRead: number;
+          cacheWrite: number;
+          tiers?: CostTier[];
+        }
+
+        interface CostTier extends CostRates {
+          inputTokensAbove: number;
+        }
+
+        interface UsageTotals {
+          input: number;
+          output: number;
+          cacheRead: number;
+          cacheWrite: number;
+          cacheWrite1h: number;
+          recordedCost: number;
+        }
+
         const THEMES: Record<string, ThemeSpec> = ${builtins.toJSON themes};
         const DEFAULT_THEME = ${builtins.toJSON cfg.statusLine.theme};
         const STATE_FILE = ${builtins.toJSON (cfg.configDir + "/statusline-theme")};
         const AUTO_THEME = "auto";
         const AUTO_SOFTEN = 0.3;
 
-        let spend: { total: number; credits: number | null; fetchedAt: number } | null = null;
+        interface SpendSnapshot {
+          total: number;
+          credits: number | null;
+          fetchedAt: number;
+        }
+
+        const spendCache: Record<string, SpendSnapshot> = {};
 
         function grpcVarint(n: number): Buffer {
           const out: number[] = [];
@@ -294,70 +322,259 @@
           });
         }
 
-        async function fetchSpend(ctx: any): Promise<void> {
+        async function providerApiKey(ctx: any, provider: string): Promise<string> {
           try {
-            let apiKey = "";
-            if (SPEND_API_KEY_FILE) {
-              try {
-                apiKey = readFileSync(SPEND_API_KEY_FILE, "utf8").trim();
-              } catch {
-                apiKey = "";
-              }
-            }
-            if (!apiKey) {
-              const registry = ctx.modelRegistry;
-              if (!registry || typeof registry.getProviderAuth !== "function") return;
-              const resolved = await registry.getProviderAuth(SPEND_PROVIDER);
-              apiKey = resolved?.auth?.apiKey ?? "";
-            }
-            let accountId = "";
+            const registry = ctx?.modelRegistry;
+            if (!registry || typeof registry.getProviderAuth !== "function") return "";
+            const resolved = await registry.getProviderAuth(provider);
+            return resolved?.auth?.apiKey ?? "";
+          } catch {
+            return "";
+          }
+        }
+
+        async function fetchOpenRouterSpend(ctx: any): Promise<SpendSnapshot | null> {
+          const apiKey = await providerApiKey(ctx, "openrouter");
+          if (!apiKey) return null;
+          const res = await fetch("https://openrouter.ai/api/v1/credits", {
+            headers: { Authorization: "Bearer " + apiKey },
+            signal: AbortSignal.timeout(8000),
+          });
+          if (!res.ok) return null;
+          const data: any = await res.json();
+          const totalUsage = Number(data?.data?.total_usage);
+          if (!Number.isFinite(totalUsage)) return null;
+          const totalCredits = Number(data?.data?.total_credits);
+          const credits = Number.isFinite(totalCredits) ? Math.max(0, totalCredits - totalUsage) : null;
+          return { total: totalUsage, credits: credits, fetchedAt: Date.now() };
+        }
+
+        async function fetchFireworksSpend(ctx: any): Promise<SpendSnapshot | null> {
+          let apiKey = "";
+          if (SPEND_API_KEY_FILE) {
             try {
-              accountId = readFileSync(SPEND_ACCOUNT_ID_FILE, "utf8").trim();
+              apiKey = readFileSync(SPEND_API_KEY_FILE, "utf8").trim();
             } catch {
-              return;
+              apiKey = "";
             }
-            if (!apiKey || !accountId) return;
-            const nowMs = Date.now();
-            const start = new Date(nowMs - 29 * 86400000).toISOString();
-            const end = new Date(nowMs + 86400000).toISOString();
-            const walk = (node: any, inArray: boolean): void => {
-              if (Array.isArray(node)) {
-                for (const item of node) walk(item, true);
-              } else if (node && typeof node === "object") {
-                for (const [k, v] of Object.entries(node)) {
-                  if (inArray && k === "totalCost" && v && typeof v === "object") {
-                    spendTotal += (parseFloat(v.units) || 0) + (v.nanos || 0) / 1e9;
-                  } else if (k !== "nextPageToken") {
-                    walk(v, false);
-                  }
+          }
+          if (!apiKey) apiKey = await providerApiKey(ctx, SPEND_PROVIDER);
+          let accountId = "";
+          try {
+            accountId = readFileSync(SPEND_ACCOUNT_ID_FILE, "utf8").trim();
+          } catch {
+            return null;
+          }
+          if (!apiKey || !accountId) return null;
+          const nowMs = Date.now();
+          const start = new Date(nowMs - 29 * 86400000).toISOString();
+          const end = new Date(nowMs + 86400000).toISOString();
+          const walk = (node: any, inArray: boolean): void => {
+            if (Array.isArray(node)) {
+              for (const item of node) walk(item, true);
+            } else if (node && typeof node === "object") {
+              for (const [k, v] of Object.entries(node)) {
+                if (inArray && k === "totalCost" && v && typeof v === "object") {
+                  spendTotal += (parseFloat(v.units) || 0) + (v.nanos || 0) / 1e9;
+                } else if (k !== "nextPageToken") {
+                  walk(v, false);
                 }
               }
-            };
-            let spendTotal = 0;
-            let pageToken: string | undefined = undefined;
-            do {
-              const url =
-                "https://api.fireworks.ai/v1/accounts/" + accountId + "/billing/summary" +
-                "?startTime=" + encodeURIComponent(start) +
-                "&endTime=" + encodeURIComponent(end) +
-                (pageToken ? "&pageToken=" + encodeURIComponent(pageToken) : "");
-              const res = await fetch(url, {
-                headers: { Authorization: "Bearer " + apiKey },
-                signal: AbortSignal.timeout(8000),
-              });
-              if (!res.ok) return;
-              const data: any = await res.json();
-              walk(data, false);
-              pageToken = typeof data?.nextPageToken === "string" && data.nextPageToken ? data.nextPageToken : undefined;
-            } while (pageToken);
-            const credits = await fetchCredits(apiKey, accountId);
-            spend = { total: spendTotal, credits: credits, fetchedAt: Date.now() };
+            }
+          };
+          let spendTotal = 0;
+          let pageToken: string | undefined = undefined;
+          do {
+            const url =
+              "https://api.fireworks.ai/v1/accounts/" + accountId + "/billing/summary" +
+              "?startTime=" + encodeURIComponent(start) +
+              "&endTime=" + encodeURIComponent(end) +
+              (pageToken ? "&pageToken=" + encodeURIComponent(pageToken) : "");
+            const res = await fetch(url, {
+              headers: { Authorization: "Bearer " + apiKey },
+              signal: AbortSignal.timeout(8000),
+            });
+            if (!res.ok) return null;
+            const data: any = await res.json();
+            walk(data, false);
+            pageToken = typeof data?.nextPageToken === "string" && data.nextPageToken ? data.nextPageToken : undefined;
+          } while (pageToken);
+          const credits = await fetchCredits(apiKey, accountId);
+          return { total: spendTotal, credits: credits, fetchedAt: Date.now() };
+        }
+
+        async function fetchSpend(ctx: any, providerOverride?: string): Promise<void> {
+          try {
+            const provider = String(providerOverride || ctx?.model?.provider || SPEND_PROVIDER || "");
+            if (!provider) return;
+            let snapshot: SpendSnapshot | null = null;
+            if (provider === "openrouter") snapshot = await fetchOpenRouterSpend(ctx);
+            else if (provider === "fireworks" || provider === SPEND_PROVIDER) snapshot = await fetchFireworksSpend(ctx);
+            if (snapshot) spendCache[provider] = snapshot;
           } catch {
             /* keep the last successful snapshot */
           }
         }
 
 
+
+        const OPENROUTER_PRICING_URL = "https://openrouter.ai/api/v1/models";
+        const MODELS_DEV_PRICING_URL = "https://models.dev/api.json";
+        const PI_CATALOG_PRICING_URL = "https://pi.dev/api/models/providers/";
+        const PRICING_TTL_MS = 10 * 60 * 1000;
+        const MODELS_DEV_PROVIDER_ALIASES: Record<string, string> = {
+          fireworks: "fireworks-ai",
+          together: "togetherai",
+        };
+
+        const priceCache: Record<string, { at: number; rates: Record<string, CostRates> }> = {};
+        let modelsDevCache: { at: number; providers: Record<string, any> } | null = null;
+
+        function isOffline(): boolean {
+          const v = process.env.PI_OFFLINE;
+          return !!v && v !== "0" && v.toLowerCase() !== "false";
+        }
+
+        function nonNegative(v: any): number | null {
+          const n = typeof v === "number" ? v : typeof v === "string" ? parseFloat(v) : NaN;
+          return Number.isFinite(n) && n >= 0 ? n : null;
+        }
+
+        function normalizeRates(cost: any): CostRates | null {
+          if (!cost || typeof cost !== "object") return null;
+          const input = nonNegative(cost.input);
+          const output = nonNegative(cost.output);
+          if (input === null || output === null) return null;
+          const tiers: CostTier[] = [];
+          if (Array.isArray(cost.tiers)) {
+            for (const t of cost.tiers) {
+              const above = nonNegative(t?.inputTokensAbove);
+              const tierInput = nonNegative(t?.input);
+              const tierOutput = nonNegative(t?.output);
+              if (above === null || tierInput === null || tierOutput === null) continue;
+              tiers.push({
+                inputTokensAbove: above,
+                input: tierInput,
+                output: tierOutput,
+                cacheRead: nonNegative(t?.cacheRead) ?? 0,
+                cacheWrite: nonNegative(t?.cacheWrite) ?? 0,
+              });
+            }
+          }
+          const rates: CostRates = {
+            input: input,
+            output: output,
+            cacheRead: nonNegative(cost.cacheRead) ?? nonNegative(cost.cache_read) ?? 0,
+            cacheWrite: nonNegative(cost.cacheWrite) ?? nonNegative(cost.cache_write) ?? 0,
+          };
+          if (tiers.length > 0) rates.tiers = tiers;
+          return rates;
+        }
+
+        function normalizeOpenRouterRates(pricing: any): CostRates | null {
+          if (!pricing || typeof pricing !== "object") return null;
+          const perMillion = (v: any): number | null => {
+            const n = nonNegative(v);
+            return n === null ? null : n * 1000000;
+          };
+          const input = perMillion(pricing.prompt);
+          const output = perMillion(pricing.completion);
+          if (input === null || output === null) return null;
+          return {
+            input: input,
+            output: output,
+            cacheRead: perMillion(pricing.input_cache_read) ?? 0,
+            cacheWrite: perMillion(pricing.input_cache_write) ?? 0,
+          };
+        }
+
+        async function loadOpenRouterRates(): Promise<Record<string, CostRates>> {
+          const rates: Record<string, CostRates> = {};
+          const res = await fetch(OPENROUTER_PRICING_URL, { signal: AbortSignal.timeout(10000) });
+          if (!res.ok) return rates;
+          const data: any = await res.json();
+          for (const m of data?.data ?? []) {
+            if (typeof m?.id !== "string") continue;
+            const r = normalizeOpenRouterRates(m.pricing);
+            if (r) rates[m.id] = r;
+          }
+          return rates;
+        }
+
+        async function loadModelsDevRates(provider: string): Promise<Record<string, CostRates>> {
+          const rates: Record<string, CostRates> = {};
+          const now = Date.now();
+          if (!modelsDevCache || now - modelsDevCache.at > PRICING_TTL_MS) {
+            const res = await fetch(MODELS_DEV_PRICING_URL, { signal: AbortSignal.timeout(20000) });
+            if (!res.ok) return rates;
+            modelsDevCache = { at: now, providers: await res.json() };
+          }
+          const key = MODELS_DEV_PROVIDER_ALIASES[provider] ?? provider;
+          const models = modelsDevCache.providers?.[key]?.models;
+          if (!models || typeof models !== "object") return rates;
+          for (const id of Object.keys(models)) {
+            const r = normalizeRates(models[id]?.cost);
+            if (r) rates[id] = r;
+          }
+          return rates;
+        }
+
+        async function loadCatalogRates(provider: string): Promise<Record<string, CostRates>> {
+          const rates: Record<string, CostRates> = {};
+          const url = PI_CATALOG_PRICING_URL + encodeURIComponent(provider) + "?types=chat,image,classifier";
+          const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+          if (!res.ok) return rates;
+          const data: any = await res.json();
+          if (!Array.isArray(data)) return rates;
+          for (const m of data) {
+            if (typeof m?.id !== "string") continue;
+            const r = normalizeRates(m.cost);
+            if (r) rates[m.id] = r;
+          }
+          return rates;
+        }
+
+        async function fetchPricing(provider: string): Promise<void> {
+          if (!LIVE_PRICING || !provider || isOffline()) return;
+          const cached = priceCache[provider];
+          if (cached && Date.now() - cached.at < PRICING_TTL_MS) return;
+          let rates: Record<string, CostRates> = {};
+          try {
+            if (provider === "openrouter") rates = await loadOpenRouterRates();
+            if (Object.keys(rates).length === 0) rates = await loadModelsDevRates(provider);
+            if (Object.keys(rates).length === 0) rates = await loadCatalogRates(provider);
+          } catch {
+            return;
+          }
+          if (Object.keys(rates).length > 0) priceCache[provider] = { at: Date.now(), rates: rates };
+        }
+
+        function liveRates(provider: string, modelId: string): CostRates | null {
+          const cached = priceCache[provider];
+          if (!cached) return null;
+          return cached.rates[modelId] ?? null;
+        }
+
+        function computeCost(rates: CostRates, u: UsageTotals): number {
+          const inputTokens = u.input + u.cacheRead + u.cacheWrite;
+          let r: CostRates = rates;
+          let matched = -1;
+          for (const tier of rates.tiers ?? []) {
+            if (inputTokens > tier.inputTokensAbove && tier.inputTokensAbove > matched) {
+              r = tier;
+              matched = tier.inputTokensAbove;
+            }
+          }
+          const longWrite = Math.min(u.cacheWrite, u.cacheWrite1h);
+          const shortWrite = u.cacheWrite - longWrite;
+          const cost =
+            r.input * u.input +
+            r.output * u.output +
+            r.cacheRead * u.cacheRead +
+            r.cacheWrite * shortWrite +
+            r.input * 2 * longWrite;
+          return cost / 1000000;
+        }
 
         function hexToRgb(hex: string): number[] {
           const h = hex.replace("#", "");
@@ -560,6 +777,7 @@
 
         interface LineData {
           path: string;
+          provider: string;
           model: string;
           level: string;
           pct: number | null;
@@ -584,15 +802,38 @@
           let output = 0;
           let cost = 0;
           if (SHOW_TOKENS || SHOW_COST) {
+            const groups = new Map<string, { provider: string; model: string; totals: UsageTotals }>();
             for (const e of ctx.sessionManager.getBranch()) {
               if (e.type === "message" && e.message.role === "assistant") {
                 const m: any = e.message;
-                if (m.usage) {
-                  input += m.usage.input || 0;
-                  output += m.usage.output || 0;
-                  if (m.usage.cost) cost += m.usage.cost.total || 0;
+                if (!m.usage) continue;
+                input += m.usage.input || 0;
+                output += m.usage.output || 0;
+                if (!SHOW_COST) continue;
+                const provider = String(m.provider ?? "");
+                const model = String(m.model ?? "");
+                const key = provider + "\u0000" + model;
+                let group = groups.get(key);
+                if (!group) {
+                  group = {
+                    provider: provider,
+                    model: model,
+                    totals: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0, cacheWrite1h: 0, recordedCost: 0 },
+                  };
+                  groups.set(key, group);
                 }
+                const t = group.totals;
+                t.input += m.usage.input || 0;
+                t.output += m.usage.output || 0;
+                t.cacheRead += m.usage.cacheRead || 0;
+                t.cacheWrite += m.usage.cacheWrite || 0;
+                t.cacheWrite1h += m.usage.cacheWrite1h || 0;
+                t.recordedCost += m.usage.cost?.total || 0;
               }
+            }
+            for (const group of groups.values()) {
+              const rates = liveRates(group.provider, group.model);
+              cost += rates ? computeCost(rates, group.totals) : group.totals.recordedCost;
             }
           }
           let pct: number | null = null;
@@ -602,7 +843,12 @@
           }
           return {
             path: shortenCwd(String(ctx.cwd || process.cwd() || "")),
-            model: ctx.model ? ctx.model.id : "no-model",
+            provider: String(ctx.model?.provider ?? ""),
+            model: ctx.model
+              ? ctx.model.provider
+                ? ctx.model.provider + "/" + ctx.model.id
+                : ctx.model.id
+              : "no-model",
             level: String(ctx.thinkingLevel ?? "off"),
             pct: pct,
             input: input,
@@ -632,12 +878,13 @@
           return { filled: "█".repeat(full) + PARTIAL_BLOCKS[pIdx], empty: emptyChar.repeat(emptyLen) };
         }
 
-        function spendText(theme: any): string {
-          if (!spend) return "";
-          let text = theme.fg("dim", "spent ") + theme.fg("warning", "$" + spend.total.toFixed(2));
-          if (spend.credits !== null) {
-            const color = spend.credits < 2 ? "error" : spend.credits < 10 ? "warning" : "success";
-            text += theme.fg("dim", " · credits ") + theme.fg(color, "$" + spend.credits.toFixed(2));
+        function spendText(theme: any, provider: string): string {
+          const snapshot = spendCache[provider];
+          if (!snapshot) return "";
+          let text = theme.fg("dim", "spent ") + theme.fg("warning", "$" + snapshot.total.toFixed(2));
+          if (snapshot.credits !== null) {
+            const color = snapshot.credits < 2 ? "error" : snapshot.credits < 10 ? "warning" : "success";
+            text += theme.fg("dim", " · credits ") + theme.fg(color, "$" + snapshot.credits.toFixed(2));
           }
           return text;
         }
@@ -671,7 +918,7 @@
           if (SHOW_TOKENS) parts.push(theme.fg("dim", "↑" + fmtTokens(d.input) + " ↓" + fmtTokens(d.output)));
           if (SHOW_COST) parts.push(theme.fg("dim", "💵 $" + d.cost.toFixed(2)));
           if (d.branch) parts.push(theme.fg("warning", d.branch));
-          const u = spendText(theme);
+          const u = spendText(theme, d.provider);
           if (u) parts.push(u);
           return parts.join(theme.fg("dim", " | "));
         }
@@ -684,7 +931,7 @@
           if (SHOW_TOKENS) parts.push("↑" + fmtTokens(d.input) + " ↓" + fmtTokens(d.output));
           if (SHOW_COST) parts.push("💵 $" + d.cost.toFixed(2));
           if (d.branch) parts.push(d.branch);
-          const u = spendText(noopTheme);
+          const u = spendText(noopTheme, d.provider);
           if (u) parts.push(u);
           return parts.join("  ");
         }
@@ -705,7 +952,7 @@
             });
           }
           if (SHOW_COST) segs.push({ id: "cost", text: "💵 $" + d.cost.toFixed(2) });
-          const u = spendText(noopTheme);
+          const u = spendText(noopTheme, d.provider);
           if (u) segs.push({ id: "usage", text: u });
           return segs;
         }
@@ -798,6 +1045,7 @@
           function previewLines(theme: any, fallbackModel: string, fallbackLevel: string): string[] {
             const base: LineData = lastData || {
               path: shortenCwd(process.cwd()),
+              provider: "",
               model: fallbackModel,
               level: fallbackLevel,
               pct: 42,
@@ -874,7 +1122,10 @@
             },
           });
 
-          pi.on("model_select", async () => {
+          pi.on("model_select", async (event: any, ctx: any) => {
+            const provider = event?.model?.provider ?? lastCtx?.model?.provider;
+            if (provider) void fetchPricing(String(provider)).then(() => footerTui?.requestRender());
+            void fetchSpend(ctx, provider ? String(provider) : undefined).then(() => footerTui?.requestRender());
             footerTui?.requestRender();
           });
 
@@ -883,6 +1134,8 @@
           });
 
           pi.on("turn_end", async () => {
+            const provider = lastCtx?.model?.provider;
+            if (provider) void fetchPricing(String(provider)).then(() => footerTui?.requestRender());
             void fetchSpend(lastCtx).then(() => footerTui?.requestRender());
             footerTui?.requestRender();
           });
@@ -901,6 +1154,7 @@
             if (!ctx.hasUI) return;
 
             void fetchSpend(ctx).then(() => footerTui?.requestRender());
+            if (ctx.model?.provider) void fetchPricing(String(ctx.model.provider)).then(() => footerTui?.requestRender());
             lastCtx = ctx;
             ctx.ui.setFooter((tui, theme, footerData) => {
               footerTui = tui;
@@ -932,6 +1186,8 @@
             }
             usageTimer = setInterval(() => {
               if (!footerTui || !lastCtx) return;
+              const provider = lastCtx.model?.provider;
+              if (provider) void fetchPricing(String(provider)).then(() => footerTui?.requestRender());
               void fetchSpend(lastCtx).then(() => footerTui?.requestRender());
               footerTui.requestRender();
             }, 60000);
@@ -993,11 +1249,34 @@
           description = "Show the current git branch.";
         };
 
+        livePricing = lib.mkOption {
+          type = lib.types.bool;
+          default = true;
+          description = ''
+            Recompute the session cost from live provider pricing instead of the
+            per-message cost snapshot recorded when each request completed, so
+            the status line follows price changes rather than the rates that
+            were configured in models.json. OpenRouter prices come from
+            https://openrouter.ai/api/v1/models; other providers fall back to
+            models.dev and then the pi.dev model catalog. Prices are cached per
+            provider for 10 minutes. When no live price is known, or when
+            PI_OFFLINE is set, the recorded cost is shown.
+          '';
+        };
+
         spend = {
           provider = lib.mkOption {
             type = lib.types.str;
             default = "fireworks";
-            description = "Provider id used to resolve the Fireworks API credential when apiKeyFile is unset.";
+            description = ''
+              Fallback provider id used when the session has no current model,
+              and the provider whose pi credential the Fireworks billing lookup
+              uses when apiKeyFile is unset. The spend/credits widget otherwise
+              follows the active model's provider: OpenRouter reads
+              https://openrouter.ai/api/v1/credits, Fireworks reads its billing
+              summary and credit balance. Providers without a known balance API
+              hide the widget.
+            '';
           };
           accountIdFile = lib.mkOption {
             type = lib.types.path;
