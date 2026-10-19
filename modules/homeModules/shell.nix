@@ -355,7 +355,7 @@
             end
 
             cd ~/olympus-nixos
-            nix run ".#nixosConfigurations.$argv[1].config.system.build.vmWithDisko"
+            nix run ".#nixosConfigurations.$argv[1].config.system.build.vmWithDisko" -- -display gtk,gl=on -vga none -device virtio-gpu-gl-pci
           '';
         };
 
@@ -508,7 +508,7 @@
             fi
 
             cd ~/olympus-nixos
-            nix run .#nixosConfigurations.$1.config.system.build.vmWithDisko
+            nix run .#nixosConfigurations.$1.config.system.build.vmWithDisko -- -display gtk,gl=on -vga none -device virtio-gpu-gl-pci
           };
 
           export FZF_DEFAULT_OPS="${config.home.sessionVariables.FZF_DEFAULT_OPTS}"

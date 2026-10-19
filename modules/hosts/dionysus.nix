@@ -15,6 +15,7 @@
       self.nixosModules.common
       self.nixosModules.systemHarden
       self.nixosModules.preservation
+      self.nixosModules.vmTest
       self.nixosModules.defaultNetwork
       self.nixosModules.deck
       self.nixosModules.deckSops
@@ -91,11 +92,6 @@
       };
 
       virtualisation.vmVariantWithDisko = {
-        virtualisation.qemu.options = [
-          "-vga none"
-          "-device virtio-gpu-gl-pci"
-          "-display gtk,gl=on"
-        ];
         boot.initrd.availableKernelModules = [ "virtio_gpu" ];
         boot.initrd.secrets."/tmp/luks-vm.key" = builtins.toFile "luks-vm.key" "disko";
         boot.initrd.luks.devices."crypted".keyFile = "/tmp/luks-vm.key";

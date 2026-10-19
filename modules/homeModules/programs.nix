@@ -657,12 +657,27 @@
           Dionysus deck@dionysus-nixos.vpn.olympus.moe · Ariadne deck@ariadne-nixos.vpn.olympus.moe ·
           Nyx server@nyx-nixos.vpn.olympus.moe · Aether server@aether-nixos.vpn.olympus.moe
           SSH failure usually means the machine is offline — continue without it if possible.
+
+          ## VM testing
+
+          - `vm_start` builds and boots a headless QEMU VM of a host configuration; `vm_ssh` runs commands in it as root; `vm_logs` shows the serial boot log; `vm_screenshot` captures the guest desktop; `vm_stop` tears it down.
+          - The default display is software-rendered VNC on localhost, so the niri greeter renders and screenshots work; `vm_start` prints a vncviewer endpoint for a human to watch. With `--display egl` the guest gets virgl and `vm_screenshot` with `guest: true` captures the accelerated session via grim.
+          - After a userspace/service change, use `vm_switch` to apply the current flake into the running VM without rebooting; kernel, initrd, boot, and disko changes still need `vm_stop` followed by `vm_start`.
+          - VMs use a fresh ephemeral disk every boot. Use them to reproduce config changes before asking for a rebuild; never start two VMs of the same host.
+          - VMs started with `vm_start` are stopped automatically when the pi session exits; a detached owner watchdog also stops them if pi is Ctrl-C'd, the terminal is closed, or pi crashes. Call `vm_stop` earlier to free memory and ports.
+          - A start rebuilds the system and disk image, so expect several minutes after a config change.
+          - Read-only modes intentionally hide the `vm_*` tools because they mutate host state; switch to debug or build to use them.
         '';
       };
+
+      home.packages = [
+        inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.vm-test
+      ];
 
       home.file = {
         ".pi/agent/agents/cheap-scout.md".source = ../../assets/pi/agents/cheap-scout.md;
         ".pi/agent/extensions/subagent/config.json".text = builtins.toJSON { toolActivation = "eager"; };
+        ".pi/agent/extensions/vm-test".source = ../../assets/pi/vm-test;
       };
       /*
         home.file.".pi/agent/extensions/actual-finance".source = ../../assets/pi/actual-finance;

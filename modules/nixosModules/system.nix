@@ -542,4 +542,48 @@
       SUBSYSTEM=="hidraw", ATTRS{idVendor}=="1fc9", ATTRS{idProduct}=="0021", MODE="0660", GROUP="input", TAG+="uaccess"
     '';
   };
+
+  flake.nixosModules.vmTest =
+    { lib, pkgs, ... }:
+    {
+      virtualisation.vmVariantWithDisko = {
+        services.openssh = {
+          enable = true;
+          openFirewall = true;
+          settings = {
+            PasswordAuthentication = false;
+            KbdInteractiveAuthentication = false;
+            PermitRootLogin = lib.mkForce "prohibit-password";
+          };
+        };
+
+        users.users.root.openssh.authorizedKeys.keys = [
+          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJcAXHlW7WhNVvoU5H6q7BZDu09Tnd60P8QDJVhpbSiJ foxtrot@circe-nixos"
+        ];
+        users.users.foxtrot.hashedPasswordFile = lib.mkForce null;
+
+        virtualisation = {
+          memorySize = 4096;
+          cores = 4;
+          forwardPorts = map (port: {
+            from = "host";
+            host.address = "127.0.0.1";
+            host.port = port;
+            guest.port = 22;
+          }) (lib.range 2222 2231);
+        };
+
+        boot.kernelParams = [ "console=ttyS0" ];
+
+        environment.systemPackages = [ pkgs.grim ];
+
+        environment.sessionVariables = {
+          LIBGL_ALWAYS_SOFTWARE = lib.mkDefault "1";
+          MESA_LOADER_DRIVER_OVERRIDE = lib.mkDefault "kms_swrast";
+        };
+
+        systemd.services.sops-install-secrets.enable = lib.mkForce false;
+        systemd.services.sops-install-secrets-for-users.enable = lib.mkForce false;
+      };
+    };
 }
