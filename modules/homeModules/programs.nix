@@ -436,6 +436,24 @@
               };
             };
             openrouter = {
+              compat.openRouterRouting = {
+                order = [
+                  "relace"
+                  "wafer"
+                  "novita"
+                  "z-ai"
+                  "fireworks"
+                  "baseten"
+                ];
+                ignore = [
+                  "reka"
+                  "morph"
+                  "open-inference"
+                  "inceptron"
+                  "sail-research"
+                  "together"
+                ];
+              };
               models = [
                 {
                   id = "deepseek/deepseek-v4.1-flash-1017";
