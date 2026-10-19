@@ -2904,9 +2904,9 @@
       };
 
       config = lib.mkIf cfg.skills.enable {
-        home.file = lib.mapAttrs'
-          (name: file: lib.nameValuePair "${cfg.configDir}/skills/${name}/SKILL.md" { source = file; })
-          skillFiles;
+        home.file = lib.mapAttrs' (
+          name: file: lib.nameValuePair "${cfg.configDir}/skills/${name}/SKILL.md" { source = file; }
+        ) skillFiles;
       };
     };
 }

@@ -217,7 +217,10 @@
       description = "Reset btrfs root subvol for stateless boot";
       wantedBy = [ "initrd-root-device.target" ];
       before = [ "sysroot.mount" ];
-      after = [ "dev-mapper-crypted.device" "local-fs-pre.target" ];
+      after = [
+        "dev-mapper-crypted.device"
+        "local-fs-pre.target"
+      ];
       unitConfig.DefaultDependencies = "no";
       serviceConfig.Type = "oneshot";
       script = ''
@@ -232,7 +235,7 @@
         done
         btrfs subvolume create /btrfs_tmp/root
         umount /btrfs_tmp
-     '';
+      '';
     };
   };
 

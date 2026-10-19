@@ -1,6 +1,12 @@
 { inputs, self, ... }: {
   flake.nixosModules.finance-summary =
-    { config, lib, pkgs, util, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      util,
+      ...
+    }:
     let
       summaryApp = pkgs.buildNpmPackage {
         pname = "finance-summary";

@@ -9,7 +9,6 @@
     ];
   };
 
-
   flake.nixosModules.immich =
     {
       config,

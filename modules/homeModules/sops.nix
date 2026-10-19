@@ -1,7 +1,12 @@
 { inputs, self, ... }:
 {
   flake.homeModules.foxtrotSops =
-    { inputs, config, osConfig, ... }:
+    {
+      inputs,
+      config,
+      osConfig,
+      ...
+    }:
     let
       hostName = osConfig.networking.hostName;
     in
@@ -62,7 +67,12 @@
   };
 
   flake.homeModules.deckSops =
-    { inputs, config, osConfig, ... }:
+    {
+      inputs,
+      config,
+      osConfig,
+      ...
+    }:
     let
       hostName = osConfig.networking.hostName;
     in

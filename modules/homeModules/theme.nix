@@ -10,7 +10,8 @@
       h = config.lib.stylix.colors.withHashtag;
       piTheme = pkgs.writeText "pi-theme-stylix.json" (
         builtins.toJSON {
-          "$schema" = "https://raw.githubusercontent.com/earendil-works/pi/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json";
+          "$schema" =
+            "https://raw.githubusercontent.com/earendil-works/pi/main/packages/coding-agent/src/modes/interactive/theme/theme-schema.json";
           name = "stylix";
           vars = {
             bg = h.base00;

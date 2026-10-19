@@ -13,7 +13,9 @@
         let
           unstable = inputs.nixpkgs-unstable.legacyPackages.${system};
           sdl2Prelaunch = unstable.writeText "00-sdl2.sh" ''
-            export LD_LIBRARY_PATH=${unstable.lib.makeLibraryPath [ unstable.sdl2-compat ]}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
+            export LD_LIBRARY_PATH=${
+              unstable.lib.makeLibraryPath [ unstable.sdl2-compat ]
+            }''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}
           '';
         in
         unstable.stdenvNoCC.mkDerivation (finalAttrs: {
@@ -43,10 +45,12 @@
 
             install -m755 $src xlm
             patchelf --set-interpreter "${unstable.stdenv.cc.bintools.dynamicLinker}" \
-              --set-rpath "${unstable.lib.makeLibraryPath [
-                unstable.glibc
-                unstable.stdenv.cc.cc.lib
-              ]}" xlm
+              --set-rpath "${
+                unstable.lib.makeLibraryPath [
+                  unstable.glibc
+                  unstable.stdenv.cc.cc.lib
+                ]
+              }" xlm
 
             mkdir compat
             ./xlm install-steam-tool --xlm-updater-disable \

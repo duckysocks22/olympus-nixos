@@ -28,7 +28,15 @@
       # 192.168.10.253 is nyx's WireGuard-mesh address, reachable only by
       # mesh members (aether, circe). LAN clients use nyx's LAN address instead.
       builderHostName =
-        if builtins.elem config.networking.hostName [ "aether-nixos" "circe-nixos" ] then "192.168.10.253" else "172.17.100.1";
+        if
+          builtins.elem config.networking.hostName [
+            "aether-nixos"
+            "circe-nixos"
+          ]
+        then
+          "192.168.10.253"
+        else
+          "172.17.100.1";
     in
     {
       sops.secrets."remotebuild/privateKey" = {

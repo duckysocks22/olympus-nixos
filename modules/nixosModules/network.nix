@@ -122,8 +122,14 @@
           unmanaged = lib.optionals hasWiredEth [ ethDevice.${config.networking.hostName} ];
         };
         firewall = {
-          allowedTCPPorts = [ 4646 8384 ];
-          allowedUDPPorts = [ 4646 8384 ];
+          allowedTCPPorts = [
+            4646
+            8384
+          ];
+          allowedUDPPorts = [
+            4646
+            8384
+          ];
         };
       };
 
@@ -160,43 +166,53 @@
         wants = [ "wifi-psk-env.service" ];
       };
 
-      systemd.services.wifi-recover-boot = lib.mkIf (autoconnect.${config.networking.hostName} == "true") {
-        description = "Ensure wifi autoconnect completes after declarative profiles are ensured";
-        wantedBy = [ "multi-user.target" ];
-        after = [
-          "NetworkManager.service"
-          "NetworkManager-ensure-profiles.service"
-          "iwd.service"
-        ];
-        wants = [ "NetworkManager-ensure-profiles.service" ];
-        path = [ pkgs.coreutils pkgs.gawk ];
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${wifiRecover} boot";
-          TimeoutStartSec = "3min";
-        };
-      };
-      systemd.services.wifi-recover-resume = lib.mkIf (autoconnect.${config.networking.hostName} == "true") {
-        description = "Re-establish wifi after suspend/resume (iwd/NM state desync)";
-        wantedBy = [
-          "suspend.target"
-          "hibernate.target"
-          "hybrid-sleep.target"
-          "suspend-then-hibernate.target"
-        ];
-        after = [
-          "suspend.target"
-          "hibernate.target"
-          "hybrid-sleep.target"
-          "suspend-then-hibernate.target"
-        ];
-        path = [ pkgs.coreutils pkgs.gawk ];
-        serviceConfig = {
-          Type = "oneshot";
-          ExecStart = "${wifiRecover} resume";
-          TimeoutStartSec = "3min";
-        };
-      };
+      systemd.services.wifi-recover-boot =
+        lib.mkIf (autoconnect.${config.networking.hostName} == "true")
+          {
+            description = "Ensure wifi autoconnect completes after declarative profiles are ensured";
+            wantedBy = [ "multi-user.target" ];
+            after = [
+              "NetworkManager.service"
+              "NetworkManager-ensure-profiles.service"
+              "iwd.service"
+            ];
+            wants = [ "NetworkManager-ensure-profiles.service" ];
+            path = [
+              pkgs.coreutils
+              pkgs.gawk
+            ];
+            serviceConfig = {
+              Type = "oneshot";
+              ExecStart = "${wifiRecover} boot";
+              TimeoutStartSec = "3min";
+            };
+          };
+      systemd.services.wifi-recover-resume =
+        lib.mkIf (autoconnect.${config.networking.hostName} == "true")
+          {
+            description = "Re-establish wifi after suspend/resume (iwd/NM state desync)";
+            wantedBy = [
+              "suspend.target"
+              "hibernate.target"
+              "hybrid-sleep.target"
+              "suspend-then-hibernate.target"
+            ];
+            after = [
+              "suspend.target"
+              "hibernate.target"
+              "hybrid-sleep.target"
+              "suspend-then-hibernate.target"
+            ];
+            path = [
+              pkgs.coreutils
+              pkgs.gawk
+            ];
+            serviceConfig = {
+              Type = "oneshot";
+              ExecStart = "${wifiRecover} resume";
+              TimeoutStartSec = "3min";
+            };
+          };
 
       systemd.network = {
         enable = true;
@@ -581,7 +597,8 @@
     "hermes-graphene" = "SY3SSMktNiyc4qe7/JK2Vo+p/21QFGHPdYAuucOvuR0=";
   };
 
-  flake.nixosModules.syncthing = { config, ... }:
+  flake.nixosModules.syncthing =
+    { config, ... }:
     let
       address = {
         "nyx-nixos" = "192.168.10.253";
@@ -597,66 +614,72 @@
         cert = config.sops.secrets."syncthing/${config.networking.hostName}/cert".path;
         key = config.sops.secrets."syncthing/${config.networking.hostName}/key".path;
 
-      settings = {
-        devices = {
-          circe-nixos = {
-            id = "ECLW26H-2JWNNZX-YUWT42U-CYNARNX-SJRMMXA-XA2I7KD-ATCMTX2-4JXJNAP";
+        settings = {
+          devices = {
+            circe-nixos = {
+              id = "ECLW26H-2JWNNZX-YUWT42U-CYNARNX-SJRMMXA-XA2I7KD-ATCMTX2-4JXJNAP";
+            };
+            athena-nixos = {
+              id = "JKIY2Y5-V62NP54-PUGNOIZ-N3VQ4QY-7LJ4T4T-WEQWEDX-B7RIP74-J24IGQM";
+            };
+            dionysus-nixos = {
+              id = "AQSHDSY-3I6HO7B-XJTWCSU-5MBSCSL-AU4BWKN-PQUDFE2-YVBZT6R-25G7RAI";
+            };
+            ariadne-nixos = {
+              id = "Z6NPUDI-PZ46LWD-6WJ2AN4-TFTS3ST-VSR4TBS-JSU73RB-MYOPXP7-2ISDWAR";
+            };
+            nyx-nixos = {
+              id = "T5XG4ZF-FYS5II7-JJH5274-CZF2CDG-QDDTASR-FZH7FCO-TQA6UV2-KDFTYQB";
+            };
           };
-          athena-nixos = {
-            id = "JKIY2Y5-V62NP54-PUGNOIZ-N3VQ4QY-7LJ4T4T-WEQWEDX-B7RIP74-J24IGQM";
-          };
-          dionysus-nixos = {
-            id = "AQSHDSY-3I6HO7B-XJTWCSU-5MBSCSL-AU4BWKN-PQUDFE2-YVBZT6R-25G7RAI";
-          };
-          ariadne-nixos = {
-            id = "Z6NPUDI-PZ46LWD-6WJ2AN4-TFTS3ST-VSR4TBS-JSU73RB-MYOPXP7-2ISDWAR";
-          };
-          nyx-nixos = {
-            id = "T5XG4ZF-FYS5II7-JJH5274-CZF2CDG-QDDTASR-FZH7FCO-TQA6UV2-KDFTYQB";
+          folders = {
+            "FFXIV" = {
+              id = "FFXIV";
+              path = "/media/hdd1/services/syncthing/ffxiv";
+              devices = [
+                "circe-nixos"
+                "nyx-nixos"
+                "dionysus-nixos"
+                "athena-nixos"
+                "ariadne-nixos"
+              ];
+              ignorePatterns = [
+                "!.stignore"
+                "!accounts.json"
+                "!secrets.json"
+                "!cfgcopy"
+                "!ffxivConfig"
+                "ffxivConfig/FFXIV.cfg"
+                "ffxivConfig/FFXIV.cfg.old"
+                "!pluginConfigs"
+                "!installedPlugins"
+                "!dalamudConfig.json"
+                "!dalamudUI.ini"
+                "!launcherUI.ini"
+                "FFXIV_CHR004000174C7A37AE"
+                "pluginConfigs/LightlessSync/tracelog"
+                "*"
+              ];
+            };
           };
         };
-        folders = {
-          "FFXIV" = {
-            id = "FFXIV";
-            path = "/media/hdd1/services/syncthing/ffxiv";
-            devices = [ "circe-nixos" "nyx-nixos" "dionysus-nixos" "athena-nixos" "ariadne-nixos" ];
-            ignorePatterns = [
-              "!.stignore"
-              "!accounts.json"
-              "!secrets.json"
-              "!cfgcopy"
-              "!ffxivConfig"
-              "ffxivConfig/FFXIV.cfg"
-              "ffxivConfig/FFXIV.cfg.old"
-              "!pluginConfigs"
-              "!installedPlugins"
-              "!dalamudConfig.json"
-              "!dalamudUI.ini"
-              "!launcherUI.ini"
-              "FFXIV_CHR004000174C7A37AE"
-              "pluginConfigs/LightlessSync/tracelog"
-              "*"
-            ];
-          };
-        };
+        guiAddress = "${address.${config.networking.hostName}}:8384";
+        guiPasswordFile = "${config.sops.secrets."syncthing/pass".path}";
+
+        settings.gui.user = "foxtrot";
       };
-      guiAddress = "${address.${config.networking.hostName}}:8384";
-      guiPasswordFile = "${config.sops.secrets."syncthing/pass".path}";
 
-      settings.gui.user = "foxtrot";
+      sops.secrets."syncthing/${config.networking.hostName}/cert" = {
+        owner = "syncthing";
+        sopsFile = hostSecrets;
+      };
+      sops.secrets."syncthing/${config.networking.hostName}/key" = {
+        owner = "syncthing";
+        sopsFile = hostSecrets;
+      };
+      sops.secrets."syncthing/pass" = {
+        owner = "syncthing";
+        sopsFile = ../../secrets/common.yaml;
+      };
     };
-
-    sops.secrets."syncthing/${config.networking.hostName}/cert" = {
-      owner = "syncthing";
-      sopsFile = hostSecrets;
-    };
-    sops.secrets."syncthing/${config.networking.hostName}/key" = {
-      owner = "syncthing";
-      sopsFile = hostSecrets;
-    };
-    sops.secrets."syncthing/pass" = {
-      owner = "syncthing";
-      sopsFile = ../../secrets/common.yaml;
-    };
-  };
 }

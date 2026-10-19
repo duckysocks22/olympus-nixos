@@ -6,7 +6,8 @@
       config,
       pkgs,
       ...
-    }: {
+    }:
+    {
       home.activation.ffxivWinebusSdl = config.lib.dag.entryAfter [ "writeBoundary" ] ''
         reg="${config.home.homeDirectory}/.xlcore/wineprefix/system.reg"
         if [ -f "$reg" ] && ${pkgs.gnugrep}/bin/grep -q '"Enable SDL"=' "$reg"; then
@@ -19,31 +20,31 @@
         fi
       '';
       xdg.mimeApps = {
-      enable = true;
-      defaultApplications = {
-        "x-scheme-handler/unityhub" = "unityhub.desktop";
+        enable = true;
+        defaultApplications = {
+          "x-scheme-handler/unityhub" = "unityhub.desktop";
+        };
+      };
+
+      xdg.configFile."mimeapps.list".force = true;
+
+      home.packages = with pkgs; [
+        fastfetch
+        kdePackages.dolphin
+        unrar
+        p7zip
+        filezilla
+        lunatask
+        kdePackages.kate
+      ];
+
+      programs.kitty = {
+        enable = true;
+        settings = {
+          confirm_os_window_close = 0;
+        };
       };
     };
-
-    xdg.configFile."mimeapps.list".force = true;
-
-    home.packages = with pkgs; [
-      fastfetch
-      kdePackages.dolphin
-      unrar
-      p7zip
-      filezilla
-      lunatask
-      kdePackages.kate
-    ];
-
-    programs.kitty = {
-      enable = true;
-      settings = {
-        confirm_os_window_close = 0;
-      };
-    };
-  };
 
   flake.homeModules.nixvim =
     {
@@ -159,12 +160,19 @@
         };
         autoCmd = [
           {
-            event = [ "FocusGained" "CursorHold" "CursorHoldI" ];
+            event = [
+              "FocusGained"
+              "CursorHold"
+              "CursorHoldI"
+            ];
             pattern = [ "*" ];
             command = "checktime";
           }
           {
-            event = [ "BufEnter" "BufWritePost" ];
+            event = [
+              "BufEnter"
+              "BufWritePost"
+            ];
             pattern = [ "*" ];
             group = "harpoon-lualine-refresh";
             command = "redrawstatus";
@@ -221,7 +229,9 @@
           }
         ];
         autoGroups = {
-          harpoon-lualine-refresh = { clear = true; };
+          harpoon-lualine-refresh = {
+            clear = true;
+          };
         };
         plugins.lualine.settings = {
           sections = {
@@ -378,7 +388,7 @@
         inputs.self.homeModules.pi-agent-skills
         inputs.sops-nix.homeModules.sops
       ];
-      
+
       sops.templates."pi-auth" = {
         path = "${config.home.homeDirectory}/.pi/agent/auth.json";
         content = ''
@@ -631,8 +641,8 @@
         '';
       };
       /*
-      home.file.".pi/agent/extensions/actual-finance".source = ../../assets/pi/actual-finance;
-      home.file.".pi/agent/skills/actual-finance".source = ../../assets/pi/skills/actual-finance;
+        home.file.".pi/agent/extensions/actual-finance".source = ../../assets/pi/actual-finance;
+        home.file.".pi/agent/skills/actual-finance".source = ../../assets/pi/skills/actual-finance;
       */
 
       home.file.".pi/agent/modes.config.json".text =
@@ -648,8 +658,7 @@
             "web_enable"
             "web_search"
           ];
-          gitReadOnlyInstructions =
-            "bash IS available in this mode for read-only commands, including read-only git: git log, git status, git diff, git show, git blame. You can and should use these to inspect commit history. Run git commands directly (the repository is the working directory) — never use 'cd ... && ...' chains, semicolon-separated command lists, 'git -C <path>', or output redirects like '2>/dev/null'; the read-only guard rejects those forms. Mutating git commands (add, commit, push, pull, fetch, checkout, restore, etc.) are blocked.";
+          gitReadOnlyInstructions = "bash IS available in this mode for read-only commands, including read-only git: git log, git status, git diff, git show, git blame. You can and should use these to inspect commit history. Run git commands directly (the repository is the working directory) — never use 'cd ... && ...' chains, semicolon-separated command lists, 'git -C <path>', or output redirects like '2>/dev/null'; the read-only guard rejects those forms. Mutating git commands (add, commit, push, pull, fetch, checkout, restore, etc.) are blocked.";
         in
         builtins.toJSON {
           modes = {
@@ -1460,12 +1469,14 @@
       };
     };
 
-    flake.homeModules.syncthing = {
+  flake.homeModules.syncthing =
+    {
       config,
       osConfig,
       lib,
       ...
-    }: let
+    }:
+    let
       address = {
         "circe-nixos" = "192.168.10.2";
         "dionysus-nixos" = "192.168.10.3";
@@ -1490,7 +1501,8 @@
         "pluginConfigs/LightlessSync/tracelog"
         "*"
       ];
-    in {
+    in
+    {
       home.file.".xlcore/.stignore" = {
         text = lib.concatStringsSep "\n" (ffxivIgnorePatterns ++ [ "" ]);
         force = true;
@@ -1524,7 +1536,13 @@
             "FFXIV" = {
               id = "FFXIV";
               path = "${config.home.homeDirectory}/.xlcore";
-              devices = [ "circe-nixos" "nyx-nixos" "dionysus-nixos" "athena-nixos" "ariadne-nixos" ];
+              devices = [
+                "circe-nixos"
+                "nyx-nixos"
+                "dionysus-nixos"
+                "athena-nixos"
+                "ariadne-nixos"
+              ];
               ignorePatterns = [
                 "!.stignore"
                 "!accounts.json"

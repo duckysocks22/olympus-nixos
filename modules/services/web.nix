@@ -195,17 +195,25 @@
   flake.nixosModules.routeVPNMullvad = { config, ... }: {
     systemd.network = {
       netdevs."60-wg-mullvad1" = {
-        netdevConfig = { Kind = "wireguard"; Name = "wg-mullvad1"; };
+        netdevConfig = {
+          Kind = "wireguard";
+          Name = "wg-mullvad1";
+        };
         wireguardConfig = {
           PrivateKeyFile = config.sops.secrets."wireguard/mullvad/privkey".path;
           FirewallMark = 51820;
           RouteTable = 51820;
         };
-        wireguardPeers = [{
-          PublicKey = "HjcUGVDXWdrRkaKNpc/8494RM5eICO6DPyrhCtTv9Ws=";
-          AllowedIPs = [ "0.0.0.0/0" "::/0" ];
-          Endpoint = "143.244.47.78:3489";
-        }];
+        wireguardPeers = [
+          {
+            PublicKey = "HjcUGVDXWdrRkaKNpc/8494RM5eICO6DPyrhCtTv9Ws=";
+            AllowedIPs = [
+              "0.0.0.0/0"
+              "::/0"
+            ];
+            Endpoint = "143.244.47.78:3489";
+          }
+        ];
       };
 
       networks."60-wg-mullvad1" = {
@@ -217,8 +225,16 @@
       };
 
       networks."50-wg0".routingPolicyRules = [
-        { Priority = 100; From = "192.168.10.30/32";       Table = 51820; }
-        { Priority = 100; From = "fd31:bf08:57cb::30/128"; Table = 51820; }
+        {
+          Priority = 100;
+          From = "192.168.10.30/32";
+          Table = 51820;
+        }
+        {
+          Priority = 100;
+          From = "fd31:bf08:57cb::30/128";
+          Table = 51820;
+        }
       ];
     };
 
@@ -881,58 +897,59 @@
       users.groups.adguardhome = { };
     };
 
-    flake.nixosModules.atuinServer = { config, pkgs, ... }: {
-      services.atuin = {
-        enable = true;
-        package = pkgs.atuin;
-        host = "::";
-        port = 1823;
-        environmentFile = config.sops.secrets."atuin/env".path;
-        database = {
-          createLocally = true;
-        };
+  flake.nixosModules.atuinServer = { config, pkgs, ... }: {
+    services.atuin = {
+      enable = true;
+      package = pkgs.atuin;
+      host = "::";
+      port = 1823;
+      environmentFile = config.sops.secrets."atuin/env".path;
+      database = {
+        createLocally = true;
       };
-
-      networking.firewall.allowedTCPPorts = [ config.services.atuin.port ];
     };
 
-    flake.nixosModules.atuinAIServer = { config, pkgs, ... }:
-      let
-        configToml = pkgs.writeText "atuin-ai-config.toml" ''
-          port = 1824
-          endpoint = "https://api.fireworks.ai/inference/v1"
-          api_key = { env = "FIREWORKS_API_KEY" }
+    networking.firewall.allowedTCPPorts = [ config.services.atuin.port ];
+  };
 
-          default_model = "glm-5p3-flash"
+  flake.nixosModules.atuinAIServer =
+    { config, pkgs, ... }:
+    let
+      configToml = pkgs.writeText "atuin-ai-config.toml" ''
+        port = 1824
+        endpoint = "https://api.fireworks.ai/inference/v1"
+        api_key = { env = "FIREWORKS_API_KEY" }
 
-          [request.body]
-          stream_options = { include_usage = true }
+        default_model = "glm-5p3-flash"
 
-          [request.headers]
-          Authorization = "Bearer {{api_key}}"
-          user-agent = "atuin-ai-server/1.0"
-          x-opencode-session = "9c1d4b7e-2a63-4f18-9e5b-7d0a2c6f8b34"
+        [request.body]
+        stream_options = { include_usage = true }
 
-          [[models]]
-          alias = "glm-5p3-flash"
-          name = "GLM 5.3 Flash"
-          description = "Fireworks API - GLM Flash Latest"
-          model = "accounts/fireworks/routers/glm-5p3-flash"
-        '';
-      in
-      {
-        virtualisation.oci-containers.containers."atuin-ai-server" = {
-          image = "ghcr.io/atuinsh/atuin-ai-server:latest";
-          environmentFiles = [ config.sops.secrets."atuin/ai-env".path ];
-          volumes = [ "${configToml}:/etc/atuin-ai/config.toml:ro" ];
-          log-driver = "journald";
-          extraOptions = [
-            "--network=host"
-          ];
-        };
+        [request.headers]
+        Authorization = "Bearer {{api_key}}"
+        user-agent = "atuin-ai-server/1.0"
+        x-opencode-session = "9c1d4b7e-2a63-4f18-9e5b-7d0a2c6f8b34"
 
-        networking.firewall.allowedTCPPorts = [ 1824 ];
+        [[models]]
+        alias = "glm-5p3-flash"
+        name = "GLM 5.3 Flash"
+        description = "Fireworks API - GLM Flash Latest"
+        model = "accounts/fireworks/routers/glm-5p3-flash"
+      '';
+    in
+    {
+      virtualisation.oci-containers.containers."atuin-ai-server" = {
+        image = "ghcr.io/atuinsh/atuin-ai-server:latest";
+        environmentFiles = [ config.sops.secrets."atuin/ai-env".path ];
+        volumes = [ "${configToml}:/etc/atuin-ai/config.toml:ro" ];
+        log-driver = "journald";
+        extraOptions = [
+          "--network=host"
+        ];
       };
+
+      networking.firewall.allowedTCPPorts = [ 1824 ];
+    };
 
   flake.nixosModules.homepage = { config, pkgs, ... }: {
     services.homepage-dashboard = {
@@ -1173,7 +1190,7 @@
                 siteMonitor = "http://localhost:5058";
               };
             }
-            
+
           ];
         }
       ];
