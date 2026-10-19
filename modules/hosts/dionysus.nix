@@ -102,7 +102,14 @@
         users.users.root.initialPassword = "root";
       };
 
-      nix.package = lib.mkForce pkgs.lixPackageSets.lix_2_96.lix;
+      nix.package = lib.mkForce (
+        pkgs.lixPackageSets.lix_2_96.lix.overrideAttrs (prev: {
+          mesonFlags = map (
+            flag: if lib.hasPrefix "-Dmimalloc=" flag then "-Dmimalloc=disabled" else flag
+          ) prev.mesonFlags;
+          buildInputs = builtins.filter (input: (input.pname or "") != "mimalloc") prev.buildInputs;
+        })
+      );
     };
 
   flake.nixosModules.dionysusDisko = { inputs, lib, ... }: {
