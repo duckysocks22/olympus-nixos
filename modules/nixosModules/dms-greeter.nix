@@ -53,7 +53,8 @@
           path = "/tmp/dms-greeter.log";
         };
 
-        quickshell.package = inputs.nixpkgs-unstable.legacyPackages.${pkgs.system}.quickshell;
+        quickshell.package =
+          inputs.nixpkgs-unstable.legacyPackages.${pkgs.stdenv.hostPlatform.system}.quickshell;
       };
 
       environment.systemPackages = [ pkgs.bibata-cursors ];
