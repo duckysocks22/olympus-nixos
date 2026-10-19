@@ -390,6 +390,10 @@
             "openrouter": {
               "type": "api_key",
               "key": "${config.sops.placeholder."aiApiKey/openrouter/apiKey"}"
+            },
+            "opencode-go": {
+              "type": "api_key",
+              "key": "${config.sops.placeholder."aiApiKey/opencode-go/apiKey"}"
             }
           }
         '';
@@ -399,9 +403,10 @@
         enable = true;
         package = pkgs-unstable.pi-coding-agent;
         settings = {
-          defaultProvider = "openrouter";
-          defaultModel = "deepseek/deepseek-v4.1-flash-1017";
+          defaultProvider = "opencode-go";
+          defaultModel = "deepseek-v4.1-flash";
           enabledModels = [
+            "deepseek-v4.1-flash"
             "openrouter/deepseek/deepseek-v4.1-flash-1017"
             "llama.cpp/*"
           ];

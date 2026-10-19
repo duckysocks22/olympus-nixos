@@ -29,6 +29,10 @@
       sops.secrets."aiApiKey/fireworks/apiKey" = {
         sopsFile = ../../secrets/common.yaml;
       };
+
+      sops.secrets."aiApiKey/opencode-go/apiKey" = {
+        sopsFile = ../../secrets/common.yaml;
+      };
     };
 
   flake.homeModules.serverSops = { inputs, config, ... }: {
@@ -49,6 +53,10 @@
     };
 
     sops.secrets."aiApiKey/fireworks/apiKey" = {
+      sopsFile = ../../secrets/common.yaml;
+    };
+
+    sops.secrets."aiApiKey/opencode-go/apiKey" = {
       sopsFile = ../../secrets/common.yaml;
     };
   };
@@ -82,5 +90,10 @@
       sops.secrets."aiApiKey/fireworks/apiKey" = {
         sopsFile = ../../secrets/common.yaml;
       };
+
+      sops.secrets."aiApiKey/opencode-go/apiKey" = {
+        sopsFile = ../../secrets/common.yaml;
+      };
+
     };
 }
