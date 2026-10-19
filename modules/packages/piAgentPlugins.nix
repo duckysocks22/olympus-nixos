@@ -155,6 +155,9 @@
         const SPEND_PROVIDER = ${builtins.toJSON cfg.statusLine.spend.provider};
         const SPEND_ACCOUNT_ID_FILE = ${builtins.toJSON cfg.statusLine.spend.accountIdFile};
         const SPEND_API_KEY_FILE = ${builtins.toJSON cfg.statusLine.spend.apiKeyFile};
+        const SPEND_PROVIDERS = new Set(["openrouter", "fireworks"]);
+        const OPENCODE_GO_PROVIDER = "opencode-go";
+        const OPENCODE_GO_USAGE_URL = "https://opencode.ai/zen/go/v1/usage";
         const LIVE_PRICING = ${boolStr cfg.statusLine.livePricing};
 
         interface Seg {
@@ -206,7 +209,20 @@
           fetchedAt: number;
         }
 
+        interface UsageWindow {
+          percent: number;
+          resetsAt: string;
+        }
+
+        interface UsageSnapshot {
+          rolling: UsageWindow | null;
+          weekly: UsageWindow | null;
+          monthly: UsageWindow | null;
+          fetchedAt: number;
+        }
+
         const spendCache: Record<string, SpendSnapshot> = {};
+        const usageCache: Record<string, UsageSnapshot> = {};
 
         function grpcVarint(n: number): Buffer {
           const out: number[] = [];
@@ -403,13 +419,49 @@
           return { total: spendTotal, credits: credits, fetchedAt: Date.now() };
         }
 
+        async function fetchOpenCodeGoUsage(ctx: any): Promise<UsageSnapshot | null> {
+          const apiKey = await providerApiKey(ctx, OPENCODE_GO_PROVIDER);
+          if (!apiKey) return null;
+          const res = await fetch(OPENCODE_GO_USAGE_URL, {
+            headers: {
+              Authorization: "Bearer " + apiKey,
+              Accept: "application/json",
+              "User-Agent": "pi-status-line",
+            },
+            signal: AbortSignal.timeout(8000),
+          });
+          if (!res.ok) return null;
+          const data: any = await res.json();
+          const usage = data?.usage;
+          if (!usage || typeof usage !== "object") return null;
+          const window = (w: any): UsageWindow | null => {
+            const percent = Number(w?.percent);
+            if (!Number.isFinite(percent)) return null;
+            return {
+              percent: Math.min(100, Math.max(0, percent)),
+              resetsAt: typeof w?.resetsAt === "string" ? w.resetsAt : "",
+            };
+          };
+          return {
+            rolling: window(usage.rolling),
+            weekly: window(usage.weekly),
+            monthly: window(usage.monthly),
+            fetchedAt: Date.now(),
+          };
+        }
+
         async function fetchSpend(ctx: any, providerOverride?: string): Promise<void> {
           try {
             const provider = String(providerOverride || ctx?.model?.provider || SPEND_PROVIDER || "");
             if (!provider) return;
+            if (provider === OPENCODE_GO_PROVIDER) {
+              const usage = await fetchOpenCodeGoUsage(ctx);
+              if (usage) usageCache[provider] = usage;
+              return;
+            }
             let snapshot: SpendSnapshot | null = null;
             if (provider === "openrouter") snapshot = await fetchOpenRouterSpend(ctx);
-            else if (provider === "fireworks" || provider === SPEND_PROVIDER) snapshot = await fetchFireworksSpend(ctx);
+            else if (provider === "fireworks") snapshot = await fetchFireworksSpend(ctx);
             if (snapshot) spendCache[provider] = snapshot;
           } catch {
             /* keep the last successful snapshot */
@@ -878,7 +930,12 @@
           return { filled: "█".repeat(full) + PARTIAL_BLOCKS[pIdx], empty: emptyChar.repeat(emptyLen) };
         }
 
+        function spendVisible(provider: string): boolean {
+          return SPEND_PROVIDERS.has(provider);
+        }
+
         function spendText(theme: any, provider: string): string {
+          if (!spendVisible(provider)) return "";
           const snapshot = spendCache[provider];
           if (!snapshot) return "";
           let text = theme.fg("dim", "spent ") + theme.fg("warning", "$" + snapshot.total.toFixed(2));
@@ -887,6 +944,39 @@
             text += theme.fg("dim", " · credits ") + theme.fg(color, "$" + snapshot.credits.toFixed(2));
           }
           return text;
+        }
+
+        function usageColor(pct: number): string {
+          return pct < 50 ? "success" : pct < 80 ? "warning" : "error";
+        }
+
+        function reportedPercent(percent: number): number {
+          const floored = Math.floor(percent);
+          return Math.min(100, floored + 1);
+        }
+
+        function goUsageText(theme: any, provider: string): string {
+          if (provider !== OPENCODE_GO_PROVIDER) return "";
+          const snapshot = usageCache[provider];
+          if (!snapshot) return "";
+          const windows: [string, UsageWindow | null][] = [
+            ["5h", snapshot.rolling],
+            ["wk", snapshot.weekly],
+            ["mo", snapshot.monthly],
+          ];
+          const parts: string[] = [];
+          for (const [label, window] of windows) {
+            if (!window) continue;
+            const pct = reportedPercent(window.percent);
+            parts.push(theme.fg("dim", label + " ") + theme.fg(usageColor(pct), pct + "%"));
+          }
+          if (parts.length === 0) return "";
+          return theme.fg("accent", "go ") + parts.join(theme.fg("dim", " · "));
+        }
+
+        function usageText(theme: any, provider: string): string {
+          const spend = spendText(theme, provider);
+          return spend || goUsageText(theme, provider);
         }
 
         const noopTheme = { fg: (_c: string, t: string): string => t };
@@ -916,9 +1006,9 @@
             }
           }
           if (SHOW_TOKENS) parts.push(theme.fg("dim", "↑" + fmtTokens(d.input) + " ↓" + fmtTokens(d.output)));
-          if (SHOW_COST) parts.push(theme.fg("dim", "💵 $" + d.cost.toFixed(2)));
+          if (SHOW_COST && spendVisible(d.provider)) parts.push(theme.fg("dim", "💵 $" + d.cost.toFixed(2)));
           if (d.branch) parts.push(theme.fg("warning", d.branch));
-          const u = spendText(theme, d.provider);
+          const u = usageText(theme, d.provider);
           if (u) parts.push(u);
           return parts.join(theme.fg("dim", " | "));
         }
@@ -929,9 +1019,9 @@
           if (SHOW_MODEL) parts.push(d.model + " " + d.level);
           if (SHOW_CONTEXT) parts.push(d.pct === null ? "--" : blockBar(d.pct, 10, "·").filled + " " + d.pct + "%");
           if (SHOW_TOKENS) parts.push("↑" + fmtTokens(d.input) + " ↓" + fmtTokens(d.output));
-          if (SHOW_COST) parts.push("💵 $" + d.cost.toFixed(2));
+          if (SHOW_COST && spendVisible(d.provider)) parts.push("💵 $" + d.cost.toFixed(2));
           if (d.branch) parts.push(d.branch);
-          const u = spendText(noopTheme, d.provider);
+          const u = usageText(noopTheme, d.provider);
           if (u) parts.push(u);
           return parts.join("  ");
         }
@@ -951,8 +1041,8 @@
                 : "📁 ctx --",
             });
           }
-          if (SHOW_COST) segs.push({ id: "cost", text: "💵 $" + d.cost.toFixed(2) });
-          const u = spendText(noopTheme, d.provider);
+          if (SHOW_COST && spendVisible(d.provider)) segs.push({ id: "cost", text: "💵 $" + d.cost.toFixed(2) });
+          const u = usageText(noopTheme, d.provider);
           if (u) segs.push({ id: "usage", text: u });
           return segs;
         }
