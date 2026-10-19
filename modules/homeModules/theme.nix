@@ -143,6 +143,7 @@
           kde.enable = true;
           nixvim.enable = true;
           btop.enable = true;
+          zellij.enable = true;
         };
       };
 
