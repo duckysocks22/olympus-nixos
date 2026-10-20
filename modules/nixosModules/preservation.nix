@@ -50,6 +50,12 @@
             "/var/cache/mullvad-vpn"
             "/var/log"
             "/etc/mullvad-vpn"
+            {
+              directory = "/var/lib/decky-loader";
+              user = "deck";
+              group = "users";
+              mode = "0755";
+            }
           ];
 
           files = [
