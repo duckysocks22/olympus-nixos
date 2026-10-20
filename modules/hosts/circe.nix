@@ -37,6 +37,62 @@
       inputs,
       ...
     }:
+    let
+      wifiPmHooks = {
+        ExecStartPre = "-${pkgs.bash}/bin/sh -c 'echo 0000:62:00.0 > /sys/bus/pci/drivers/mt7921e/unbind'";
+        ExecStartPost = "-${pkgs.bash}/bin/sh -c 'echo 0000:62:00.0 > /sys/bus/pci/drivers/mt7921e/bind'";
+      };
+      # Two separate resume bugs: niri drops the first frame while reacquiring DRM master,
+      # and the quickshell lock surface keeps waiting on a pre-stall frame callback, so it
+      # only repaints once input arrives. A synthetic Shift tap (no character) unblocks it.
+      niriResumeRedraw = pkgs.writeShellScript "niri-resume-redraw" ''
+        export XDG_RUNTIME_DIR="/run/user/$(id -u)"
+        export WAYLAND_DISPLAY="$(basename "$(ls "$XDG_RUNTIME_DIR"/wayland-* 2>/dev/null | grep -v '\.lock' | head -1)")"
+        sock=$(ls "$XDG_RUNTIME_DIR"/niri.wayland-*.sock 2>/dev/null | head -1)
+        [ -n "$sock" ] || exit 0
+        export NIRI_SOCKET="$sock"
+        sleep 4
+        ${pkgs.niri}/bin/niri msg action power-on-monitors >/dev/null 2>&1 || true
+        ${pkgs.wtype}/bin/wtype -k Shift_L >/dev/null 2>&1 || true
+        sleep 5
+        ${pkgs.niri}/bin/niri msg action power-on-monitors >/dev/null 2>&1 || true
+        ${pkgs.wtype}/bin/wtype -k Shift_L >/dev/null 2>&1 || true
+        sleep 3
+        ${pkgs.niri}/bin/niri msg action power-on-monitors >/dev/null 2>&1 || true
+      '';
+      # Persist boot progress to the unencrypted ESP: the initrd journal is lost on a
+      # hard power-off, this survives it and shows how far a failed wake got.
+      traceStage =
+        stage:
+        ''
+          esp=""
+          for i in {1..20}; do
+            for candidate in /dev/disk/by-partlabel/disk-main-ESP /dev/nvme0n1p1; do
+              if [ -b "$candidate" ]; then
+                esp="$candidate"
+                break 2
+              fi
+            done
+            sleep 0.5
+          done
+          if [ -z "$esp" ]; then
+            echo "resume-trace: no ESP device" > /dev/kmsg
+            exit 0
+          fi
+          mkdir -p /mnt
+          if ! mount -o rw "$esp" /mnt 2>/tmp/mount.err; then
+            echo "resume-trace: mount $esp failed: $(cat /tmp/mount.err)" > /dev/kmsg
+            exit 0
+          fi
+          printf '%s stage=${stage} boot=%s swap=%s\n' \
+            "$(date -Is)" \
+            "$(cat /proc/sys/kernel/random/boot_id)" \
+            "$(if [ -e /dev/mapper/crypted-swap ]; then echo present; else echo absent; fi)" \
+            >> /mnt/resume-trace.log
+          sync
+          umount /mnt || umount -l /mnt
+        '';
+    in
     {
 
       environment.systemPackages =
@@ -72,7 +128,69 @@
       };
       security.rtkit.enable = true;
       systemd.sleep.settings.Sleep = {
-        HibernateDelaySec = "2h";
+        HibernateDelaySec = "1h";
+      };
+      systemd.services.niri-resume-redraw = {
+        description = "Repaint niri after resume";
+        wantedBy = [
+          "hibernate.target"
+          "suspend.target"
+          "suspend-then-hibernate.target"
+          "hybrid-sleep.target"
+        ];
+        after = [
+          "hibernate.target"
+          "suspend.target"
+          "suspend-then-hibernate.target"
+          "hybrid-sleep.target"
+        ];
+        path = [ pkgs.coreutils ];
+        serviceConfig = {
+          Type = "oneshot";
+          User = config.users.users.foxtrot.name;
+          ExecStart = niriResumeRedraw;
+        };
+      };
+      # mt7921e (0000:62:00.0) fails pci_pm_restore with -ETIMEDOUT on every hibernation
+      # resume and can wedge the machine after thaw; keep it out of the driver's PM list.
+      systemd.services.systemd-hibernate.serviceConfig = wifiPmHooks;
+      systemd.services.systemd-suspend-then-hibernate.serviceConfig = wifiPmHooks;
+      boot.initrd.availableKernelModules = [
+        "vfat"
+        "nls_cp437"
+        "nls_iso8859-1"
+      ];
+      boot.initrd.systemd.services = {
+        resume-trace-early = {
+          description = "Trace: initrd userspace reached";
+          wantedBy = [ "sysinit.target" ];
+          after = [ "systemd-udevd.service" ];
+          before = [
+            "systemd-cryptsetup@crypted.service"
+            "systemd-hibernate-resume.service"
+          ];
+          unitConfig.DefaultDependencies = "no";
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+          };
+          script = traceStage "initrd-userspace";
+        };
+        resume-trace-luks = {
+          description = "Trace: LUKS unlocked in initrd";
+          wantedBy = [ "sysinit.target" ];
+          after = [
+            "systemd-cryptsetup@crypted.service"
+            "systemd-cryptsetup@crypted-swap.service"
+          ];
+          before = [ "systemd-hibernate-resume.service" ];
+          unitConfig.DefaultDependencies = "no";
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+          };
+          script = traceStage "luks-unlocked";
+        };
       };
       boot.kernelParams = [
         "pcie_aspm.policy=powersave"
