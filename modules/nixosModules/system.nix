@@ -284,9 +284,10 @@
               gamescope_args=()
             fi
 
-            exec env LD_PRELOAD= ${pkgs.gamescope}/bin/gamescope \
+            # gamescope is a nix binary: keep Steam's runtime paths out of it
+            exec env LD_PRELOAD= LD_LIBRARY_PATH= ${pkgs.gamescope}/bin/gamescope \
               "''${gamescope_args[@]}" \
-              -- env LD_PRELOAD="$LD_PRELOAD" "''${game_cmd[@]}"
+              -- env LD_PRELOAD="$LD_PRELOAD" LD_LIBRARY_PATH="$LD_LIBRARY_PATH" "''${game_cmd[@]}"
           '')
           (writeShellScriptBin "no-hardened" ''
             exec ${bubblewrap}/bin/bwrap \
