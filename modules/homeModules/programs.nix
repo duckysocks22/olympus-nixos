@@ -755,12 +755,13 @@
         gamemoderun
         pkgs.prismlauncher
         inputs.elysia.packages.x86_64-linux.default
-        pkgs.xivlauncher
         (wrapNoHardened pkgs.heroic "heroic")
         (wrapNoHardened pkgs.vacuum-tube "VacuumTube")
         (pkgs.olympus.override { celesteWrapper = "steam-run"; })
         pkgs.r2modman
         pkgs.deadlock-mod-manager
+        pkgs.xivlauncher
+        inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.xodus-nexus
       ];
 
       programs.mangohud = {
