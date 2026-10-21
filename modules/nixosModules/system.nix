@@ -290,10 +290,11 @@
               -- env LD_PRELOAD="$LD_PRELOAD" LD_LIBRARY_PATH="$LD_LIBRARY_PATH" "''${game_cmd[@]}"
           '')
           (writeShellScriptBin "no-hardened" ''
-            exec ${bubblewrap}/bin/bwrap \
-              --dev-bind / / \
-              --bind /dev/null /etc/ld-nix.so.preload \
-              -- "$@"
+            exec ${pkgs.util-linux}/bin/unshare --mount --user --map-root-user \
+              ${pkgs.runtimeShell} -c '
+                ${pkgs.util-linux}/bin/mount --bind /dev/null /etc/ld-nix.so.preload
+                exec "$@"
+              ' no-hardened "$@"
           '')
         ])
         ++ (with inputs.reshade.packages.${pkgs.stdenv.hostPlatform.system}; [
