@@ -701,7 +701,8 @@
             "tool_search"
             "web_enable"
             "web_search"
-          ] ++ delegationTools;
+          ]
+          ++ delegationTools;
           gitReadOnlyInstructions = "bash IS available in this mode for read-only commands, including read-only git: git log, git status, git diff, git show, git blame. You can and should use these to inspect commit history. Run git commands directly (the repository is the working directory) — never use 'cd ... && ...' chains, semicolon-separated command lists, 'git -C <path>', or output redirects like '2>/dev/null'; the read-only guard rejects those forms. Mutating git commands (add, commit, push, pull, fetch, checkout, restore, etc.) are blocked.";
         in
         builtins.toJSON {

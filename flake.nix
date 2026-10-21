@@ -2,14 +2,14 @@
   inputs = {
     nixpkgs.url = "github:NixOs/nixpkgs/nixos-26.05";
     nixpkgs-unstable.url = "github:NixOs/nixpkgs/nixos-unstable";
-    home-manager-unstable.url = "github:nix-community/home-manager";
     nix-index-database.url = "github:nix-community/nix-index-database";
+    import-tree.url = "github:vic/import-tree";
+    preservation.url = "github:nix-community/preservation";
+    flake-parts.url = "github:hercules-ci/flake-parts";
 
-    flake-parts = {
-      url = "github:hercules-ci/flake-parts";
-    };
-    import-tree = {
-      url = "github:vic/import-tree";
+    home-manager-unstable = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs-unstable";
     };
     home-manager = {
       url = "github:nix-community/home-manager/release-26.05";
@@ -23,10 +23,6 @@
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    preservation = {
-      url = "github:nix-community/preservation";
-    };
-
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -69,6 +65,7 @@
     };
     nixcord = {
       url = "github:FlameFlag/nixcord";
+      inputs.nixpkgs.follows = "nixpkgs";
     };
     luxxy-pkgs = {
       url = "github:reedrw/nix-config";

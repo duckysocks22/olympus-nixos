@@ -11,20 +11,25 @@
       # session has no display (gamescope unsets DISPLAY), killing the daemon mid-request.
       # Activate them through a wrapper that only falls back to offscreen when nothing
       # can render, and own the activation files so the packaged raw Exec= never wins.
-      walletDaemon = name: binary: pkgs.writeShellScript "${name}-activate" ''
-        if [ -z "''${DISPLAY:-}" ]; then
-          export QT_QPA_PLATFORM=offscreen
-        fi
-        exec ${pkgs.kdePackages.kwallet}/bin/${binary}
-      '';
+      walletDaemon =
+        name: binary:
+        pkgs.writeShellScript "${name}-activate" ''
+          if [ -z "''${DISPLAY:-}" ]; then
+            export QT_QPA_PLATFORM=offscreen
+          fi
+          exec ${pkgs.kdePackages.kwallet}/bin/${binary}
+        '';
       ksecretdActivate = walletDaemon "ksecretd" "ksecretd";
       kwalletdActivate = walletDaemon "kwalletd" "kwalletd6";
-      walletService = name: exec:
-        lib.hiPrio (pkgs.writeTextDir "share/dbus-1/services/${name}.service" ''
-          [D-BUS Service]
-          Name=${name}
-          Exec=${exec}
-        '');
+      walletService =
+        name: exec:
+        lib.hiPrio (
+          pkgs.writeTextDir "share/dbus-1/services/${name}.service" ''
+            [D-BUS Service]
+            Name=${name}
+            Exec=${exec}
+          ''
+        );
 
       # ksecretd only unlocks a passwordless collection on a retried request and answers the
       # first one with an org.freedesktop.Secret.Prompt it cannot complete (no Prompt() and
@@ -122,7 +127,10 @@
 
       systemd.user.services.kwalletd6 = {
         description = "KWallet daemon (answers ksecretd unlock prompts)";
-        wantedBy = [ "default.target" "gamescope-session.target" ];
+        wantedBy = [
+          "default.target"
+          "gamescope-session.target"
+        ];
         serviceConfig = {
           ExecStart = kwalletdActivate;
           Restart = "on-failure";
@@ -132,7 +140,10 @@
 
       systemd.user.services.kwallet-unlock = {
         description = "Unlock the passwordless default wallet";
-        wantedBy = [ "default.target" "gamescope-session.target" ];
+        wantedBy = [
+          "default.target"
+          "gamescope-session.target"
+        ];
         after = [ "kwalletd6.service" ];
         unitConfig.ConditionPathExists = "%h/.local/share/kwalletd/default.kwl";
         serviceConfig = {
