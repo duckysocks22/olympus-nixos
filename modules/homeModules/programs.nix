@@ -950,8 +950,32 @@
             #sidebar-main, #sidebar-container, #sidebar-launcher-splitter { display: none !important; }
 
             * { border-radius: 0px !important; }
+
+            :root { 
+              --fox-accent: #fc7f03 !important;
+              --fox-accent-hover: #fca903 !important;
+              --color-accent-primary: var(--fox-accent) !important;
+              --color-accent-primary-hover: var(--fox-accent-hover) !important; 
+              --color-accent-primary: #fc7f03 !important;
+            }
+
           '';
-          userContent = "";
+
+          userContent = ''
+            @-moz-document url-prefix("about:") {
+              :root {
+                --color-accent-primary: #fc7f03 !important;
+                --color-accent-primary-hover: #fca903 !important;
+                --color-accent-primary-active: #fca903 !important;
+                --background-color-canvas: #0a0a0a !important;
+                --color-accent-primary-hover: #fca903 !important;
+                --color-accent-primary-active: #fca903 !important;
+                --background-color-information: #7a3a00 !important;
+                --icon-color-information: #fc7f03 !important;
+              }
+            }
+          '';
+
           settings = {
             "browser.startup.homepage" = "https://kagi.com/";
             "privacy.sanitize.sanitizeOnShutdown" = false;
