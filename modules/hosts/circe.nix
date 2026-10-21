@@ -38,9 +38,48 @@
       ...
     }:
     let
+      # Sleep-transaction markers on the ESP. A hibernation that never returns leaves a
+      # bare hibernate-begin with no matching end, which is the signature of the hang;
+      # a real S4 power-off is bracketed by begin, a fresh initrd boot, then end.
+      resumeTraceLog = "/boot/resume-trace.log";
+      resumeTrace = pkgs.writeShellScript "resume-trace" ''
+        export PATH="${pkgs.coreutils}/bin:${pkgs.gnugrep}/bin:${pkgs.gnused}/bin"
+        log=${resumeTraceLog}
+        boot="$(cat /proc/sys/kernel/random/boot_id)"
+        now="$(date +%s)"
+        case "$1" in
+          userspace)
+            printf '%s stage=userspace boot=%s\n' "$(date -Is)" "$boot" >> "$log"
+            ;;
+          begin)
+            printf '%s stage=hibernate-begin boot=%s t=%s\n' "$(date -Is)" "$boot" "$now" >> "$log"
+            ;;
+          end)
+            begin="$(sed -n 's/.*stage=hibernate-begin .* t=\([0-9]*\).*/\1/p' "$log" 2>/dev/null | tail -n1)"
+            if [ -n "$begin" ] && [ "$now" -ge "$begin" ]; then
+              slept="$((now - begin))s"
+            else
+              slept=-
+            fi
+            lastInitrd="$(sed -n 's/.*stage=initrd .*boot=\([^ ]*\).*/\1/p' "$log" 2>/dev/null | tail -n1)"
+            if [ -n "$lastInitrd" ] && [ "$lastInitrd" != "$boot" ]; then
+              resumed=yes
+            else
+              resumed=no
+            fi
+            printf '%s stage=hibernate-end boot=%s resumed=%s slept=%s\n' "$(date -Is)" "$boot" "$resumed" "$slept" >> "$log"
+            ;;
+        esac
+      '';
       wifiPmHooks = {
-        ExecStartPre = "-${pkgs.bash}/bin/sh -c 'echo 0000:62:00.0 > /sys/bus/pci/drivers/mt7921e/unbind'";
-        ExecStartPost = "-${pkgs.bash}/bin/sh -c 'echo 0000:62:00.0 > /sys/bus/pci/drivers/mt7921e/bind'";
+        ExecStartPre = [
+          "-${pkgs.bash}/bin/sh -c 'echo 0000:62:00.0 > /sys/bus/pci/drivers/mt7921e/unbind'"
+          "-${resumeTrace} begin"
+        ];
+        ExecStartPost = [
+          "-${pkgs.bash}/bin/sh -c 'echo 0000:62:00.0 > /sys/bus/pci/drivers/mt7921e/bind'"
+          "-${resumeTrace} end"
+        ];
       };
       # Two separate resume bugs: niri drops the first frame while reacquiring DRM master,
       # and the quickshell lock surface keeps waiting on a pre-stall frame callback, so it
@@ -60,38 +99,51 @@
         sleep 3
         ${pkgs.niri}/bin/niri msg action power-on-monitors >/dev/null 2>&1 || true
       '';
-      # Persist boot progress to the unencrypted ESP: the initrd journal is lost on a
-      # hard power-off, this survives it and shows how far a failed wake got.
-      traceStage =
-        stage:
-        ''
-          esp=""
-          for i in {1..20}; do
-            for candidate in /dev/disk/by-partlabel/disk-main-ESP /dev/nvme0n1p1; do
-              if [ -b "$candidate" ]; then
-                esp="$candidate"
-                break 2
-              fi
-            done
-            sleep 0.5
+      # The initrd journal does not survive the image restore, so initrd progress goes to
+      # the unencrypted ESP. Failures are echoed to the console because /dev/kmsg lives in
+      # the memory the restore throws away. Timestamps here are UTC: the initrd has no tzdata.
+      initrdTrace = ''
+        trace_fail() { echo "resume-trace: $*" > /dev/console 2>/dev/null; }
+        esp=""
+        tries=0
+        while [ -z "$esp" ] && [ "$tries" -lt 20 ]; do
+          for candidate in /dev/disk/by-partlabel/disk-main-ESP /dev/nvme0n1p1; do
+            if [ -b "$candidate" ]; then
+              esp="$candidate"
+              break
+            fi
           done
-          if [ -z "$esp" ]; then
-            echo "resume-trace: no ESP device" > /dev/kmsg
-            exit 0
-          fi
-          mkdir -p /mnt
-          if ! mount -o rw "$esp" /mnt 2>/tmp/mount.err; then
-            echo "resume-trace: mount $esp failed: $(cat /tmp/mount.err)" > /dev/kmsg
-            exit 0
-          fi
-          printf '%s stage=${stage} boot=%s swap=%s\n' \
-            "$(date -Is)" \
-            "$(cat /proc/sys/kernel/random/boot_id)" \
-            "$(if [ -e /dev/mapper/crypted-swap ]; then echo present; else echo absent; fi)" \
-            >> /mnt/resume-trace.log
-          sync
-          umount /mnt || umount -l /mnt
-        '';
+          [ -n "$esp" ] || sleep 0.5
+          tries=$((tries + 1))
+        done
+        if [ -z "$esp" ]; then
+          trace_fail "no ESP device"
+          exit 0
+        fi
+        mkdir -p /mnt
+        if ! mount -t vfat -o rw "$esp" /mnt 2>/dev/null; then
+          trace_fail "mount $esp failed"
+          exit 0
+        fi
+        line="$(date -Is) stage=initrd boot=$(cat /proc/sys/kernel/random/boot_id)"
+        line="$line resume=$(cat /sys/power/resume 2>/dev/null || echo -)"
+        if [ -e /dev/mapper/crypted-swap ]; then
+          line="$line swap=present"
+        else
+          line="$line swap=absent"
+        fi
+        if [ -e /sys/firmware/efi/efivars/HibernateLocation-8cf2644b-4b0b-428f-9387-6d876050dc67 ]; then
+          line="$line img=yes"
+        else
+          line="$line img=no"
+        fi
+        printf '%s\n' "$line" >> /mnt/resume-trace.log
+        if [ "$(tail -n1 /mnt/resume-trace.log 2>/dev/null)" != "$line" ]; then
+          trace_fail "$esp write not verified"
+        fi
+        sync
+        umount /mnt || umount -l /mnt
+      '';
     in
     {
 
@@ -127,8 +179,14 @@
         };
       };
       security.rtkit.enable = true;
+      # This firmware never completes native ACPI S4: with the kernel default of
+      # HibernateMode=platform the image is written but the machine stays powered
+      # (backlight and keyboard lit, battery draining) until it is forced off, or the
+      # platform bounces straight back before the image write. S5 does work, so power
+      # down via shutdown instead of handing off to S4.
       systemd.sleep.settings.Sleep = {
         HibernateDelaySec = "1h";
+        HibernateMode = "shutdown";
       };
       systemd.services.niri-resume-redraw = {
         description = "Repaint niri after resume";
@@ -155,42 +213,41 @@
       # resume and can wedge the machine after thaw; keep it out of the driver's PM list.
       systemd.services.systemd-hibernate.serviceConfig = wifiPmHooks;
       systemd.services.systemd-suspend-then-hibernate.serviceConfig = wifiPmHooks;
+      systemd.services.resume-trace-userspace = {
+        description = "Trace: userspace reached";
+        wantedBy = [ "sysinit.target" ];
+        after = [ "local-fs.target" ];
+        unitConfig.DefaultDependencies = "no";
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          ExecStart = "${resumeTrace} userspace";
+        };
+      };
       boot.initrd.availableKernelModules = [
         "vfat"
         "nls_cp437"
         "nls_iso8859-1"
       ];
-      boot.initrd.systemd.services = {
-        resume-trace-early = {
-          description = "Trace: initrd userspace reached";
-          wantedBy = [ "sysinit.target" ];
-          after = [ "systemd-udevd.service" ];
-          before = [
-            "systemd-cryptsetup@crypted.service"
-            "systemd-hibernate-resume.service"
-          ];
-          unitConfig.DefaultDependencies = "no";
-          serviceConfig = {
-            Type = "oneshot";
-            RemainAfterExit = true;
-          };
-          script = traceStage "initrd-userspace";
+      boot.initrd.systemd.services.resume-trace-initrd = {
+        description = "Trace: initrd reached, before attempting resume";
+        wantedBy = [ "sysinit.target" ];
+        wants = [
+          "systemd-cryptsetup@crypted.service"
+          "systemd-cryptsetup@crypted-swap.service"
+        ];
+        after = [
+          "systemd-udevd.service"
+          "systemd-cryptsetup@crypted.service"
+          "systemd-cryptsetup@crypted-swap.service"
+        ];
+        before = [ "systemd-hibernate-resume.service" ];
+        unitConfig.DefaultDependencies = "no";
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
         };
-        resume-trace-luks = {
-          description = "Trace: LUKS unlocked in initrd";
-          wantedBy = [ "sysinit.target" ];
-          after = [
-            "systemd-cryptsetup@crypted.service"
-            "systemd-cryptsetup@crypted-swap.service"
-          ];
-          before = [ "systemd-hibernate-resume.service" ];
-          unitConfig.DefaultDependencies = "no";
-          serviceConfig = {
-            Type = "oneshot";
-            RemainAfterExit = true;
-          };
-          script = traceStage "luks-unlocked";
-        };
+        script = initrdTrace;
       };
       boot.kernelParams = [
         "pcie_aspm.policy=powersave"
