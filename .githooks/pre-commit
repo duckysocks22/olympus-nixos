@@ -1,0 +1,9 @@
+#!/bin/sh
+set -eu
+staged=$(mktemp)
+trap 'rm -f "$staged"' EXIT
+git diff --cached --name-only --diff-filter=ACMR -z > "$staged"
+treefmt
+if [ -s "$staged" ]; then
+  git add --pathspec-from-file="$staged" --pathspec-file-nul
+fi
