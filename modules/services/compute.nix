@@ -1,7 +1,7 @@
 { inputs, self, ... }: {
   flake.nixosModules.compute = { inputs, ... }: {
     imports = [
-      inputs.self.nixosModules.llama-cpp
+      #inputs.self.nixosModules.llama-cpp
     ];
   };
 
