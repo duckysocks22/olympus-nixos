@@ -1145,10 +1145,12 @@
                 "ublock-unbreak"
                 "urlhaus-1"
               ];
-            };
-            # Torrent Control Settings
-            "{e6e36c9a-8323-446c-b720-a176017e38ff}".adminSettings = {
 
+              hostnameSwitchesString = lib.concatStringsSep "\n" [
+                "no-large-media: behind-the-scenes false"
+                "no-csp-reports: * true"
+                "no-scripting: * true"
+              ];
             };
           };
         };
