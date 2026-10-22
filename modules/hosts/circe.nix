@@ -26,6 +26,7 @@
       self.nixosModules.localPrinting
       self.nixosModules.localSamba
       self.nixosModules.buildClient
+      self.nixosModules.i2pd
     ];
   };
 
