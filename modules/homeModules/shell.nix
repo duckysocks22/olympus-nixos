@@ -329,6 +329,15 @@
               HandBrakeCLI --input "$f" --output "$argv[2]/$f" --encoder x265 -x pools=6 --all-audio --all-subtitles --aencoder opus
             end
           '';
+          psxrip = ''
+            switch "$argv[1]"
+              case -h --help
+                echo "Usage: psxrip [GAME_NAME]"
+                echo "Rips PSX game to current directory"
+            end
+
+            cdrdao read-cd --read-raw --read-subchan rw_raw --datafile $1.bin --device /dev/sr0 --driver generic-mmc-raw $1.toc
+          '';
           firefoxid = ''
             switch "$argv[1]"
               case -h --help
