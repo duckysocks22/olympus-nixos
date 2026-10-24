@@ -50,6 +50,10 @@ creation_rules:
     key_groups:
     - age:
       - *server_aether
+  - path_regex: secrets/ares-nixos\.yaml$
+    key_groups:
+    - age:
+      - *laptop_circe
   # Legacy fallback: homeSecrets.yaml and any remaining root-level secret files
   - path_regex: secrets/[^/]+\.(yaml|json|env|ini)$
     key_groups:

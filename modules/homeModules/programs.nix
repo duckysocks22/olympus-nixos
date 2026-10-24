@@ -1571,6 +1571,7 @@
       address = {
         "circe-nixos" = "192.168.10.2";
         "dionysus-nixos" = "192.168.10.3";
+        "ares-nixos" = "192.168.10.5";
         "ariadne-nixos" = "192.168.10.4";
         "athena-nixos" = "192.168.10.1";
       };

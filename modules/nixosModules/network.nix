@@ -13,12 +13,14 @@
         "circe-nixos" = "172.17.25.2/16";
         "ariadne-nixos" = "172.17.25.3/16";
         "dionysus-nixos" = "172.17.25.4/16";
+        "ares-nixos" = "172.17.25.5/16";
       };
       autoconnect = {
         "athena-nixos" = "false";
         "circe-nixos" = "true";
         "ariadne-nixos" = "true";
         "dionysus-nixos" = "true";
+        "ares-nixos" = "true";
       };
       ethDevice = lib.filterAttrs (_: v: v != null) {
         "ariadne-nixos" = "enp5s0";
