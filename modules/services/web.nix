@@ -492,7 +492,9 @@
           }
 
           (bunny) {
-            import bunny
+            tls {
+              dns bunny {$BUNNY_API}
+            }
           }
 
           (arrcors) {
