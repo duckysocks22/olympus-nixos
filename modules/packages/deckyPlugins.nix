@@ -29,11 +29,11 @@
     {
       packages.decky-lsfg-vk = stdenvNoCC.mkDerivation (finalAttrs: {
         pname = "decky-lsfg-vk";
-        version = "0.14.0";
+        version = "0.14.4";
 
         src = fetchurl {
           url = "https://github.com/xXJSONDeruloXx/decky-lsfg-vk/releases/download/v${finalAttrs.version}/Decky.LSFG-VK.zip";
-          hash = "sha256-KoqsykGNQg0h77RvZaVrdIo9y0Xho1yY0iSxtaTtcDc=";
+          hash = "sha256-ohh5Jt+1PhgT+nhtbhKh0HhjiqJxUwYTibdVgG6XM48=";
         };
 
         nativeBuildInputs = [
