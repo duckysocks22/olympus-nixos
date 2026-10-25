@@ -1,4 +1,12 @@
-{ inputs, self, ... }: {
+{ inputs, self, ... }:
+let
+  preservationPatched = inputs.nixpkgs.legacyPackages.x86_64-linux.applyPatches {
+    name = "preservation-patched";
+    src = inputs.preservation;
+    patches = [ ../../patches/preservation-no-initrd-assertion.patch ];
+  };
+in
+{
   flake.nixosModules.preservation =
     {
       inputs,
@@ -8,7 +16,7 @@
       ...
     }:
     {
-      imports = [ inputs.preservation.nixosModules.default ];
+      imports = [ "${preservationPatched}/module.nix" ];
       preservation = {
         enable = true;
 

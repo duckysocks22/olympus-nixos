@@ -209,7 +209,6 @@
         };
       };
     };
-    boot.initrd.systemd.enable = lib.mkForce true;
     fileSystems."/nix".neededForBoot = true;
     fileSystems."/persistent".neededForBoot = true;
 
