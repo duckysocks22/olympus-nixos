@@ -282,7 +282,7 @@ in
               Restart = "on-failure";
               RestartSec = 10;
             };
-            Install.WantedBy = [ "graphical-session.target" ];
+            Install.WantedBy = [ ];
           };
 
           home = {
