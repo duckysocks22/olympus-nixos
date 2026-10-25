@@ -44,10 +44,6 @@
 
         configHome = "${config.users.users.foxtrot.home}";
 
-        configFiles = [
-          "${config.users.users.foxtrot.home}/.config/DankMaterialShell/settings.json"
-        ];
-
         logs = {
           save = true;
           path = "/tmp/dms-greeter.log";
