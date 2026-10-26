@@ -19,6 +19,7 @@
       self.nixosModules.deck
       self.nixosModules.deckSops
       self.nixosModules.jovian
+      self.nixosModules.retroarch
       self.nixosModules.buildClient
       self.nixosModules.wireguardPeer
     ];
