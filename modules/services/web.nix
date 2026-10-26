@@ -531,6 +531,9 @@
         virtualHosts."dns.puppygirls.net".extraConfig = ''
           reverse_proxy /dns-query* 192.168.10.253:854 {
             header_up X-Real-IP {remote_host}
+            transport http {
+              tls_server_name dns.puppygirls.net
+            }
           }
 
           import bunny
