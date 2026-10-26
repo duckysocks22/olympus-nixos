@@ -165,6 +165,13 @@
       };
       sops.secrets."finance-summary/env" = { };
 
+      sops.secrets."futo-notes/environment" = {
+        owner = config.users.users.futo-notes.name;
+        group = config.users.users.futo-notes.group;
+        mode = "0600";
+        sopsFile = serverShared;
+      };
+
       sops.secrets."samba-nyx/socks" = { };
       sops.secrets."samba-nyx/serena" = { };
       sops.secrets."samba-nyx/zia" = { };

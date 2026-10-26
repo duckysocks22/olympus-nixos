@@ -28,15 +28,20 @@
 
       xdg.configFile."mimeapps.list".force = true;
 
-      home.packages = with pkgs; [
-        fastfetch
-        kdePackages.dolphin
-        unrar
-        p7zip
-        filezilla
-        lunatask
-        kdePackages.kate
-      ];
+      home.packages =
+        with pkgs;
+        [
+          fastfetch
+          kdePackages.dolphin
+          unrar
+          p7zip
+          filezilla
+          lunatask
+          kdePackages.kate
+        ]
+        ++ [
+          inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.futo-notes
+        ];
 
       programs.kitty = {
         enable = true;

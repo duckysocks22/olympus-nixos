@@ -30,6 +30,7 @@
       self.nixosModules.atuinAIServer
       self.nixosModules.syncthing
       self.nixosModules.homepage
+      self.nixosModules.futo-notes-server
     ];
   };
 
