@@ -38,6 +38,8 @@
           filezilla
           lunatask
           kdePackages.kate
+          kdePackages.okular
+          simple-scan
         ]
         ++ [
           inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.futo-notes
