@@ -277,6 +277,11 @@
       systemd.services.waydroid-container.wantedBy = lib.mkForce [ ];
       systemd.services.libvirtd.wantedBy = lib.mkForce [ ];
 
+      services.udev.extraRules = ''
+        # Keep the Bluetooth radio from waking the laptop when earbuds power on.
+        ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0e8d", ATTR{idProduct}=="223c", ATTR{power/wakeup}="disabled"
+      '';
+
       services.tuned = {
         profiles.circe-balanced-battery = {
           main.include = "balanced-battery";

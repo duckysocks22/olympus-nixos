@@ -102,6 +102,10 @@
           fi
         '';
       };
+      services.udev.extraRules = ''
+        # Keep the Bluetooth radio from waking the deck when earbuds power on.
+        ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="28de", ATTR{idProduct}=="1401", ATTR{power/wakeup}="disabled"
+      '';
       nixpkgs.config.allowUnfree = true;
       system.stateVersion = "26.05";
 
