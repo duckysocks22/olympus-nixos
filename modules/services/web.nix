@@ -235,16 +235,6 @@
           From = "fd31:bf08:57cb::30/128";
           Table = 51820;
         }
-        {
-          Priority = 100;
-          From = "192.168.10.3/32";
-          Table = 51820;
-        }
-        {
-          Priority = 100;
-          From = "fd31:bf08:57cb::3/128";
-          Table = 51820;
-        }
       ];
     };
 
