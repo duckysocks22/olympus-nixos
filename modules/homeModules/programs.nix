@@ -1584,20 +1584,20 @@
       };
 
       ffxivIgnorePatterns = [
+        "ffxivConfig/FFXIV.cfg"
+        "ffxivConfig/FFXIV.cfg.old"
+        "pluginConfigs/LightlessSync/tracelog"
         "!.stignore"
         "!accounts.json"
         "!secrets.json"
         "!cfgcopy"
         "!ffxivConfig"
-        "ffxivConfig/FFXIV.cfg"
-        "ffxivConfig/FFXIV.cfg.old"
         "!pluginConfigs"
         "!installedPlugins"
         "!dalamudConfig.json"
         "!dalamudUI.ini"
         "!launcherUI.ini"
         "!FFXIV_CHR004000174C7A37AE"
-        "pluginConfigs/LightlessSync/tracelog"
         "*"
       ];
     in
@@ -1642,23 +1642,12 @@
                 "athena-nixos"
                 "ariadne-nixos"
               ];
-              ignorePatterns = [
-                "!.stignore"
-                "!accounts.json"
-                "!secrets.json"
-                "!cfgcopy"
-                "!ffxivConfig"
-                "ffxivConfig/FFXIV.cfg"
-                "ffxivConfig/FFXIV.cfg.old"
-                "!pluginConfigs"
-                "!installedPlugins"
-                "!dalamudConfig.json"
-                "!dalamudUI.ini"
-                "!launcherUI.ini"
-                "!FFXIV_CHR004000174C7A37AE"
-                "pluginConfigs/LightlessSync/tracelog"
-                "*"
-              ];
+              versioning = {
+                type = "simple";
+                params.keep = "10";
+              };
+              rescanIntervalS = 60;
+              ignorePatterns = ffxivIgnorePatterns;
             };
           };
         };
