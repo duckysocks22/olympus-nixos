@@ -214,6 +214,27 @@
 
   flake.nixosModules.copyparty = { inputs, config, ... }: {
     imports = [ inputs.copyparty.nixosModules.default ];
+
+    # Pillow 13 rejects fromarray(mode=...) on 16-bit I;16 images, failing the
+    # test suites of pillow-jpls and imageio (copyparty's thumbnail deps).
+    # Drop just those tests until nixpkgs patches both packages.
+    nixpkgs.overlays = [
+      (final: prev: {
+        copyparty = prev.copyparty.override {
+          python3Packages = prev.python3Packages.override {
+            overrides = _pyFinal: pyPrev: {
+              pillow-jpls = pyPrev.pillow-jpls.overridePythonAttrs (_: {
+                disabledTests = [ "test_encode_with_spiff_header" ];
+              });
+              imageio = pyPrev.imageio.overridePythonAttrs (_: {
+                disabledTests = [ "test_png" ];
+              });
+            };
+          };
+        };
+      })
+    ];
+
     services.copyparty = {
       enable = true;
       user = "copyparty";
