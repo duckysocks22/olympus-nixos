@@ -105,21 +105,9 @@
             kernel = {
               "nyx-nixos" = pkgs.linuxPackages_latest;
               "aether-nixos" = pkgs.linuxPackages_latest;
-              "athena-nixos" = rcKernel;
-              "circe-nixos" = rcKernel;
+              "athena-nixos" = pkgs.linuxPackages_latest;
+              "circe-nixos" = pkgs.linuxPackages_latest;
             };
-            rcKernel = pkgs.linuxPackagesFor (
-              pkgs.linuxKernel.kernels.linux_7_2.override {
-                argsOverride = rec {
-                  src = pkgs.fetchurl {
-                    url = "https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/snapshot/linux-7.3-rc3.tar.gz";
-                    sha256 = "sha256-SbJBGde5Ladbug2vXaT3c1yMuUh1eiguhJCS3MaB2N0=";
-                  };
-                  version = "7.3.0-rc3";
-                  modDirVersion = "7.3.0-rc3";
-                };
-              }
-            );
           in
           kernel.${config.networking.hostName} or (
             if config ? jovian then
