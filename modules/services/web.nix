@@ -2,7 +2,7 @@
 
   flake.nixosModules.web = { inputs, ... }: {
     imports = [
-      inputs.self.nixosModules.adguardhome
+      inputs.self.nixosModules.dnsHost
       inputs.self.nixosModules.avahi
       inputs.self.nixosModules.atticd
       inputs.self.nixosModules.ntfy
@@ -781,6 +781,29 @@
       systemd.services.avahi-daemon.requires = lib.mkForce [ ];
     };
 
+  flake.nixosModules.dnsHost =
+    { config, ... }:
+    {
+      imports = [ inputs.self.nixosModules.adguardhome ];
+
+      # Local DNS resolver
+      services.dnsmasq = {
+        enable = true;
+        settings = {
+          port = 53;
+          listen-address = [ "172.17.100.1" ];
+          bind-interfaces = true;
+          no-resolv = true;
+          server = [ "127.0.0.1#53" "/ssh.olympus.moe/127.0.0.1#53" "/vpn.olympus.moe/127.0.0.1#53" "/www.olympus.moe/127.0.0.1#53" ];
+          address = [
+            "/olympus.moe/172.17.100.1"
+            "/puppygirls.net/172.17.100.1"
+          ];
+          local = [ "/olympus.moe/" "/puppygirls.net/" ];
+        };
+      };
+    };
+
   flake.nixosModules.adguardhome =
     { lib, config, ... }:
     let
@@ -807,6 +830,7 @@
               "9.9.9.9"
             ];
             #aaaa_disabled = true;
+            bind_hosts = [ "127.0.0.1" "192.168.10.253" ];
           };
           tls = {
             enabled = true;

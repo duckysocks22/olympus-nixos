@@ -67,8 +67,12 @@
         if [ -z "$CONNECTION_ID" ] || [ -z "$DEVICE_INTERFACE" ]; then
           exit 0
         fi
-        ${config.networking.networkmanager.package}/bin/nmcli con modify "$CONNECTION_ID" ipv4.ignore-auto-dns true ipv6.ignore-auto-dns true ipv4.dns 127.0.0.1 >/dev/null 2>&1 || true
-        ${pkgs.systemd}/bin/resolvectl dns "$DEVICE_INTERFACE" 127.0.0.1 >/dev/null 2>&1 || true
+        case "$CONNECTION_ID" in
+          bazinga) dns=172.17.100.1 ;;
+          *) dns=127.0.0.1 ;;
+        esac
+        ${config.networking.networkmanager.package}/bin/nmcli con modify "$CONNECTION_ID" ipv4.ignore-auto-dns true ipv6.ignore-auto-dns true ipv4.dns "$dns" >/dev/null 2>&1 || true
+        ${pkgs.systemd}/bin/resolvectl dns "$DEVICE_INTERFACE" "$dns" >/dev/null 2>&1 || true
       '';
     in
     {
@@ -111,7 +115,7 @@
                 method = "manual";
                 address1 = staticIp.${config.networking.hostName};
                 gateway = "172.17.0.254";
-                dns = "127.0.0.1";
+                dns = "172.17.100.1";
                 ignore-auto-dns = true;
               };
               ipv6 = {
@@ -225,7 +229,7 @@
           matchConfig.Name = ethDevice.${config.networking.hostName};
           address = [ staticIp.${config.networking.hostName} ];
           gateway = [ "172.17.0.254" ];
-          dns = [ "127.0.0.1" ];
+          dns = [ "172.17.100.1" ];
           networkConfig = {
             DHCP = "no";
           };
@@ -540,15 +544,11 @@
           ignore_system_dns = true;
           server_names = [
             "PuppyGirls-DNS"
-            "PuppyGirlsLocal-DNS"
           ];
 
           static = {
             "PuppyGirls-DNS".stamp =
               "sdns://AgcAAAAAAAAADTEwNy4xNzQuMzYuNTYAEmRucy5wdXBweWdpcmxzLm5ldAovZG5zLXF1ZXJ5";
-            "PuppyGirlsLocal-DNS".stamp =
-              "sdns://AgcAAAAAAAAADDE3Mi4xNy4xMDAuMQAWZG5zLnB1cHB5Z2lybHMubmV0Ojg1NAovZG5zLXF1ZXJ5";
-
           };
 
           ipv6_servers = hasIPv6Internet;
