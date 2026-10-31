@@ -932,27 +932,35 @@
           ];
 
           filters =
-            map
-              (url: {
-                enabled = true;
-                url = url;
-              })
+            lib.imap1
+              (id: filter: filter // { inherit id; enabled = true; })
               [
-                "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.txt"
-                "https://raw.githubusercontent.com/Perflyst/PiHoleBlocklist/refs/heads/master/SmartTV.txt"
-                "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.txt"
-                "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/popupads.txt"
+                {
+                  name = "HaGeZi Multi PRO";
+                  url = "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/pro.txt";
+                }
+                {
+                  name = "Perflyst SmartTV";
+                  url = "https://raw.githubusercontent.com/Perflyst/PiHoleBlocklist/refs/heads/master/SmartTV.txt";
+                }
+                {
+                  name = "HaGeZi TIF";
+                  url = "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/tif.txt";
+                }
+                {
+                  name = "HaGeZi PopupAds";
+                  url = "https://cdn.jsdelivr.net/gh/hagezi/dns-blocklists@latest/adblock/popupads.txt";
+                }
               ];
 
-          whitelist_filters =
-            map
-              (url: {
-                enabled = true;
-                url = url;
-              })
-              [
-                "https://dawn.wine/foxtrottt/olympus-nixos/raw/branch/main/modules/nyx/services/networking/adguardhome/allowlist.txt"
-              ];
+          whitelist_filters = [
+            {
+              id = 101;
+              enabled = true;
+              name = "Olympus allowlist";
+              url = "https://dawn.wine/foxtrottt/olympus-nixos/raw/branch/main/assets/allowlist.txt";
+            }
+          ];
 
         };
       };
