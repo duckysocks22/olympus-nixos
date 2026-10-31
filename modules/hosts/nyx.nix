@@ -31,6 +31,7 @@
       self.nixosModules.syncthing
       self.nixosModules.homepage
       self.nixosModules.futo-notes-server
+      self.nixosModules.reverseProxy
     ];
   };
 

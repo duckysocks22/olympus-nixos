@@ -15,10 +15,10 @@
       self.nixosModules.systemHarden
       self.nixosModules.serverNetwork
       self.nixosModules.server
-      self.nixosModules.reverseProxy
       self.nixosModules.aetherSops
       self.nixosModules.buildClient
       self.nixosModules.routeVPNMullvad
+      self.nixosModules.networkPassthrough
     ];
   };
 

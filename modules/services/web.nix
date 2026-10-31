@@ -466,6 +466,42 @@
       };
     };
 
+  flake.nixosModules.networkPassthrough =
+    { config, pkgs, lib, ... }:
+    {
+      services.caddy = {
+        enable = true;
+        package = pkgs.caddy.withPlugins {
+          plugins = [
+            "github.com/mholt/caddy-l4@v0.1.2"
+          ];
+          hash = "sha256-FwGmHobFqBkEI7LN/YaPsL0t+dJn8uZMhCp9asDEsYw=";
+        };
+        environmentFile = "${config.sops.secrets."caddy/environment".path}";
+        globalConfig = ''
+        layer4 {
+          :443 {
+            route {
+              proxy {
+                upstream 192.168.10.253:443
+              }
+            }
+          }
+
+          :80 {
+            route {
+              proxy {
+                upstream 192.168.10.253:80
+              }
+            }
+          }
+        }
+        '';
+      };
+
+      networking.firewall.allowedTCPPorts = [ 80 443 ];
+    };
+
   flake.nixosModules.caddy =
     { config, pkgs, ... }:
     let
@@ -569,6 +605,8 @@
               versions 1.1
             }
           }
+
+          import bunny
         '';
         virtualHosts."https://sonarr.puppygirls.net".extraConfig = ''
           import mtls
@@ -580,6 +618,8 @@
               versions 1.1
             }
           }
+
+          import bunny
         '';
         virtualHosts."https://prowlarr.puppygirls.net".extraConfig = ''
           import mtls
@@ -591,6 +631,8 @@
               versions 1.1
             }
           }
+
+          import bunny
         '';
         virtualHosts."music.puppygirls.net".extraConfig = ''
           reverse_proxy 192.168.10.253:4533
@@ -605,6 +647,8 @@
         virtualHosts."https://ofsm.puppygirls.net".extraConfig = ''
           import mtls
           reverse_proxy 192.168.10.253:42702
+
+          import bunny
         '';
 
         #olympus.moe
@@ -641,19 +685,26 @@
             header_up X-Forwarded-For {remote_host}
           }
 
+          import bunny
         '';
         virtualHosts."https://immich.olympus.moe".extraConfig = ''
           import mtls
           reverse_proxy 192.168.10.253:2283
+
+          import bunny
         '';
         virtualHosts."https://home.olympus.moe".extraConfig = ''
           import mtls
           reverse_proxy 192.168.10.253:8123
+
+          import bunny
         '';
         virtualHosts."https://budget.olympus.moe".extraConfig = ''
           encode gzip zstd
           reverse_proxy 192.168.10.253:5006
           import mtls
+
+          import bunny
         '';
         /*virtualHosts."https://qbit.olympus.moe".extraConfig = ''
           encode gzip zstd
@@ -678,6 +729,8 @@
         virtualHosts."dash.olympus.moe".extraConfig = ''
           import mtls
           reverse_proxy 192.168.10.253:8085
+
+          import bunny
         '';
         virtualHosts."notes.olympus.moe".extraConfig = ''
           reverse_proxy 192.168.10.253:3005

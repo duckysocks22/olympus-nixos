@@ -185,6 +185,10 @@
       sops.secrets."caddy/environment" = {
         sopsFile = serverShared;
       };
+      sops.secrets."caddy/ca-cert" = {
+        owner = "caddy";
+        sopsFile = serverShared;
+      };
       sops.secrets."adguardhome/environment" = { };
       sops.secrets."attic/server-token" = { };
       sops.secrets."attic/client-config" = {
