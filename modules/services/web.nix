@@ -655,12 +655,12 @@
           reverse_proxy 192.168.10.253:5006
           import mtls
         '';
-        virtualHosts."https://qbit.olympus.moe".extraConfig = ''
+        /*virtualHosts."https://qbit.olympus.moe".extraConfig = ''
           encode gzip zstd
           reverse_proxy 192.168.10.253:8080
 
           import mtls
-        '';
+        '';*/
         virtualHosts."https://ntfy.olympus.moe".extraConfig = ''
           import mtls
 
