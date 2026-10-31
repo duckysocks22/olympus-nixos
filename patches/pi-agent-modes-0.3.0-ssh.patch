@@ -1,0 +1,305 @@
+diff -ruN a/src/guard.ts b/src/guard.ts
+--- a/src/guard.ts	2026-09-24 23:24:50.977649909 -0400
++++ b/src/guard.ts	2026-09-25 00:33:22.039534114 -0400
+@@ -127,7 +127,13 @@
+  */
+ export function isSafeBashCommand(command: string): boolean {
+ 	const segments = tokenizeReadOnlyShell(command);
+-	return segments !== undefined && segments.length > 0 && segments.every(isSafeReadOnlySegment);
++	if (segments === undefined || segments.length === 0) return false;
++	for (let index = 0; index < segments.length; index++) {
++		const segment = segments[index];
++		if (!isSafeReadOnlySegment(segment)) return false;
++		if (index > 0 && invokesNixRepl(segment.words)) return false;
++	}
++	return true;
+ }
+ 
+ interface ShellSegment {
+@@ -241,6 +247,7 @@
+ 	"free", "vmstat", "iostat", "ss", "netstat", "lsof", "git", "npm", "yarn", "pnpm",
+ 	"jq", "yq", "awk", "sed", "bat", "batcat", "gpg", "direnv", "openssl", "curl", "wget",
+ 	"python", "python3", "node", "deno", "bun", "command",
++	"ssh", "sudo", "journalctl", "systemctl", "dmesg", "coredumpctl", "nix",
+ ]);
+ 
+ const FORBIDDEN_ARGUMENTS = [
+@@ -299,11 +306,96 @@
+ 			return args[0] === "dump" || args[0] === "status";
+ 		case "awk":
+ 			return !text.includes(">");
++		case "ssh":
++			return isSafeSshCommand(args);
++		case "sudo":
++			return args.length > 0 && isSafeBashCommand(args.join(" "));
++		case "systemctl":
++			return isSafeSystemctlCommand(args);
++		case "journalctl":
++			return !args.some((argument) => /^-[a-zA-Z]*f/.test(argument) || argument.startsWith("--follow"));
++		case "dmesg":
++			return !args.some((argument) => /^-[a-zA-Z]*[wW]/.test(argument) || argument.startsWith("--follow"));
++		case "coredumpctl":
++			return ["list", "info", "dump"].includes(args[0] ?? "") && !args.some((argument) => argument === "-o" || argument.startsWith("--output"));
++		case "nix":
++			return isSafeNixCommand(args);
+ 		default:
+ 			return true;
+ 	}
+ }
+ 
++const SSH_VALUE_OPTIONS = new Set(["-o", "-p", "-l", "-i", "-F", "-J", "-b", "-c", "-m", "-Q"]);
++const SSH_ALLOWED_FLAGS = /^[46vqnTAaxXCs]+$/;
++
++function isSafeSshCommand(args: string[]): boolean {
++	let index = 0;
++	while (index < args.length) {
++		const argument = args[index];
++		if (!argument.startsWith("-")) break;
++		if (SSH_VALUE_OPTIONS.has(argument)) {
++			const value = args[index + 1];
++			if (value === undefined) return false;
++			if (argument === "-o" && /command/i.test(value)) return false;
++			index += 2;
++			continue;
++		}
++		if (argument === "-" || !SSH_ALLOWED_FLAGS.test(argument.slice(1))) return false;
++		index += 1;
++	}
++	const destination = args[index];
++	if (!destination) return false;
++	const remoteCommand = args.slice(index + 1);
++	if (remoteCommand.length === 0) return false;
++	return isSafeBashCommand(remoteCommand.join(" "));
++}
++
++const SYSTEMCTL_SAFE_ACTIONS = ["status", "show", "cat", "is-active", "is-enabled", "is-failed", "list-units", "list-timers", "list-jobs", "list-sockets"];
++
++function isSafeSystemctlCommand(args: string[]): boolean {
++	return SYSTEMCTL_SAFE_ACTIONS.includes(args[0] ?? "");
++}
++
++const NIX_SAFE_SUBCOMMANDS = new Set([
++	"eval", "repl", "instantiate", "search", "path-info", "why-depends",
++	"log", "hash", "diff-closures",
++]);
++
++function isSafeNixCommand(args: string[]): boolean {
++	const subcommand = args[0];
++	if (!subcommand) return false;
++	const action = args[1];
++	if (NIX_SAFE_SUBCOMMANDS.has(subcommand)) return true;
++	switch (subcommand) {
++		case "flake":
++			return ["show", "metadata", "verify", "archive"].includes(action ?? "");
++		case "profile":
++			return action === "list";
++		case "config":
++			return action === "show";
++		case "registry":
++			return action === "list";
++		case "store":
++			return ["ls", "stat", "ping", "verify", "info"].includes(action ?? "");
++		case "derivation":
++			return action === "show";
++		default:
++			return false;
++	}
++}
++
++function invokesNixRepl(words: string[]): boolean {
++	let index = 0;
++	if (words[0]?.toLowerCase() === "sudo") index = 1;
++	if (words[index]?.toLowerCase() !== "nix") return false;
++	for (let position = index + 1; position < words.length; position++) {
++		const argument = words[position];
++		if (argument.startsWith("-")) continue;
++		return argument === "repl";
++	}
++	return false;
++}
++
+ function isSafeGitCommand(args: string[]): boolean {
+ 	const subcommand = args[0];
+ 	if (!subcommand) return false;
+diff -ruN a/tests/guard.test.ts b/tests/guard.test.ts
+--- a/tests/guard.test.ts	2026-09-24 23:24:50.977944246 -0400
++++ b/tests/guard.test.ts	2026-09-24 23:27:42.865098491 -0400
+@@ -56,7 +56,7 @@
+ 		"git commit -m x",
+ 		"mkdir -p foo",
+ 		"touch foo",
+-		"sudo ls",
++		"sudo rm -rf node_modules",
+ 		"mv a b",
+ 		"docker build .",
+ 		"pip install requests",
+diff -ruN a/tests/nix.test.ts b/tests/nix.test.ts
+--- a/tests/nix.test.ts	1969-12-31 19:00:00.000000000 -0500
++++ b/tests/nix.test.ts	2026-09-25 00:33:51.650727099 -0400
+@@ -0,0 +1,72 @@
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import { evaluateToolCall, isSafeBashCommand, type GuardRequest } from "../src/guard.ts";
++import { defaultPolicy, type ModePolicy } from "../src/types.ts";
++
++const readOnly: ModePolicy = defaultPolicy({ allowWriteTools: false, bash: "readOnly" });
++
++function bash(command: string): GuardRequest {
++	return { modeName: "test", policy: readOnly, toolName: "bash", input: { command } };
++}
++
++test("read-only mode allows read-only nix commands", () => {
++	const allowed = [
++		"nix eval --raw .#nixosConfigurations.ariadne-nixos.pkgs.gamescope.version",
++		"nix eval --json .#packages.x86_64-linux.pi-agent-modes.drvPath",
++		"nix eval --expr '1 + 1'",
++		"nix repl --expr \"1 + 1\"",
++		"nix instantiate --expr \"import <nixpkgs> {}\"",
++		"nix flake show",
++		"nix flake metadata --json",
++		"nix path-info --json /nix/store/example",
++		"nix search nixpkgs hello",
++		"nix profile list",
++		"nix store ls /nix/store",
++		"nix config show",
++		"ssh host 'nix eval --raw .#nixosConfigurations.ariadne-nixos.pkgs.gamescope.version'",
++	];
++	for (const command of allowed) {
++		assert.equal(evaluateToolCall(bash(command)).blocked, false, `should allow: ${command}`);
++	}
++});
++
++test("read-only mode blocks nix commands that build or mutate", () => {
++	const blocked = [
++		"nix",
++		"nix build .",
++		"nix build .#pi-agent-modes",
++		"nix run nixpkgs#cowsay",
++		"nix flake update",
++		"nix flake lock",
++		"nix flake check",
++		"nix profile install nixpkgs#hello",
++		"nix profile upgrade --all",
++		"nix store gc",
++		"nix-collect-garbage -d",
++		"nixos-rebuild switch --flake .",
++		"nix eval .#x; rm -rf /",
++	];
++	for (const command of blocked) {
++		assert.equal(evaluateToolCall(bash(command)).blocked, true, `should block: ${command}`);
++	}
++});
++
++test("nix repl cannot receive stdin from an earlier pipeline segment", () => {
++	const blocked = [
++		"echo ':sh id' | nix repl",
++		"cat /etc/passwd | nix repl",
++		"echo ':sh id' | sudo nix repl",
++		"cat file | nix --extra-experimental-features repl",
++	];
++	for (const command of blocked) {
++		assert.equal(isSafeBashCommand(command), false, `should block: ${command}`);
++	}
++	const allowed = [
++		"nix repl --expr '1 + 1'",
++		"nix repl | head -n 5",
++		"echo hi | nix eval --raw .#x",
++	];
++	for (const command of allowed) {
++		assert.equal(isSafeBashCommand(command), true, `should allow: ${command}`);
++	}
++});
+diff -ruN a/tests/ssh.test.ts b/tests/ssh.test.ts
+--- a/tests/ssh.test.ts	1969-12-31 19:00:00.000000000 -0500
++++ b/tests/ssh.test.ts	2026-09-24 23:29:51.382531032 -0400
+@@ -0,0 +1,90 @@
++import { test } from "node:test";
++import assert from "node:assert/strict";
++import { evaluateToolCall, isSafeBashCommand, type GuardRequest } from "../src/guard.ts";
++import { defaultPolicy, type ModePolicy } from "../src/types.ts";
++
++const readOnly: ModePolicy = defaultPolicy({ allowWriteTools: false, bash: "readOnly" });
++
++function bash(command: string): GuardRequest {
++	return { modeName: "test", policy: readOnly, toolName: "bash", input: { command } };
++}
++
++test("read-only mode allows ssh with a read-only remote command", () => {
++	const allowed = [
++		"ssh deck@ariadne-nixos.vpn.olympus.moe 'journalctl -b -n 50'",
++		"ssh host journalctl -b -n 20",
++		"ssh -o BatchMode=yes -p 22 host 'systemctl status steam'",
++		"ssh host 'sudo journalctl -u steam'",
++		"ssh host 'grep -r gamescope /tmp/log'",
++		"ssh -4v host 'dmesg --ctime'",
++	];
++	for (const command of allowed) {
++		assert.equal(evaluateToolCall(bash(command)).blocked, false, `should allow: ${command}`);
++	}
++});
++
++test("read-only mode blocks ssh with mutating remote commands", () => {
++	const blocked = [
++		"ssh host 'rm -rf /'",
++		"ssh host 'systemctl restart steam'",
++		"ssh host 'sudo systemctl restart steam'",
++		"ssh host 'git push'",
++		"ssh host 'sudo rm -rf /'",
++	];
++	for (const command of blocked) {
++		assert.equal(evaluateToolCall(bash(command)).blocked, true, `should block: ${command}`);
++	}
++});
++
++test("read-only mode blocks unsafe or interactive ssh invocations", () => {
++	const blocked = [
++		"ssh",
++		"ssh deck@host",
++		"ssh -N host 'journalctl -b'",
++		"ssh -f host 'journalctl -b'",
++		"ssh -L 8080:localhost:80 host 'journalctl -b'",
++		"ssh -D 1080 host 'journalctl -b'",
++		"ssh -o ProxyCommand=evil host 'journalctl -b'",
++		"ssh -o LocalCommand=evil host 'journalctl -b'",
++		"ssh host 'journalctl -f'",
++	];
++	for (const command of blocked) {
++		assert.equal(evaluateToolCall(bash(command)).blocked, true, `should block: ${command}`);
++	}
++});
++
++test("read-only allowlist gains only read-only system inspection commands", () => {
++	const allowed = [
++		"journalctl -b -n 20",
++		"journalctl --user -u steam -n 20",
++		"systemctl status steam",
++		"systemctl list-timers --no-pager",
++		"dmesg --ctime",
++		"coredumpctl list",
++		"coredumpctl info",
++		"sudo journalctl -u steam",
++		"ls -la /var/log",
++	];
++	for (const command of allowed) {
++		assert.equal(evaluateToolCall(bash(command)).blocked, false, `should allow: ${command}`);
++	}
++	const blocked = [
++		"systemctl restart steam",
++		"systemctl enable sshd",
++		"journalctl -f",
++		"journalctl --follow",
++		"dmesg -w",
++		"sudo rm -rf /tmp/x",
++		"sudo systemctl restart steam",
++		"coredumpctl dump -o /tmp/core",
++	];
++	for (const command of blocked) {
++		assert.equal(evaluateToolCall(bash(command)).blocked, true, `should block: ${command}`);
++	}
++});
++
++test("ssh destination requires a validated remote command", () => {
++	assert.equal(isSafeBashCommand("ssh"), false);
++	assert.equal(isSafeBashCommand("ssh deck@host"), false);
++	assert.equal(isSafeBashCommand("ssh deck@host 'journalctl -b'"), true);
++});

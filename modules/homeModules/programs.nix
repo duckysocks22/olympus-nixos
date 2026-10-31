@@ -431,12 +431,12 @@
           defaultThinkingLevel = "low";
           packages = [
             "npm:pi-death-loop-guard"
-            "npm:billion-context"
             "npm:pi-web-access"
             "npm:@juicesharp/rpiv-todo"
             "npm:@juicesharp/rpiv-ask-user-question"
             "npm:pi-bansos"
             "npm:pi-subagents"
+            "${inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.pi-agent-modes}"
           ];
           subagents = {
             modelScope = {
@@ -612,36 +612,6 @@
           notifications.enable = false;
         };
         context = ''
-          ## HOW TO TEACH (default behaviour)
-
-          You are a teacher and a sounding board, not a code generator. The user wants to
-          understand every line that lands in their tree.
-
-          Your default output for any request is an EXPLANATION + a PLAN + the smallest next
-          step — then STOP and ask. Not a patch.
-
-          - Start by locating the relevant code and naming the mechanism in 2-4 sentences, with
-            file:line. Say what the system does now, not what it should do.
-          - Then give the plan as numbered steps, one concern per step, each small enough for
-            the user to type and test on its own.
-          - End every turn with exactly one question: either a decision handed back to the
-            user, or a comprehension check ("what do you expect the rebuild to print?").
-
-          Writing code is a separate, explicitly granted action. Apply an edit only when the
-          user says one of: "go ahead", "write it", "you do it", "apply it", "make the edit".
-          Anything else — including "fix this", "help me with X", "how would you do Y" —
-          means explain and propose, never edit.
-
-          When you are granted the pen:
-          - One file, one concern per turn. No drive-by fixes in adjacent code.
-          - State what you are changing and why BEFORE the edit, then read the diff back AFTER,
-            line by line, including lines that were already there.
-          - Diff hunks only. Never dump a full-file rewrite to "make it easier".
-          - Close with how the user verifies it themselves.
-
-          When you think the user is wrong or a shortcut is better, argue for it in prose and
-          let them decide. Asking is cheap; an unwanted patch is expensive.
-
           ## HARD RULES (all repos)
 
           - NEVER commit PII to any repository. Secrets are managed exclusively via sops-nix.
@@ -715,12 +685,46 @@
         ".pi/agent/agents/cheap-scout.md".source = ../../assets/pi/agents/cheap-scout.md;
         ".pi/agent/extensions/subagent/config.json".text = builtins.toJSON { toolActivation = "eager"; };
         ".pi/agent/extensions/vm-test".source = ../../assets/pi/vm-test;
-        ".pi/agent/extensions/confirm-edits".source = ../../assets/pi/confirm-edits;
       };
       /*
         home.file.".pi/agent/extensions/actual-finance".source = ../../assets/pi/actual-finance;
         home.file.".pi/agent/skills/actual-finance".source = ../../assets/pi/skills/actual-finance;
       */
+
+      home.file.".pi/agent/modes.config.json".text =
+        let
+          delegationTools = [
+            "subagent"
+            "subagent_supervisor"
+            "bg_wait"
+          ];
+          readOnlyTools = [
+            "ask_user_question"
+            "codemode"
+            "fetch_content"
+            "get_search_content"
+            "source_check"
+            "todo"
+            "tool_search"
+            "web_enable"
+            "web_search"
+          ]
+          ++ delegationTools;
+          gitReadOnlyInstructions = "bash IS available in this mode for read-only commands, including read-only git: git log, git status, git diff, git show, git blame. You can and should use these to inspect commit history. Run git commands directly (the repository is the working directory) — never use 'cd ... && ...' chains, semicolon-separated command lists, 'git -C <path>', or output redirects like '2>/dev/null'; the read-only guard rejects those forms. Mutating git commands (add, commit, push, pull, fetch, checkout, restore, etc.) are blocked.";
+        in
+        builtins.toJSON {
+          modes = {
+            ask.allowTools = readOnlyTools;
+            ask.thinkingLevel = null;
+            ask.extraInstructions = gitReadOnlyInstructions;
+            plan.allowTools = readOnlyTools ++ [ "pi_modes_plan_complete" ];
+            plan.thinkingLevel = null;
+            plan.extraInstructions = gitReadOnlyInstructions;
+            review.allowTools = readOnlyTools;
+            review.thinkingLevel = null;
+            review.extraInstructions = gitReadOnlyInstructions;
+          };
+        };
     };
 
   flake.homeModules.launchers =
