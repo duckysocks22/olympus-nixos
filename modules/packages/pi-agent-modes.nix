@@ -8,23 +8,21 @@
         pname = "pi-agent-modes";
         version = "0.3.0";
 
-        src = pkgs.fetchFromGitHub {
-          owner = "yoyo406";
-          repo = "pi-agent-modes";
-          tag = "v${finalAttrs.version}";
-          hash = "sha256-czujF6xEpjQrxPJnrRgSUoE0vO2NI+hHl/gT2eZgmG0=";
+        src = pkgs.fetchurl {
+          url = "https://registry.npmjs.org/pi-agent-modes/-/pi-agent-modes-${finalAttrs.version}.tgz";
+          hash = "sha256-+xJ6e9j6E5Oma1drbF54PnqAnB2wRv6rWH2eNegNj7E=";
         };
+
+        unpackPhase = ''
+          runHook preUnpack
+          tar xzf $src
+          runHook postUnpack
+        '';
+        sourceRoot = "package";
 
         patches = [ ../../patches/pi-agent-modes-0.3.0-ssh.patch ];
 
         nativeBuildInputs = [ pkgs.nodejs ];
-
-        doCheck = true;
-        checkPhase = ''
-          runHook preCheck
-          node --experimental-strip-types --test tests/*.test.ts
-          runHook postCheck
-        '';
 
         installPhase = ''
           runHook preInstall

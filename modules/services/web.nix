@@ -467,7 +467,12 @@
     };
 
   flake.nixosModules.networkPassthrough =
-    { config, pkgs, lib, ... }:
+    {
+      config,
+      pkgs,
+      lib,
+      ...
+    }:
     {
       services.caddy = {
         enable = true;
@@ -479,27 +484,30 @@
         };
         environmentFile = "${config.sops.secrets."caddy/environment".path}";
         globalConfig = ''
-        layer4 {
-          :443 {
-            route {
-              proxy {
-                upstream 192.168.10.253:443
+          layer4 {
+            :443 {
+              route {
+                proxy {
+                  upstream 192.168.10.253:443
+                }
               }
             }
-          }
 
-          :80 {
-            route {
-              proxy {
-                upstream 192.168.10.253:80
+            :80 {
+              route {
+                proxy {
+                  upstream 192.168.10.253:80
+                }
               }
             }
           }
-        }
         '';
       };
 
-      networking.firewall.allowedTCPPorts = [ 80 443 ];
+      networking.firewall.allowedTCPPorts = [
+        80
+        443
+      ];
     };
 
   flake.nixosModules.caddy =
@@ -706,12 +714,14 @@
 
           import bunny
         '';
-        /*virtualHosts."https://qbit.olympus.moe".extraConfig = ''
-          encode gzip zstd
-          reverse_proxy 192.168.10.253:8080
+        /*
+          virtualHosts."https://qbit.olympus.moe".extraConfig = ''
+            encode gzip zstd
+            reverse_proxy 192.168.10.253:8080
 
-          import mtls
-        '';*/
+            import mtls
+          '';
+        */
         virtualHosts."https://ntfy.olympus.moe".extraConfig = ''
           import mtls
 
@@ -782,7 +792,7 @@
     };
 
   flake.nixosModules.dnsHost =
-    { config, ... }:
+    { config, lib, ... }:
     {
       imports = [ inputs.self.nixosModules.adguardhome ];
 
@@ -794,14 +804,31 @@
           listen-address = [ "172.17.100.1" ];
           bind-interfaces = true;
           no-resolv = true;
-          server = [ "127.0.0.1#53" "/ssh.olympus.moe/127.0.0.1#53" "/vpn.olympus.moe/127.0.0.1#53" "/www.olympus.moe/127.0.0.1#53" ];
+          local-service = true;
+          server = [
+            "127.0.0.1#53"
+            "/ssh.olympus.moe/127.0.0.1#53"
+            "/vpn.olympus.moe/127.0.0.1#53"
+            "/www.olympus.moe/127.0.0.1#53"
+          ];
           address = [
             "/olympus.moe/172.17.100.1"
             "/puppygirls.net/172.17.100.1"
           ];
-          local = [ "/olympus.moe/" "/puppygirls.net/" ];
+          local = [
+            "/olympus.moe/"
+            "/puppygirls.net/"
+          ];
         };
       };
+
+      # The router forwards 53 here; keep plain DNS on the LAN only.
+      networking.firewall.extraCommands = lib.mkAfter ''
+        for proto in tcp udp; do
+          iptables -C INPUT -d 172.17.100.1 -p $proto --dport 53 ! -s 172.17.0.0/16 -j DROP 2>/dev/null \
+            || iptables -I INPUT 1 -d 172.17.100.1 -p $proto --dport 53 ! -s 172.17.0.0/16 -j DROP
+        done
+      '';
     };
 
   flake.nixosModules.adguardhome =
@@ -830,7 +857,21 @@
               "9.9.9.9"
             ];
             #aaaa_disabled = true;
-            bind_hosts = [ "127.0.0.1" "192.168.10.253" ];
+            bind_hosts = [
+              "127.0.0.1"
+              "192.168.10.253"
+            ];
+            # dnsmasq fronts this resolver, so all LAN clients share the
+            # 127.0.0.1 rate-limit bucket; ratelimit_whitelist is inert in
+            # 0.107.x, so keep a wide per-client budget instead.
+            ratelimit = 200;
+            ratelimit_whitelist = [ "127.0.0.1" ];
+            # resolv.conf advertises ::1, where nothing listens.
+            local_ptr_upstreams = [
+              "9.9.9.9"
+              "8.8.8.8"
+              "8.8.4.4"
+            ];
           };
           tls = {
             enabled = true;
@@ -933,7 +974,14 @@
 
           filters =
             lib.imap1
-              (id: filter: filter // { inherit id; enabled = true; })
+              (
+                id: filter:
+                filter
+                // {
+                  inherit id;
+                  enabled = true;
+                }
+              )
               [
                 {
                   name = "HaGeZi Multi PRO";
