@@ -534,7 +534,12 @@
   };
 
   flake.nixosModules.vmTest =
-    { lib, pkgs, ... }:
+    {
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
     {
       virtualisation.vmVariantWithDisko = {
         services.openssh = {
@@ -547,10 +552,16 @@
           };
         };
 
-        users.users.root.openssh.authorizedKeys.keys = [
-          "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJcAXHlW7WhNVvoU5H6q7BZDu09Tnd60P8QDJVhpbSiJ foxtrot@circe-nixos"
-        ];
-        users.users.foxtrot.hashedPasswordFile = lib.mkForce null;
+        users.users = {
+          root.openssh.authorizedKeys.keys = [
+            "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIJcAXHlW7WhNVvoU5H6q7BZDu09Tnd60P8QDJVhpbSiJ foxtrot@circe-nixos"
+          ];
+          # Only touch 'foxtrot' where the host actually declares it, otherwise this
+          # stub user fails the isNormalUser/group assertions on the deck hosts.
+        }
+        // lib.optionalAttrs (config.users.users ? foxtrot) {
+          foxtrot.hashedPasswordFile = lib.mkForce null;
+        };
 
         virtualisation = {
           memorySize = 4096;
