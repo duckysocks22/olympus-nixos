@@ -278,11 +278,19 @@ in
             Service = {
               Type = "exec";
               EnvironmentFile = "-%t/gamescope-environment";
+              # %t/gamescope-environment outlives the session it describes, so a desktop
+              # session would otherwise start Discord against a display that is gone.
+              ExecCondition = "${pkgs.runtimeShell} -c 'grep -qx XDG_CURRENT_DESKTOP=gamescope %t/gamescope-environment'";
+              # A crashed Discord leaves its IPC socket behind and the Decky plugin then
+              # connects to the dead file and reports a refused connection instead of
+              # waiting for Discord to come back.
+              ExecStartPre = "${pkgs.runtimeShell} -c 'rm -f %t/discord-ipc-*'";
               ExecStart = "${config.home.homeDirectory}/.local/bin/com.discordapp.Discord";
+              ExecStopPost = "${pkgs.runtimeShell} -c 'rm -f %t/discord-ipc-*'";
               Restart = "on-failure";
               RestartSec = 10;
             };
-            Install.WantedBy = [ ];
+            Install.WantedBy = [ "graphical-session.target" ];
           };
 
           home = {
