@@ -723,8 +723,6 @@
           '';
         */
         virtualHosts."https://ntfy.olympus.moe".extraConfig = ''
-          import mtls
-
           reverse_proxy 192.168.10.253:1147
 
           import bunny
