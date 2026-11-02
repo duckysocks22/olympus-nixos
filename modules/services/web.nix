@@ -732,6 +732,7 @@
         virtualHosts."https://molly.olympus.moe".extraConfig = ''
           reverse_proxy 192.168.10.253:8020 {
             header_up Host {host}
+            header_up X-Original-URL {path}
           }
 
           import bunny
