@@ -363,6 +363,7 @@
       settings = {
         base-url = "https://ntfy.olympus.moe";
         listen-http = ":1147";
+        auth-default-access = "deny-all";
       };
     };
   };
