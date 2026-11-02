@@ -421,10 +421,10 @@
         package = pkgs-unstable.pi-coding-agent;
         settings = {
           defaultProvider = "opencode-go";
-          defaultModel = "deepseek-v4.1-flash";
+          defaultModel = "glm-5.3-flash";
           enabledModels = [
-            "deepseek-v4.1-flash"
-            "openrouter/deepseek/deepseek-v4.1-flash-1017"
+            "glm-5.3-flash"
+            "openrouter/z-ai/glm-5.3-flash"
             "llama.cpp/*"
             "bansos/*"
           ];
@@ -490,8 +490,8 @@
               };
               models = [
                 {
-                  id = "deepseek/deepseek-v4.1-flash-1017";
-                  name = "DeepSeek: DeepSeek V4.1 Flash 1017";
+                  id = "z-ai/glm-5.3-flash";
+                  name = "Z.ai: GLM 5.3 Flash";
                   api = "openai-completions";
                   baseUrl = "https://openrouter.ai/api/v1";
                   reasoning = true;
@@ -500,13 +500,13 @@
                     "image"
                   ];
                   cost = {
-                    input = 0.15;
-                    output = 0.6;
-                    cacheRead = 0.003;
+                    input = 0.0285;
+                    output = 0.0923;
+                    cacheRead = 0.0285;
                     cacheWrite = 0;
                   };
                   contextWindow = 1048576;
-                  maxTokens = 393216;
+                  maxTokens = 131072;
                   thinkingLevelMap = {
                     off = "none";
                     minimal = null;
