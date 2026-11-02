@@ -1054,16 +1054,15 @@
         ]
       },
       "locked": {
-        "lastModified": 1792353334,
-        "narHash": "sha256-xLHhhIkNrQOSiW89huV3QpybscLThCxX/TAcePfb38M=",
+        "lastModified": 1793578573,
+        "narHash": "sha256-suZyoKDPwhV1xMIPJW7pkK7Fp4ufVRg1Gh5A0Qe99yA=",
         "owner": "duckysocks22",
         "repo": "Jovian-NixOS",
-        "rev": "0a7fb66a0948ad9369128448c8f36740b540e443",
+        "rev": "b6a7eaa88dd40504a38f807edcc75ee5a39d17b6",
         "type": "github"
       },
       "original": {
         "owner": "duckysocks22",
-        "ref": "rebase",
         "repo": "Jovian-NixOS",
         "type": "github"
       }
