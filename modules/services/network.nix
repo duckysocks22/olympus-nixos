@@ -96,8 +96,6 @@
           };
         };
 
-        management.metricsPort = 13090;
-
         signal.port = 8012;
 
         management.package = pkgs-unstable.netbird-management;
