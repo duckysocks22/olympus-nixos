@@ -172,6 +172,16 @@
         sopsFile = serverShared;
       };
 
+      sops.secrets."pocket-id/encryption" = {
+        owner = "pocket-id";
+        group = "pocket-id";
+      };
+
+      sops.secrets."pocket-id/maxmind" = {
+        owner = "pocket-id";
+        group = "pocket-id";
+      };
+
       sops.secrets."samba-nyx/socks" = { };
       sops.secrets."samba-nyx/serena" = { };
       sops.secrets."samba-nyx/zia" = { };
