@@ -182,6 +182,36 @@
         group = "pocket-id";
       };
 
+      sops.secrets."netbird/coturn/pass" = {
+        owner = "turnserver";
+        group = "turnserver";
+      };
+
+      sops.secrets."netbird/TURN/pass" = {
+        owner = "netbird";
+        group = "netbird";
+      };
+
+      sops.secrets."netbird/datastore/encryption" = { 
+        owner = "netbird";
+        group = "netbird";
+      };
+
+      sops.secrets."netbird/turnsecret" = {
+        owner = "netbird";
+        group = "netbird";
+      };
+
+      sops.secrets."netbird/idp/apitoken" = {
+        owner = "netbird";
+        group = "netbird";
+      };
+
+      sops.secrets."netbird/relay/secret" = {
+        owner = "netbird";
+        group = "netbird";
+      };
+
       sops.secrets."samba-nyx/socks" = { };
       sops.secrets."samba-nyx/serena" = { };
       sops.secrets."samba-nyx/zia" = { };

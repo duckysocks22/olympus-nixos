@@ -32,6 +32,7 @@
       self.nixosModules.homepage
       self.nixosModules.futo-notes-server
       self.nixosModules.reverseProxy
+      self.nixosModules.servicesNetwork
     ];
   };
 

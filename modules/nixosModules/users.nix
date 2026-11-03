@@ -232,76 +232,87 @@ in
           };
         };
 
-        users.deck = { config, ... }: {
-          imports = [
-            inputs.self.homeModules.functions
-            inputs.self.homeModules.browsers
-            inputs.self.homeModules.launchers
-            inputs.self.homeModules.nixvim
-            inputs.self.homeModules.shell
-            inputs.self.homeModules.common
-            inputs.self.homeModules.piAgent
-            inputs.self.homeModules.deckSops
-            inputs.self.homeModules.syncthing
-          ];
+        users.deck =
+          { config, ... }:
+          {
+            imports = [
+              inputs.self.homeModules.functions
+              inputs.self.homeModules.browsers
+              inputs.self.homeModules.launchers
+              inputs.self.homeModules.nixvim
+              inputs.self.homeModules.shell
+              inputs.self.homeModules.common
+              inputs.self.homeModules.piAgent
+              inputs.self.homeModules.deckSops
+              inputs.self.homeModules.syncthing
+            ];
 
-          home.file = {
-            ".local/bin/com.discordapp.Discord" = {
-              source = pkgs.writeShellScript "com.discordapp.Discord" ''
-                unset LD_LIBRARY_PATH
-                unset LD_PRELOAD
-                exec ${pkgs.discord}/bin/discord "$@"
-              '';
-              force = true;
+            home.file = {
+              ".local/bin/com.discordapp.Discord" = {
+                # Mute all of Discord's output by routing it into a null sink.
+                source =
+                  let
+                    pactl = pkgs.lib.getExe' pkgs.pulseaudio "pactl";
+                  in
+                  pkgs.writeShellScript "com.discordapp.Discord" ''
+                    unset LD_LIBRARY_PATH
+                    unset LD_PRELOAD
+                    if ! ${pactl} list short sinks | grep -q discord-muted; then
+                      ${pactl} load-module module-null-sink sink_name=discord-muted sink_properties=device.description=Discord-Muted
+                    fi
+                    export PULSE_SINK=discord-muted
+                    exec ${pkgs.discord}/bin/discord "$@"
+                  '';
+                force = true;
+              };
+              ".local/share/applications/com.discordapp.Discord.desktop" = {
+                source = pkgs.writeText "com.discordapp.Discord.desktop" ''
+                  [Desktop Entry]
+                  Name=Discord
+                  Comment=All-in-one voice and text chat for gamers
+                  Exec=${config.home.homeDirectory}/.local/bin/com.discordapp.Discord
+                  Icon=discord
+                  Terminal=false
+                  Type=Application
+                  Categories=Network;InstantMessaging;
+                '';
+                force = true;
+              };
             };
-            ".local/share/applications/com.discordapp.Discord.desktop" = {
-              source = pkgs.writeText "com.discordapp.Discord.desktop" ''
-                [Desktop Entry]
-                Name=Discord
-                Comment=All-in-one voice and text chat for gamers
-                Exec=${config.home.homeDirectory}/.local/bin/com.discordapp.Discord
-                Icon=discord
-                Terminal=false
-                Type=Application
-                Categories=Network;InstantMessaging;
-              '';
-              force = true;
+
+            systemd.user.services.discord-autostart = {
+              Unit = {
+                Description = "Discord (background) for Steam Big Picture";
+                After = [ "gamescope-session.service" ];
+                PartOf = [ "graphical-session.target" ];
+              };
+              Service = {
+                Type = "exec";
+                EnvironmentFile = "-%t/gamescope-environment";
+                # %t/gamescope-environment outlives the session it describes, so a desktop
+                # session would otherwise start Discord against a display that is gone.
+                ExecCondition = "${pkgs.runtimeShell} -c 'grep -qx XDG_CURRENT_DESKTOP=gamescope %t/gamescope-environment'";
+                # A crashed Discord leaves its IPC socket behind and the Decky plugin then
+                # connects to the dead file and reports a refused connection instead of
+                # waiting for Discord to come back.
+                ExecStartPre = "${pkgs.runtimeShell} -c 'rm -f %t/discord-ipc-*'";
+                ExecStart = "${config.home.homeDirectory}/.local/bin/com.discordapp.Discord";
+                ExecStopPost = "${pkgs.runtimeShell} -c 'rm -f %t/discord-ipc-*'";
+                Restart = "on-failure";
+                RestartSec = 10;
+              };
+              Install.WantedBy = [ "graphical-session.target" ];
             };
+
+            home = {
+              username = "deck";
+              homeDirectory = "/home/deck";
+              stateVersion = "26.05";
+              sessionVariables = mkSessionVariables config;
+            };
+
+            systemd.user.startServices = "sd-switch";
           };
-
-          systemd.user.services.discord-autostart = {
-            Unit = {
-              Description = "Discord (background) for Steam Big Picture";
-              After = [ "gamescope-session.service" ];
-              PartOf = [ "graphical-session.target" ];
-            };
-            Service = {
-              Type = "exec";
-              EnvironmentFile = "-%t/gamescope-environment";
-              # %t/gamescope-environment outlives the session it describes, so a desktop
-              # session would otherwise start Discord against a display that is gone.
-              ExecCondition = "${pkgs.runtimeShell} -c 'grep -qx XDG_CURRENT_DESKTOP=gamescope %t/gamescope-environment'";
-              # A crashed Discord leaves its IPC socket behind and the Decky plugin then
-              # connects to the dead file and reports a refused connection instead of
-              # waiting for Discord to come back.
-              ExecStartPre = "${pkgs.runtimeShell} -c 'rm -f %t/discord-ipc-*'";
-              ExecStart = "${config.home.homeDirectory}/.local/bin/com.discordapp.Discord";
-              ExecStopPost = "${pkgs.runtimeShell} -c 'rm -f %t/discord-ipc-*'";
-              Restart = "on-failure";
-              RestartSec = 10;
-            };
-            Install.WantedBy = [ "graphical-session.target" ];
-          };
-
-          home = {
-            username = "deck";
-            homeDirectory = "/home/deck";
-            stateVersion = "26.05";
-            sessionVariables = mkSessionVariables config;
-          };
-
-          systemd.user.startServices = "sd-switch";
-        };
       };
     };
 

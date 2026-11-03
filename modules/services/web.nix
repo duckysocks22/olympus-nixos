@@ -535,6 +535,14 @@
                 }
               }
             }
+
+            :33093 {
+              route {
+                proxy {
+                  upstream 192.168.200.2:33080
+                }
+              }
+            }
           }
         '';
       };
@@ -542,6 +550,7 @@
       networking.firewall.allowedTCPPorts = [
         80
         443
+        33093
       ];
     };
 
@@ -558,6 +567,15 @@
           hash = "sha256-92prKdGudX4MAEfUjyCrtpWoy6p5rwYxEEDnzLg2fmI=";
         };
         environmentFile = "${config.sops.secrets."caddy/environment".path}";
+        globalConfig = ''
+          servers {
+            timeouts {
+              idle 15m
+              read_body_idle 1h
+              write_idle 1h
+            }
+          }
+        '';
         extraConfig = ''
           (mtls) {
             tls {
@@ -785,6 +803,22 @@
           reverse_proxy 192.168.10.253:1411
 
           import bunny
+        '';
+        virtualHosts."netbird.olympus.moe".extraConfig = ''
+          handle /api/* {
+            reverse_proxy 127.0.0.1:8011
+          }
+          handle /management.ManagementService/* {
+            reverse_proxy h2c://127.0.0.1:8011
+          }
+          handle /signalexchange.SignalExchange/* {
+            reverse_proxy h2c://127.0.0.1:8012
+          }
+          handle {
+            root * ${config.services.netbird.server.dashboard.finalDrv}
+            try_files {path} {path}.html {path}/ /index.html
+            file_server
+          }
         '';
       };
       networking.firewall.allowedTCPPorts = [
