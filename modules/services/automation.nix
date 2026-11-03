@@ -202,5 +202,7 @@
       };
       wantedBy = [ "multi-user.target" ];
     };
+
+    networking.firewall.allowedUDPPorts = [ 4002 ];
   };
 }
