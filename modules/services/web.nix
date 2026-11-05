@@ -13,7 +13,7 @@
 
   flake.nixosModules.reverseProxy.imports = [ inputs.self.nixosModules.caddy ];
 
-  flake.nixosModules.sso = 
+  flake.nixosModules.sso =
     {
       config,
       pkgs,
@@ -46,187 +46,103 @@
       users.groups.pocket-id = { };
     };
 
-  flake.nixosModules.wireguardHost =
+  # WireGuard hub duties moved to the NetBird overlay: aether keeps acting as the
+  # public ingress (NAT forwardPorts) and Mullvad exit, but the raw mesh device
+  # is gone; forwarded traffic rides nb-wt0 to nyx (pinned 192.168.10.253).
+  flake.nixosModules.aetherIngress =
     {
-      inputs,
       config,
       lib,
+      pkgs,
       ...
     }:
-    let
-      IPv4Address = {
-        "nyx-nixos" = "192.168.10.253/32";
-        "hermera-nixos" = "192.168.10.252/32";
-        "aether-nixos" = "192.168.10.254/32";
-      };
-      IPv6Address = {
-        "nyx-nixos" = "fd31:bf08:57cb::253/128";
-        "hermera-nixos" = "fd31:bf08:57cb::252/128";
-        "aether-nixos" = "fd31:bf08:57cb::254/128";
-      };
-      adapter = {
-        "aether-nixos" = "ens3";
-        "nyx-nixos" = "enp34s0";
-      };
-      publicKey = inputs.self.wireguardPublicKeys;
-    in
     {
-      sops.secrets."wireguard/${config.networking.hostName}/privateKey" = {
-        sopsFile = ../../secrets/${config.networking.hostName}.yaml;
-        mode = "640";
-        owner = "systemd-network";
-        group = "systemd-network";
-        restartUnits = [ "systemd-networkd.service" ];
-      };
+      config = lib.mkIf (config.networking.hostName == "aether-nixos") {
+        networking.nat = {
+          enable = true;
+          enableIPv6 = true;
+          externalInterface = "ens3";
+          internalInterfaces = [ "nb-wt0" ];
+          forwardPorts = [
+            {
+              sourcePort = 853;
+              destination = "192.168.10.253:853";
+            }
+            {
+              sourcePort = 853;
+              proto = "udp";
+              destination = "192.168.10.253:853";
+            }
+            {
+              sourcePort = 25565;
+              destination = "192.168.10.253:25665";
+            }
+            {
+              sourcePort = 25665;
+              destination = "192.168.10.253:25665";
+            }
+            {
+              sourcePort = 25865;
+              destination = "192.168.10.253:25865";
+            }
+          ];
+        };
 
-      networking.nat = {
-        enable = true;
-        enableIPv6 = true;
-        externalInterface = adapter.${config.networking.hostName};
-        internalInterfaces = [ "wg0" ];
-        extraCommands = lib.optionalString (config.networking.hostName == "aether-nixos") ''
-          iptables -w -t nat -A nixos-nat-post -o wg0 -j MASQUERADE
-        '';
-        forwardPorts = lib.optionals (config.networking.hostName == "aether-nixos") [
-          {
-            sourcePort = 853;
-            destination = "192.168.10.253:853";
-          }
-          {
-            sourcePort = 853;
-            proto = "udp";
-            destination = "192.168.10.253:853";
-          }
-          {
-            sourcePort = 25565;
-            destination = "192.168.10.253:25665";
-          }
-          {
-            sourcePort = 25665;
-            destination = "192.168.10.253:25665";
-          }
-          {
-            sourcePort = 25865;
-            destination = "192.168.10.253:25865";
-          }
-        ];
-      };
-
-      networking = {
-        useNetworkd = true;
-        firewall = {
-          allowedUDPPorts = [ 4500 ] ++ lib.optionals (config.networking.hostName == "aether-nixos") [ 853 ];
-          allowedTCPPorts = lib.optionals (config.networking.hostName == "aether-nixos") [
+        networking.firewall = {
+          allowedUDPPorts = [ 853 ];
+          allowedTCPPorts = [
             853
             25565
             25665
             25865
           ];
         };
-      };
 
-      systemd.network = {
-        enable = true;
-        networks."50-wg0" = {
-          matchConfig.Name = "wg0";
-
-          address = [
-            IPv4Address.${config.networking.hostName}
-            IPv6Address.${config.networking.hostName}
-          ];
-
-          networkConfig = {
-            IPv4Forwarding = true;
-            IPv6Forwarding = true;
-          };
+        # No .network file for nb-wt0: matching one makes networkd claim the
+        # link and flush netbird's direct netlink address assignment. Forwarding
+        # is covered by the global ip_forward sysctls (needed anyway for the
+        # mullvad exit module); the iif policy rule lives in iproute2 setup.
+        boot.kernel.sysctl = {
+          "net.ipv4.ip_forward" = true;
+          "net.ipv6.conf.all.forwarding" = true;
         };
 
-        netdevs."50-wg0" = {
-          netdevConfig = {
-            Kind = "wireguard";
-            Name = "wg0";
-          };
-
-          wireguardConfig = {
-            ListenPort = 4500;
-            PrivateKeyFile = config.sops.secrets."wireguard/${config.networking.hostName}/privateKey".path;
-            RouteTable = "main";
-            FirewallMark = 42;
-          };
-
-          wireguardPeers = [
-            {
-              # athena-nixos
-              PublicKey = publicKey."athena-nixos";
-              AllowedIPs = [
-                "fd31:bf08:57cb::1/128"
-                "192.168.10.1/32"
-              ];
-            }
-            {
-              # circe-nixos
-              PublicKey = publicKey."circe-nixos";
-              AllowedIPs = [
-                "fd31:bf08:57cb::2/128"
-                "192.168.10.2/32"
-              ];
-            }
-            {
-              PublicKey = publicKey."hermes-graphene";
-              AllowedIPs = [
-                "fd31:bf08:57cb::30/128"
-                "192.168.10.30/32"
-              ];
-            }
-            {
-              # dionysus-nixos
-              PublicKey = publicKey."dionysus-nixos";
-              AllowedIPs = [
-                "fd31:bf08:57cb::3/128"
-                "192.168.10.3/32"
-              ];
-            }
-            {
-              #ariadne-nixos
-              PublicKey = publicKey."ariadne-nixos";
-              AllowedIPs = [
-                "fd31:bf08:57cb::4/128"
-                "192.168.10.4/32"
-              ];
-            }
-          ]
-          ++ lib.optionals (config.networking.hostName != "nyx-nixos") [
-            {
-              # nyx-nixos
-              PublicKey = publicKey."nyx-nixos";
-              AllowedIPs = [
-                "fd31:bf08:57cb::253/128"
-                "192.168.10.253/32"
-              ];
-            }
-          ]
-          ++ lib.optionals (config.networking.hostName != "aether-nixos") [
-            {
-              # aether-nixos
-              PublicKey = publicKey."aether-nixos";
-              AllowedIPs = [
-                "fd31:bf08:57cb::254/128"
-                "192.168.10.254/32"
-              ];
-              Endpoint = "vpn1.olympus.moe:4500";
-              PersistentKeepalive = 25;
-            }
+        systemd.services.netbird-mullvad-rule = {
+          description = "Policy rule: netbird overlay traffic routed via Mullvad tunnel";
+          after = [
+            "network.target"
+            "netbird-wt0.service"
           ];
+          wants = [ "netbird-wt0.service" ];
+          wantedBy = [ "multi-user.target" ];
+          serviceConfig = {
+            Type = "oneshot";
+            RemainAfterExit = true;
+            ExecStart = pkgs.writeShellScript "nb-mullvad-rule" ''
+              #!${pkgs.stdenv.shell}
+              ip=${pkgs.iproute2}/bin/ip
+              for attempt in 1 2 3 4 5 6 7 8 9 10; do
+                "$ip" -4 rule add iif nb-wt0 table 51820 priority 100 2>/dev/null || true
+                "$ip" -6 rule add iif nb-wt0 table 51820 priority 100 2>/dev/null || true
+                if "$ip" -4 rule show | grep -q "iif nb-wt0"; then
+                  echo "policy rules installed"
+                  exit 0
+                fi
+                sleep 3
+              done
+              echo "failed to install nb-wt0 policy rules" >&2
+              exit 1
+            '';
+            ExecStop = pkgs.writeShellScript "nb-mullvad-rule-stop" ''
+              ${pkgs.iproute2}/bin/ip -4 rule del iif nb-wt0 table 51820 priority 100 2>/dev/null || true
+              ${pkgs.iproute2}/bin/ip -6 rule del iif nb-wt0 table 51820 priority 100 2>/dev/null || true
+            '';
+          };
         };
-      };
-
-      systemd.services.systemd-networkd = {
-        after = [ "sops-install-secrets.service" ];
-        wants = [ "sops-install-secrets.service" ];
       };
     };
 
-  flake.nixosModules.routeVPNMullvad = { config, ... }: {
+  flake.nixosModules.routeVPNMullvad = { config, pkgs, ... }: {
     systemd.network = {
       netdevs."60-wg-mullvad1" = {
         netdevConfig = {
@@ -258,32 +174,112 @@
         ];
       };
 
-      networks."50-wg0".routingPolicyRules = [
-        {
-          Priority = 100;
-          From = "192.168.10.30/32";
-          Table = 51820;
-        }
-        {
-          Priority = 100;
-          From = "fd31:bf08:57cb::30/128";
-          Table = 51820;
-        }
-      ];
     };
+
+    networking.iproute2.rttablesExtraConfig = ''
+      100 nb-wt0-mullvad
+    '';
 
     networking.nat = {
       extraCommands = ''
-        # hermes -> mullvad exit masquerade
-        iptables  -w -t nat -A nixos-nat-post -o wg-mullvad1 -s 192.168.10.30/32       -j MASQUERADE
-        ip6tables -w -t nat -A nixos-nat-post -o wg-mullvad1 -s fd31:bf08:57cb::30/128 -j MASQUERADE
+        # netbird overlay -> mullvad exit masquerade
+        iptables -w -t nat  -A nixos-nat-post -o wg-mullvad1 -i nb-wt0  -j MASQUERADE
+        ip6tables -w -t nat -A nixos-nat-post -o wg-mullvad1 -i nb-wt0  -j MASQUERADE
       '';
 
       extraStopCommands = ''
-        # hermes
-        iptables  -w -t nat -D nixos-nat-post -o wg-mullvad1 -s 192.168.10.30/32       -j MASQUERADE || true
-        ip6tables -w -t nat -D nixos-nat-post -o wg-mullvad1 -s fd31:bf08:57cb::30/128 -j MASQUERADE || true
+        # netbird overlay
+        iptables -w -t nat  -D nixos-nat-post -o wg-mullvad1 -i nb-wt0  -j MASQUERADE || true
+        ip6tables -w -t nat -D nixos-nat-post -o wg-mullvad1 -i nb-wt0  -j MASQUERADE || true
       '';
+    };
+
+    sops.secrets."netbird/api/pat" = {
+      sopsFile = ../../secrets/${config.networking.hostName}.yaml;
+      mode = "640";
+      owner = "root";
+      group = "root";
+    };
+
+    systemd.services.netbird-mullvad-route = {
+      description = "Provision Mullvad exit-node route in netbird management (idempotent)";
+      after = [
+        "network-online.target"
+        "netbird-management.service"
+      ];
+      wants = [ "network-online.target" ];
+      wantedBy = [ "multi-user.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        RemainAfterExit = true;
+        ExecStart = pkgs.writeScript "netbird-mullvad-route.sh" ''
+          #!${pkgs.bash}/bin/bash
+          set -uo pipefail
+
+          API=https://netbird.olympus.moe/api
+          PAT=$(<${config.sops.secrets."netbird/api/pat".path})
+          curl=${pkgs.curl}/bin/curl
+          jq=${pkgs.jq}/bin/jq
+          auth=(-H "Authorization: Token $PAT")
+
+          req() {
+            local m=$1 path=$2 body=''${3-} out code
+            if [ -n "$body" ]; then
+              out=$($curl -sS --show-error -w "\n%{http_code}" -X "$m" "''${auth[@]}" -H "Content-Type: application/json" -d "$body" "$API$path") \
+                || { echo "request to $path failed: $out" >&2; exit 1; }
+            else
+              out=$($curl -sS --show-error -w "\n%{http_code}" "''${auth[@]}" "$API$path") \
+                || { echo "request to $path failed" >&2; exit 1; }
+            fi
+            code="''${out##*$'\n'}"
+            body="''${out%$'\n'*}"
+            if [ "$code" -lt 200 ] || [ "$code" -ge 400 ]; then
+              echo "API $m $path -> HTTP $code: $(printf '%s' "$body" | head -c 300)" >&2
+              exit 1
+            fi
+            printf '%s' "$body"
+          }
+
+          until $curl -sf "''${auth[@]}" "$API/peers" >/dev/null 2>&1; do
+            echo "management API unreachable, retrying"
+            sleep 5
+          done
+
+          peer=$(req GET /peers | $jq -c '[.[] | select(.name=="aether-nixos")] | .[0] // empty')
+          [ -n "$peer" ] || { echo "aether-nixos peer not found"; exit 1; }
+          peer_id=$($jq -rn --argjson p "$peer" '$p.id')
+
+          dist=$(req GET /groups | $jq -c '[.[] | select(.name=="mullvad-exit-users")] | .[0] // empty')
+          if [ -z "$dist" ]; then
+            dist=$(req POST /groups '{"name":"mullvad-exit-users"}')
+          fi
+          dist_id=$($jq -rn --argjson g "$dist" '$g.id')
+          [ -n "$dist_id" ] || { echo "failed to ensure distribution group"; exit 1; }
+
+          body=$($jq -nc --arg dist "$dist_id" --arg peer "$peer_id" '{
+            description: "Mullvad exit node (aether)",
+            network_id: "mullvad-exit",
+            enabled: true,
+            network: "0.0.0.0/0",
+            metric: 9999,
+            masquerade: true,
+            keep_route: false,
+            skip_auto_apply: true,
+            groups: [$dist],
+            peer: $peer
+          }')
+
+          existing=$(req GET /routes | $jq -c '[.[] | select(.network_id=="mullvad-exit")] | .[0] // empty')
+          if [ -n "$existing" ]; then
+            rid=$($jq -rn --argjson e "$existing" '$e.id')
+            req PUT /routes/$rid "$body" >/dev/null
+            echo "exit route updated"
+          else
+            req POST /routes "$body" >/dev/null
+            echo "exit route created"
+          fi
+        '';
+      };
     };
   };
 
@@ -523,7 +519,7 @@
             :443 {
               route {
                 proxy {
-                  upstream 192.168.10.253:443
+                  upstream 192.168.200.2:443
                 }
               }
             }
@@ -531,7 +527,7 @@
             :80 {
               route {
                 proxy {
-                  upstream 192.168.10.253:80
+                  upstream 192.168.200.2:80
                 }
               }
             }
@@ -614,7 +610,7 @@
 
         '';
         virtualHosts."cache.puppygirls.net".extraConfig = ''
-          reverse_proxy 192.168.10.253:7989 {
+          reverse_proxy 127.0.0.1:7989 {
             header_up Host {upstream_hostport}
             flush_interval -1
 
@@ -636,7 +632,7 @@
           import bunny
         '';
         virtualHosts."stream.puppygirls.net".extraConfig = ''
-          reverse_proxy 192.168.10.253:8096 {
+          reverse_proxy 127.0.0.1:8096 {
             header_up Host {host}
             header_up X-Real-IP {remote_host}
             header_up X-Forwarded-For {remote_host}
@@ -650,7 +646,7 @@
           import mtls
           import arrcors
 
-          reverse_proxy 192.168.10.253:5055 {
+          reverse_proxy 127.0.0.1:5055 {
             header_up X-Real-IP {remote_host}
           }
 
@@ -660,7 +656,7 @@
           import mtls
           import arrcors
 
-          reverse_proxy 192.168.10.253:5056 {
+          reverse_proxy 127.0.0.1:5056 {
             header_up X-Real-IP {remote_host}
             transport http {
               versions 1.1
@@ -673,7 +669,7 @@
           import mtls
           import arrcors
 
-          reverse_proxy 192.168.10.253:5057 {
+          reverse_proxy 127.0.0.1:5057 {
             header_up X-Real-IP {remote_host}
             transport http {
               versions 1.1
@@ -686,7 +682,7 @@
           import mtls
           import arrcors
 
-          reverse_proxy 192.168.10.253:5058 {
+          reverse_proxy 127.0.0.1:5058 {
             header_up X-Real-IP {remote_host}
             transport http {
               versions 1.1
@@ -696,18 +692,18 @@
           import bunny
         '';
         virtualHosts."music.puppygirls.net".extraConfig = ''
-          reverse_proxy 192.168.10.253:4533
+          reverse_proxy 127.0.0.1:4533
 
           import bunny
         '';
         virtualHosts."audio.puppygirls.net".extraConfig = ''
-          reverse_proxy 192.168.10.253:8000
+          reverse_proxy 127.0.0.1:8000
 
           import bunny
         '';
         virtualHosts."https://ofsm.puppygirls.net".extraConfig = ''
           import mtls
-          reverse_proxy 192.168.10.253:42702
+          reverse_proxy 127.0.0.1:42702
 
           import bunny
         '';
@@ -715,14 +711,14 @@
         #olympus.moe
         virtualHosts."https://rss.olympus.moe".extraConfig = ''
           import mtls
-          reverse_proxy 192.168.10.253:8082
+          reverse_proxy 127.0.0.1:8082
 
           import bunny
         '';
         virtualHosts."https://rsshub.olympus.moe".extraConfig = ''
           import mtls
 
-          reverse_proxy 192.168.10.253:1200
+          reverse_proxy 127.0.0.1:1200
 
           import bunny
         '';
@@ -742,7 +738,7 @@
             }
           }
 
-          reverse_proxy 192.168.10.253:3210 {
+          reverse_proxy 127.0.0.1:3210 {
             header_up X-Forwarded-For {remote_host}
           }
 
@@ -750,19 +746,19 @@
         '';
         virtualHosts."https://immich.olympus.moe".extraConfig = ''
           import mtls
-          reverse_proxy 192.168.10.253:2283
+          reverse_proxy 127.0.0.1:2283
 
           import bunny
         '';
         virtualHosts."https://home.olympus.moe".extraConfig = ''
           import mtls
-          reverse_proxy 192.168.10.253:8123
+          reverse_proxy 127.0.0.1:8123
 
           import bunny
         '';
         virtualHosts."https://budget.olympus.moe".extraConfig = ''
           encode gzip zstd
-          reverse_proxy 192.168.10.253:5006
+          reverse_proxy 127.0.0.1:5006
           import mtls
 
           import bunny
@@ -770,18 +766,18 @@
         /*
           virtualHosts."https://qbit.olympus.moe".extraConfig = ''
             encode gzip zstd
-            reverse_proxy 192.168.10.253:8080
+            reverse_proxy 127.0.0.1:8080
 
             import mtls
           '';
         */
         virtualHosts."https://ntfy.olympus.moe".extraConfig = ''
-          reverse_proxy 192.168.10.253:1147
+          reverse_proxy 127.0.0.1:1147
 
           import bunny
         '';
         virtualHosts."https://molly.olympus.moe".extraConfig = ''
-          reverse_proxy 192.168.10.253:8020 {
+          reverse_proxy 127.0.0.1:8020 {
             header_up Host {host}
             header_up X-Original-URL {path}
           }
@@ -790,17 +786,17 @@
         '';
         virtualHosts."dash.olympus.moe".extraConfig = ''
           import mtls
-          reverse_proxy 192.168.10.253:8085
+          reverse_proxy 127.0.0.1:8085
 
           import bunny
         '';
         virtualHosts."notes.olympus.moe".extraConfig = ''
-          reverse_proxy 192.168.10.253:3005
+          reverse_proxy 127.0.0.1:3005
 
           import bunny
         '';
         virtualHosts."sso.olympus.moe".extraConfig = ''
-          reverse_proxy 192.168.10.253:1411
+          reverse_proxy 127.0.0.1:1411
 
           import bunny
         '';
@@ -874,8 +870,12 @@
         enable = true;
         settings = {
           port = 53;
-          listen-address = [ "172.17.100.1" ];
-          bind-interfaces = true;
+          listen-address = [
+            "172.17.100.1"
+            "192.168.10.253"
+          ];
+          # lets dnsmasq bind early / survive netbird bringing the overlay address up later
+          bind-dynamic = true;
           no-resolv = true;
           local-service = true;
           server = [
@@ -895,7 +895,7 @@
         };
       };
 
-      # The router forwards 53 here; keep plain DNS on the LAN only.
+      # Router forwards 53 here; LAN and the netbird mesh both reach this loop.
       networking.firewall.extraCommands = lib.mkAfter ''
         for proto in tcp udp; do
           iptables -C INPUT -d 172.17.100.1 -p $proto --dport 53 ! -s 172.17.0.0/16 -j DROP 2>/dev/null \
@@ -932,7 +932,6 @@
             #aaaa_disabled = true;
             bind_hosts = [
               "127.0.0.1"
-              "192.168.10.253"
             ];
             # dnsmasq fronts this resolver, so all LAN clients share the
             # 127.0.0.1 rate-limit bucket; ratelimit_whitelist is inert in
@@ -975,8 +974,9 @@
             safe_search = {
               enabled = false;
             };
-            # VPN member names, answered locally from wg addresses.
+            # VPN member names, answered locally from netbird addresses.
             # AdGuard reads rewrites from the `filtering` block, not `dns`.
+
             rewrites =
               lib.concatMap
                 (host: [
@@ -986,18 +986,8 @@
                     enabled = true;
                   }
                   {
-                    domain = "${host.name}.vpn.olympus.moe";
-                    answer = host.v6;
-                    enabled = true;
-                  }
-                  {
                     domain = host.name;
                     answer = host.v4;
-                    enabled = true;
-                  }
-                  {
-                    domain = host.name;
-                    answer = host.v6;
                     enabled = true;
                   }
                 ])
@@ -1005,37 +995,30 @@
                   {
                     name = "athena-nixos";
                     v4 = "192.168.10.1";
-                    v6 = "fd31:bf08:57cb::1";
                   }
                   {
                     name = "circe-nixos";
                     v4 = "192.168.10.2";
-                    v6 = "fd31:bf08:57cb::2";
                   }
                   {
                     name = "dionysus-nixos";
                     v4 = "192.168.10.3";
-                    v6 = "fd31:bf08:57cb::3";
                   }
                   {
                     name = "ariadne-nixos";
                     v4 = "192.168.10.4";
-                    v6 = "fd31:bf08:57cb::4";
+                  }
+                  {
+                    name = "hermes-graphene";
+                    v4 = "192.168.10.30";
                   }
                   {
                     name = "nyx-nixos";
                     v4 = "192.168.10.253";
-                    v6 = "fd31:bf08:57cb::253";
-                  }
-                  {
-                    name = "hermera-nixos";
-                    v4 = "192.168.10.252";
-                    v6 = "fd31:bf08:57cb::252";
                   }
                   {
                     name = "aether-nixos";
-                    v4 = "192.168.10.254";
-                    v6 = "fd31:bf08:57cb::254";
+                    v4 = "192.168.10.252";
                   }
                 ];
           };
@@ -1091,6 +1074,8 @@
           DynamicUser = lib.mkForce false;
           User = "adguardhome";
         };
+        # netbird's overlay IP may lag service start; allow unbounded retries
+        unitConfig.StartLimitIntervalSec = lib.mkForce 0;
       };
 
       # Manage cert to allow DNS encryption :3
