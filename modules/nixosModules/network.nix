@@ -79,7 +79,7 @@
       imports = [
         inputs.self.nixosModules.mullvad
         inputs.self.nixosModules.dnscrypt-proxy
-        inputs.self.nixosModules.wireguardPeer
+        inputs.self.nixosModules.netbirdClient
       ];
 
       networking = {
@@ -271,118 +271,6 @@
       systemd.services.avahi-daemon.requires = lib.mkForce [ ];
     };
 
-  flake.nixosModules.wireguardPeer =
-    {
-      inputs,
-      config,
-      lib,
-      ...
-    }:
-    let
-      IPv4Address = {
-        "athena-nixos" = "192.168.10.1/32";
-        "circe-nixos" = "192.168.10.2/32";
-        "dionysus-nixos" = "192.168.10.3/32";
-        "ariadne-nixos" = "192.168.10.4/32";
-      };
-      IPv6Address = {
-        "athena-nixos" = "fd31:bf08:57cb::1/128";
-        "circe-nixos" = "fd31:bf08:57cb::2/128";
-        "dionysus-nixos" = "fd31:bf08:57cb::3/128";
-        "ariadne-nixos" = "fd31:bf08:57cb::4/128";
-      };
-      publicKey = inputs.self.wireguardPublicKeys;
-    in
-    {
-      config = lib.mkIf (builtins.elem config.networking.hostName (builtins.attrNames IPv4Address)) {
-        sops.secrets."wireguard/${config.networking.hostName}/privateKey" = {
-          sopsFile = ../../secrets/${config.networking.hostName}.yaml;
-          mode = "640";
-          owner = "systemd-network";
-          group = "systemd-network";
-          restartUnits = [ "systemd-networkd.service" ];
-        };
-
-        networking = {
-          firewall = {
-            allowedUDPPorts = [ 4500 ];
-            extraCommands = ''
-              iptables -A nixos-fw -s 192.168.10.254 -j nixos-fw-log-refuse
-              ip6tables -A nixos-fw -s fd31:bf08:57cb::254 -j nixos-fw-log-refuse
-            '';
-          };
-          networkmanager.unmanaged = [ "interface-name:wg0" ];
-        };
-
-        systemd.network = {
-          enable = true;
-          networks."50-wg0" = {
-            matchConfig.Name = "wg0";
-
-            address = [
-              IPv4Address.${config.networking.hostName}
-              IPv6Address.${config.networking.hostName}
-            ];
-
-            networkConfig = {
-              IPv4Forwarding = true;
-              IPv6Forwarding = true;
-            };
-
-            routingPolicyRules = [
-              {
-                Priority = 50;
-                FirewallMark = 42;
-                Table = "main";
-              }
-            ];
-          };
-
-          netdevs."50-wg0" = {
-            netdevConfig = {
-              Kind = "wireguard";
-              Name = "wg0";
-            };
-
-            wireguardConfig = {
-              ListenPort = 4500;
-              PrivateKeyFile = config.sops.secrets."wireguard/${config.networking.hostName}/privateKey".path;
-              RouteTable = "main";
-              FirewallMark = 42;
-            };
-
-            wireguardPeers = [
-              {
-                #aether-nixos
-                PublicKey = publicKey."aether-nixos";
-                AllowedIPs = [
-                  "192.168.10.0/24"
-                  "fd31:bf08:57cb::/64"
-                ];
-                Endpoint = "vpn1.olympus.moe:4500";
-                PersistentKeepalive = 25;
-              }
-              {
-                #nyx-nixos
-                PublicKey = publicKey."nyx-nixos";
-                AllowedIPs = [
-                  "fd31:bf08:57cb::253/128"
-                  "192.168.10.253/32"
-                ];
-                Endpoint = "vpn2.olympus.moe:4500";
-                PersistentKeepalive = 25;
-              }
-            ];
-          };
-        };
-
-        systemd.services.systemd-networkd = {
-          after = [ "sops-install-secrets.service" ];
-          wants = [ "sops-install-secrets.service" ];
-        };
-      };
-    };
-
   flake.nixosModules.mullvad = { config, pkgs, ... }: {
     services.mullvad-vpn.enable = true;
 
@@ -470,7 +358,10 @@
       };
     in
     {
-      imports = [ inputs.self.nixosModules.wireguardHost ];
+      imports = [
+        inputs.self.nixosModules.aetherIngress
+        inputs.self.nixosModules.netbirdClient
+      ];
       systemd.network = {
         enable = true;
         networks."${adapter.${config.networking.hostName}}" = {
@@ -499,7 +390,7 @@
       // lib.optionalAttrs (config.networking.hostName == "nyx-nixos") {
         interfaces = {
           "enp34s0" = nyxPorts;
-          "wg0" = nyxPorts;
+          "nb-wt0" = nyxPorts;
         };
       };
 
@@ -526,9 +417,21 @@
     };
 
   flake.nixosModules.dnscrypt-proxy =
-    { lib, ... }:
+    {
+      lib,
+      config,
+      pkgs,
+      ...
+    }:
     let
       hasIPv6Internet = true;
+
+      # Peer-name resolution for the mesh: the netbird client runs the
+      # *.olympus.netbird zone resolver on its own overlay IP (port 5053).
+      # The dnscrypt-netbird-forward oneshot discovers this host's overlay
+      # address at runtime and points dnscrypt at it, so peer names resolve
+      # without per-host upkeep; hosts without netbird simply no-op.
+      netbirdForwardRules = "/run/dnscrypt-netbird-forward/olympus.netbird.rules";
     in
     {
       services.dnscrypt-proxy = {
@@ -556,6 +459,39 @@
           require_dnssec = false;
           require_nolog = false;
           require_nofilter = false;
+          forwarding_rules = netbirdForwardRules;
+        };
+      };
+
+      systemd.services.dnscrypt-netbird-forward = {
+        description = "Point dnscrypt at netbird's mesh-zone resolver for *.olympus.netbird";
+        after = [
+          "dnscrypt-proxy.service"
+          "netbird-wt0.service"
+        ];
+        wants = [ "netbird-wt0.service" ];
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          TimeoutStartSec = 120;
+          ExecStart = pkgs.writeShellScript "dnscrypt-netbird-forward" ''
+            ip=${pkgs.iproute2}/bin/ip
+            jq=${pkgs.jq}/bin/jq
+            mkdir -p "$(dirname ${netbirdForwardRules})"
+            for attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do
+              mesh_ip=$($ip -j -4 addr show nb-wt0 2>/dev/null | $jq -r '[.[] | .addr_info[] | select(.family == "inet") | .local] | .[0] // empty')
+              if [ -n "$mesh_ip" ]; then
+                echo "olympus.netbird $mesh_ip:5053" > ${netbirdForwardRules}
+                systemctl restart dnscrypt-proxy.service
+                echo "forwarding *.olympus.netbird $mesh_ip:5053"
+                exit 0
+              fi
+              sleep 5
+            done
+            echo "no nb-wt0 address; netbird not connected, skipping rule (peer names unset)" >&2
+            exit 0
+          '';
         };
       };
 
@@ -589,16 +525,6 @@
       };
 
     };
-
-  flake.wireguardPublicKeys = {
-    "athena-nixos" = "7jLu/Np/uxZ4vNa7oFm7fBYTcO9hiuVFLM4jJWuadAs=";
-    "circe-nixos" = "lBu6K0aoE95f9h/t1jB9Rgr9BTM8X9X0SYVE7hh6sxs=";
-    "dionysus-nixos" = "OaaSw3LeEGFuiycxMWhz0i2UALIZnV8JZ1fl3nWpmlc=";
-    "ariadne-nixos" = "ecyjWz3Fg8nsIwwL0MDpjr1/+U435ORR3YpVKgEeBiQ=";
-    "aether-nixos" = "73mtIREvRqhfiUhfG47ITB3q+nMIO5M5+eVfIj9CslI=";
-    "nyx-nixos" = "VOKzq4f1Sgj99NQxgldqX5PP2i3F+m+ttx2NIDzftHs=";
-    "hermes-graphene" = "SY3SSMktNiyc4qe7/JK2Vo+p/21QFGHPdYAuucOvuR0=";
-  };
 
   flake.nixosModules.syncthing =
     { config, ... }:
@@ -671,10 +597,21 @@
             };
           };
         };
-        guiAddress = "${address.${config.networking.hostName}}:8384";
+        # wildcard bind, listens whenever the overlay IP exists
+        guiAddress = "0.0.0.0:8384";
         guiPasswordFile = "${config.sops.secrets."syncthing/pass".path}";
 
         settings.gui.user = "foxtrot";
+      };
+
+      systemd.services.syncthing = {
+        serviceConfig = {
+          Restart = "on-failure";
+          RestartSec = 5;
+        };
+        unitConfig = {
+          StartLimitIntervalSec = 0;
+        };
       };
 
       sops.secrets."syncthing/${config.networking.hostName}/cert" = {
@@ -701,4 +638,129 @@
       };
     };
   };
+
+  # Dedicated point-to-point raw wireguard tunnel aether<->nyx that carries the
+  # public ingress (caddy layer4 passthrough) into nyx independent of the
+  # netbird overlay, so the control plane stays reachable even when netbird is
+  # misbehaving. aether is the passive listener on its public address; nyx dials
+  # out with keepalive.
+  flake.nixosModules.relayTunnel =
+    { config, lib, ... }:
+    let
+      relayIp = {
+        "aether-nixos" = "192.168.200.1/30";
+        "nyx-nixos" = "192.168.200.2/30";
+      };
+      listenPort = {
+        "aether-nixos" = 51820;
+        "nyx-nixos" = 51821;
+      };
+    in
+    {
+      config = lib.mkIf (builtins.hasAttr config.networking.hostName relayIp) {
+        sops.secrets."wireguard/relay/${config.networking.hostName}/privateKey" = {
+          sopsFile = ../../secrets/${config.networking.hostName}.yaml;
+          mode = "640";
+          owner = "systemd-network";
+          group = "systemd-network";
+          restartUnits = [ "systemd-networkd.service" ];
+        };
+
+        systemd.network = {
+          enable = true;
+
+          netdevs."40-wg-relay" = {
+            netdevConfig = {
+              Kind = "wireguard";
+              Name = "wg-relay";
+            };
+            wireguardConfig = {
+              ListenPort = listenPort.${config.networking.hostName};
+              PrivateKeyFile =
+                config.sops.secrets."wireguard/relay/${config.networking.hostName}/privateKey".path;
+            };
+            wireguardPeers =
+              lib.optionals (config.networking.hostName == "nyx-nixos") [
+                {
+                  PublicKey = "V/yaorLg5c7cmCO+Ao47JN/1NYh5dXgtC7MXbaz8C2c=";
+                  AllowedIPs = [ "192.168.200.1/32" ];
+                  Endpoint = "107.174.36.56:51820";
+                  PersistentKeepalive = 25;
+                }
+              ]
+              ++ lib.optionals (config.networking.hostName == "aether-nixos") [
+                {
+                  PublicKey = "uRL+97TCAmkPwFQigHbnqbmW8NqZZ10X65j807aaklY=";
+                  AllowedIPs = [ "192.168.200.2/32" ];
+                }
+              ];
+          };
+
+          networks."40-wg-relay" = {
+            matchConfig.Name = "wg-relay";
+            address = [ relayIp.${config.networking.hostName} ];
+            networkConfig = {
+              IPv4Forwarding = true;
+              IPv6Forwarding = true;
+            };
+          };
+        };
+
+        systemd.services.systemd-networkd = {
+          after = [ "sops-install-secrets.service" ];
+          wants = [ "sops-install-secrets.service" ];
+        };
+
+        networking.firewall = lib.optionalAttrs (config.networking.hostName == "aether-nixos") {
+          allowedUDPPorts = [ 51820 ];
+        };
+      };
+    };
+
+  flake.nixosModules.netbirdClient =
+    { config, pkgs-unstable, ... }:
+    let
+      hostUsers = {
+        athena-nixos = "foxtrot";
+        circe-nixos = "foxtrot";
+        dionysus-nixos = "deck";
+        ariadne-nixos = "deck";
+        nyx-nixos = "server";
+        aether-nixos = "server";
+        ares-nixos = "deck";
+      };
+    in
+    {
+      services.netbird = {
+        package = pkgs-unstable.netbird;
+
+        clients.wt0 = {
+          config.ManagementURL = {
+            Scheme = "https";
+            Host = "netbird.olympus.moe:443";
+          };
+
+          login = {
+            enable = true;
+            setupKeyFile = config.sops.secrets."netbird/setupKey/${config.networking.hostName}".path;
+            systemdDependencies = [ "sops-install-secrets.service" ];
+          };
+
+          port = 51821;
+          ui.enable = true;
+          openFirewall = true;
+          openInternalFirewall = true;
+        };
+      };
+
+      users.users.${hostUsers.${config.networking.hostName}}.extraGroups = [ "netbird-wt0" ];
+
+      sops.secrets."netbird/setupKey/${config.networking.hostName}" = {
+        sopsFile = ../../secrets/${config.networking.hostName}.yaml;
+        mode = "640";
+        owner = "netbird-wt0";
+        group = "netbird-wt0";
+        restartUnits = [ "netbird-wt0.service" ];
+      };
+    };
 }

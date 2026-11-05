@@ -11,6 +11,7 @@
       self.nixosModules.nyx
       self.nixosModules.nyxHardware
       self.nixosModules.serverNetwork
+      self.nixosModules.relayTunnel
       self.nixosModules.systemHarden
       self.nixosModules.functions
       self.nixosModules.system

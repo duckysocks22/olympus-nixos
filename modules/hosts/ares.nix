@@ -4,6 +4,10 @@
       inputs = inputs // {
         nixpkgs = inputs.nixpkgs-unstable;
       };
+      pkgs-unstable = import inputs.nixpkgs-unstable {
+        localSystem = "x86_64-linux";
+        config.allowUnfree = true;
+      };
     };
     modules = [
       self.nixosModules.ares
@@ -21,7 +25,6 @@
       self.nixosModules.deckSops
       self.nixosModules.jovian
       self.nixosModules.buildClient
-      self.nixosModules.wireguardPeer
     ];
   };
 

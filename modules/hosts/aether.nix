@@ -14,9 +14,11 @@
       self.nixosModules.system
       self.nixosModules.systemHarden
       self.nixosModules.serverNetwork
+      self.nixosModules.relayTunnel
       self.nixosModules.server
       self.nixosModules.aetherSops
       self.nixosModules.buildClient
+      self.nixosModules.netbirdCoturn
       self.nixosModules.routeVPNMullvad
       self.nixosModules.networkPassthrough
     ];

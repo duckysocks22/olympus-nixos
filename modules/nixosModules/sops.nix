@@ -134,6 +134,11 @@
         group = "systemd-network";
         restartUnits = [ "systemd-networkd.service" ];
       };
+
+      sops.secrets."netbird/coturn/pass" = {
+        owner = "turnserver";
+        group = "turnserver";
+      };
     };
 
   flake.nixosModules.serverSops =
@@ -192,7 +197,7 @@
         group = "netbird";
       };
 
-      sops.secrets."netbird/datastore/encryption" = { 
+      sops.secrets."netbird/datastore/encryption" = {
         owner = "netbird";
         group = "netbird";
       };

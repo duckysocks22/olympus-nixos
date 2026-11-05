@@ -27,6 +27,7 @@
         };
 
         management = {
+          turnDomain = "netbird.olympus.moe";
           oidcConfigEndpoint = "https://sso.olympus.moe/.well-known/openid-configuration";
 
           settings = {
@@ -56,7 +57,9 @@
                   Password._secret = config.sops.secrets."netbird/TURN/pass".path;
                 }
               ];
-              Secret = { _secret = config.sops.secrets."netbird/turnsecret".path; };
+              Secret = {
+                _secret = config.sops.secrets."netbird/turnsecret".path;
+              };
             };
 
             IdpManagerConfig = {
@@ -95,6 +98,8 @@
             AUTH_SILENT_REDIRECT_URI = "/silent-auth";
           };
         };
+
+        management.metricsPort = 13090;
 
         signal.port = 8012;
 
@@ -166,7 +171,10 @@
       };
 
       networking.firewall.allowedUDPPortRanges = [
-        { from = 49152; to = 65535; }
+        {
+          from = 49152;
+          to = 65535;
+        }
       ];
 
       users.users = {
@@ -181,6 +189,36 @@
       };
 
       users.groups.netbird = { };
-      users.groups.turnserver = { };
+    };
+
+  # Coturn runs on the public-IP server (aether), not on the control plane
+  # host: peers reach TURN on 107.174.36.56:3478 directly, so no NAT
+  # port-forwards and no external-ip mapping are needed. Management (nyx)
+  # keeps advertising turn:netbird.olympus.moe:3478 — that name resolves
+  # to aether's public IP.
+  flake.nixosModules.netbirdCoturn =
+    {
+      config,
+      ...
+    }:
+    {
+      services.netbird.server.coturn = {
+        enable = true;
+        domain = "netbird.olympus.moe";
+        passwordFile = config.sops.secrets."netbird/coturn/pass".path;
+        openPorts = [ 3478 ];
+      };
+
+      networking.firewall.allowedUDPPortRanges = [
+        {
+          from = 49152;
+          to = 65535;
+        }
+      ];
+
+      systemd.services.coturn = {
+        after = [ "sops-install-secrets.service" ];
+        wants = [ "sops-install-secrets.service" ];
+      };
     };
 }
