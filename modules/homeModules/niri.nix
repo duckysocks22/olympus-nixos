@@ -88,6 +88,9 @@
           };
           struts = { };
         };
+        spawn-at-startup = [
+          { argv = [ "netbird-ui-wt0" ]; }
+        ];
         window-rules = [
           {
             matches = [ { app-id = "^org\\.wezfurlong\\.wezterm$"; } ];
