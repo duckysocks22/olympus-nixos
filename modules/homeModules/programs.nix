@@ -1499,6 +1499,11 @@
                       keyword = "manpkg";
                     }
                     {
+                      name = "Rust Handbook";
+                      url = "https://doc.rust-lang.org/stable/book/";
+                      keyword = "rust";
+                    }
+                    {
                       name = "XP.css";
                       url = "https://botoxparty.github.io/XP.css/";
                       keyword = "xpcss";
