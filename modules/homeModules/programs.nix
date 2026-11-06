@@ -661,9 +661,9 @@
           ## Remote hosts
 
           First check which host you're on; SSH if the target differs:
-          Athena foxtrot@athena-nixos.vpn.olympus.moe · Circe foxtrot@circe-nixos.vpn.olympus.moe ·
-          Dionysus deck@dionysus-nixos.vpn.olympus.moe · Ariadne deck@ariadne-nixos.vpn.olympus.moe ·
-          Nyx server@nyx-nixos.vpn.olympus.moe · Aether server@aether-nixos.vpn.olympus.moe
+          Athena foxtrot@athena-nixos.olympus.netbird · Circe foxtrot@circe-nixos.olympus.netbird ·
+          Dionysus deck@dionysus-nixos.olympus.netbird · Ariadne deck@ariadne-nixos.olympus.netbird ·
+          Nyx server@nyx-nixos.olympus.netbird · Aether server@aether-nixos.olympus.netbird
           SSH failure usually means the machine is offline — continue without it if possible.
 
           ## VM testing
