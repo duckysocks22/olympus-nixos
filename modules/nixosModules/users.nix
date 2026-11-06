@@ -58,7 +58,6 @@ in
 
       services.displayManager.sessionPackages = [
         pkgs.niri
-        inputs.doors.packages.${pkgs.stdenv.hostPlatform.system}.doors
       ];
 
       home-manager = homeManagerCommon // {
@@ -77,7 +76,6 @@ in
             inputs.self.homeModules.piAgent
             inputs.self.homeModules.stylix
             inputs.self.homeModules.niri
-            inputs.self.homeModules.doors
             inputs.self.homeModules.shell
             inputs.self.homeModules.foxtrotSops
             inputs.self.homeModules.syncthing
