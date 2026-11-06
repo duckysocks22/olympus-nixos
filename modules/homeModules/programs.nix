@@ -683,14 +683,14 @@
       ];
 
       home.file = {
-        ".pi/agent/agents/cheap-scout.md".source = ../../assets/pi/agents/cheap-scout.md;
+        ".pi/agent/agents/cheap-scout.md".source = "${
+          inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.assets
+        }/share/assets/pi/agents/cheap-scout.md";
         ".pi/agent/extensions/subagent/config.json".text = builtins.toJSON { toolActivation = "eager"; };
-        ".pi/agent/extensions/vm-test".source = ../../assets/pi/vm-test;
+        ".pi/agent/extensions/vm-test".source = "${
+          inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.assets
+        }/share/assets/pi/vm-test";
       };
-      /*
-        home.file.".pi/agent/extensions/actual-finance".source = ../../assets/pi/actual-finance;
-        home.file.".pi/agent/skills/actual-finance".source = ../../assets/pi/skills/actual-finance;
-      */
 
       home.file.".pi/agent/modes.config.json".text =
         let

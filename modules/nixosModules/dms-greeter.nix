@@ -59,7 +59,9 @@
 
       system.activationScripts.dmsProfilePicture = lib.stringAfter [ "users" ] ''
         mkdir -p /var/lib/AccountsService/icons /var/lib/AccountsService/users
-        ln -sfn ${../../assets/pfp/argyle_shaded.png} /var/lib/AccountsService/icons/foxtrot
+        ln -sfn "${
+          inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.assets
+        }/share/assets/pfp/argyle_shaded.png" /var/lib/AccountsService/icons/foxtrot
         cat > /var/lib/AccountsService/users/foxtrot <<'EOF'
         [User]
         SystemAccount=false

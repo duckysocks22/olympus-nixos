@@ -11,7 +11,9 @@
       summaryApp = pkgs.buildNpmPackage {
         pname = "finance-summary";
         version = "0.1.0";
-        src = ../../assets/finance-summary;
+        src = "${
+          inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.assets
+        }/share/assets/finance-summary";
         nodejs = pkgs.nodejs_22;
         npmDepsHash = "sha256-v6TFZpFD4G7hTdd1jyjeL6EK6YX6jdpsGO0o9Jxe9+U=";
         dontNpmBuild = true;

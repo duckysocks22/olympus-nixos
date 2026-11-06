@@ -1,4 +1,4 @@
-{ ... }: {
+{ inputs, ... }: {
   perSystem =
     { pkgs, ... }:
     {
@@ -15,7 +15,9 @@
           socat
           util-linux
         ];
-        text = builtins.readFile ../../assets/vm-test/vm-test.sh;
+        text = builtins.readFile "${
+          inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.assets
+        }/share/assets/vm-test/vm-test.sh";
       };
     };
 }

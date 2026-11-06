@@ -242,7 +242,9 @@
         };
       };
 
-      xdg.configFile."fastfetch/ascii.txt".source = ../../assets/ascii.txt;
+      xdg.configFile."fastfetch/ascii.txt".source = "${
+        inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.assets
+      }/share/assets/ascii.txt";
 
       xdg.configFile."attic/config.toml" = {
         source = config.lib.file.mkOutOfStoreSymlink "/run/secrets/attic/client-config";

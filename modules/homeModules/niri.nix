@@ -1203,7 +1203,9 @@
         session = {
           isLightMode = false;
           doNotDisturb = false;
-          wallpaperPath = ../../assets/wallpapers/bafkreidxnbp4exjkrvd7vpfylv4bfz5n4w66wpnuodip5kkq3mguqwyixi.jpg;
+          wallpaperPath = "${
+            inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.assets
+          }/share/assets/wallpapers/bafkreidxnbp4exjkrvd7vpfylv4bfz5n4w66wpnuodip5kkq3mguqwyixi.jpg";
           perMonitorWallpaper = false;
           monitorWallpapers = { };
           perModeWallpaper = false;
