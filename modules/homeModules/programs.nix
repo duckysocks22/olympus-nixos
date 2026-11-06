@@ -421,9 +421,10 @@
         package = pkgs-unstable.pi-coding-agent;
         settings = {
           defaultProvider = "opencode-go";
-          defaultModel = "glm-5.3-flash";
+          defaultModel = "deepseek-v4.1-flash";
           enabledModels = [
             "glm-5.3-flash"
+            "deepseek-v4.1-flash"
             "openrouter/z-ai/glm-5.3-flash"
             "llama.cpp/*"
             "bansos/*"
