@@ -1605,6 +1605,7 @@
         "ffxivConfig/FFXIV.cfg"
         "ffxivConfig/FFXIV.cfg.old"
         "pluginConfigs/LightlessSync/tracelog"
+        "!dalamudConfig.json"
         "!.stignore"
         "!accounts.json"
         "!secrets.json"
