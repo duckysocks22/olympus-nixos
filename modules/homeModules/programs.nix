@@ -26,7 +26,7 @@
         };
       };
 
-      xdg.configFile."mimeapps.list".force = true;
+      xdg.configFile."mimeapps.list".force = false;
 
       home.packages =
         with pkgs;
