@@ -1,6 +1,6 @@
 { inputs, self, ... }:
 {
-  flake.homeModules.niri = { inputs, pkgs, ... }: {
+  flake.homeModules.niri = { inputs, pkgs, lib, config, ... }: {
     imports = [
       inputs.self.homeModules.dms
       inputs.self.homeModules.cursors
@@ -586,6 +586,30 @@
         };
       };
     };
+
+    # Patch the niri config afterwards to add per monitor default proportions
+    xdg.configFile.niri-config.source = lib.mkForce (
+      let
+        widths = {
+          "PNP(AOC) CU34G2XP 1Q1R9UA004091" = "0.33";
+        };
+
+        patched = lib.foldl' (
+          text: name:
+          lib.replaceStrings
+            [ ''output "${name}" {'' ]
+            [ ''output "${name}" {
+    layout {
+        default-column-width { proportion ${widths.${name}}; }
+    }'' ]
+            text
+        ) config.programs.niri.finalConfig (builtins.attrNames widths);
+      in
+      pkgs.runCommand "niri-config.kdl" { buildInputs = [ config.programs.niri.package ]; } ''
+        cp ${pkgs.writeText "niri-config.kdl.in" patched} $out
+        niri validate -c $out
+      ''
+    );
 
     home.packages = with pkgs; [
       niri
