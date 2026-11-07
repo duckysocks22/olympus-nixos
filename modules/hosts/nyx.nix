@@ -20,20 +20,35 @@
       self.nixosModules.server
       self.nixosModules.serverSops
       self.nixosModules.virtualisation
-      self.nixosModules.serverMedia
-      self.nixosModules.web
-      self.nixosModules.automation
-      self.nixosModules.gameServers
-      self.nixosModules.files
+      self.nixosModules.jellyfin
+      self.nixosModules.navidrome
+      self.nixosModules.freshrss
+      self.nixosModules.audiobookshelf
+      self.nixosModules.qbittorrent
+      self.nixosModules.dnsHost
+      self.nixosModules.avahi
+      self.nixosModules.atticd
+      self.nixosModules.ntfy
+      self.nixosModules.mollysocket
+      self.nixosModules.sso
+      self.nixosModules.podman
+      self.nixosModules.homeAssistant
+      self.nixosModules.printing
+      self.nixosModules.minecraftServer
+      self.nixosModules.factorioServer
+      self.nixosModules.samba
+      self.nixosModules.actual-budget
+      self.nixosModules.finance-summary
+      self.nixosModules.immich
+      self.nixosModules.copyparty
       self.nixosModules.buildHost
-      self.nixosModules.compute
       self.nixosModules.atuinServer
       self.nixosModules.atuinAIServer
       self.nixosModules.syncthing
       self.nixosModules.homepage
       self.nixosModules.futo-notes-server
-      self.nixosModules.reverseProxy
-      self.nixosModules.servicesNetwork
+      self.nixosModules.caddy
+      self.nixosModules.netbirdServer
     ];
   };
 
@@ -67,7 +82,6 @@
       networking.resolvconf.useLocalResolver = true;
       networking.networkmanager.insertNameservers = [ "127.0.0.1" ];
 
-      time.timeZone = "America/New_York";
       i18n = {
         defaultLocale = "en_US.UTF-8";
         extraLocaleSettings = {
@@ -84,10 +98,6 @@
       };
 
       services = {
-        xserver.xkb = {
-          layout = "us";
-          variant = "";
-        };
         openssh = {
           enable = true;
           openFirewall = true;
@@ -102,7 +112,6 @@
         };
       };
 
-      nixpkgs.config.allowUnfree = true;
       environment.systemPackages = with pkgs; [
         vim
         wget

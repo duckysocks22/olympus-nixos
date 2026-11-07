@@ -1,0 +1,255 @@
+{ inputs, self, ... }:
+let
+  preservationPatched = inputs.nixpkgs.legacyPackages.x86_64-linux.applyPatches {
+    name = "preservation-patched";
+    src = inputs.preservation;
+    patches = [ ../../../patches/preservation-no-initrd-assertion.patch ];
+  };
+in
+{
+  flake.nixosModules.preservation =
+    {
+      inputs,
+      config,
+      lib,
+      pkgs,
+      ...
+    }:
+    {
+      imports = [ "${preservationPatched}/module.nix" ];
+      preservation = {
+        enable = true;
+
+        preserveAt."/persistent" = {
+          directories = [
+            "/var/lib/bluetooth"
+            "/var/lib/libvirt"
+            "/var/lib/systemd/backlight"
+            "/var/lib/systemd/coredump"
+            "/var/lib/systemd/rfkill"
+            "/var/lib/systemd/timers"
+            "/var/lib/containers"
+            {
+              directory = "/var/lib/iwd/";
+              mode = "700";
+            }
+            {
+              directory = "/etc/NetworkManager/system-connections";
+              mode = "700";
+            }
+            {
+              directory = "/etc/libvirt";
+              mode = "755";
+            }
+            {
+              directory = "/var/lib/nixos";
+              inInitrd = true;
+            }
+            {
+              directory = "/var/lib/sops-nix";
+              inInitrd = true;
+              mode = "0700";
+            }
+            {
+              directory = "/media/ffxiv";
+              mode = "755";
+              group = "users";
+            }
+            "/var/cache/mullvad-vpn"
+            "/var/log"
+            "/etc/mullvad-vpn"
+            {
+              directory = "/var/lib/decky-loader";
+              user = "deck";
+              group = "users";
+              mode = "0755";
+            }
+          ];
+
+          files = [
+            {
+              file = "/etc/machine-id";
+              inInitrd = true;
+            }
+            {
+              file = "/etc/ssh/ssh_host_rsa_key";
+              how = "symlink";
+              configureParent = true;
+            }
+            {
+              file = "/etc/ssh/ssh_host_ed25519_key";
+              how = "symlink";
+              configureParent = true;
+            }
+          ];
+
+          users = lib.filterAttrs (name: _: config.users.users ? ${name}) {
+            foxtrot = {
+              commonMountOptions = [
+                "x-gvfs-hide"
+              ];
+              directories = [
+                {
+                  directory = ".ssh";
+                  mode = "0700";
+                }
+                ".librewolf"
+                ".pi"
+                ".cache/dms"
+                ".cache/nvim"
+                ".cache/neovim"
+                ".cache/mesa_shader_cache"
+                ".cache/mesa_shader_cache_db"
+                ".cache/radv_builtin_shaders"
+                ".config/sops"
+                ".config/dms"
+                ".config/Signal"
+                ".config/discord"
+                ".config/Vencord"
+                ".config/Equicord"
+                ".config/Lunatask"
+                ".config/attic"
+                ".config/git"
+                ".config/heroic"
+                ".config/mozilla"
+                ".config/filezilla"
+                ".config/fish"
+                ".config/Lunatask"
+                ".config/containers"
+                ".local/state/dms"
+                ".local/state/nvim"
+                ".local/state/neovim"
+                ".local/state/wireplumber"
+                ".local/share/direnv"
+                ".local/state/home-manager"
+                ".local/state/nix"
+                ".local/state/syncthing"
+                ".local/share"
+                ".factorio"
+                ".steam"
+                ".xlcore"
+                ".ffxiv"
+                "ffxiv"
+                "olympus-nixos"
+                "Desktop"
+                "Documents"
+                "Downloads"
+                "Music"
+                "Pictures"
+                "Videos"
+                "Git"
+              ];
+              files = [
+                ".histfile"
+              ];
+            };
+            root = {
+              home = "/root";
+              directories = [
+                {
+                  directory = ".ssh";
+                  mode = "0700";
+                }
+              ];
+            };
+            deck = {
+              commonMountOptions = [
+                "x-gvfs-hide"
+              ];
+              directories = [
+                {
+                  directory = ".ssh";
+                  mode = "0700";
+                }
+                ".librewolf"
+                ".pi"
+                ".cache/nvim"
+                ".cache/neovim"
+                ".cache/mesa_shader_cache"
+                ".cache/mesa_shader_cache_db"
+                ".cache/radv_builtin_shaders"
+                ".cache/AMD"
+                ".cache/dxvk-cache"
+                ".cache/vkcache"
+                ".cache/wine"
+                ".cache/winetricks"
+                ".config/Lunatask"
+                ".config/sops"
+                ".config/attic"
+                ".config/git"
+                ".config/heroic"
+                ".config/mozilla"
+                ".config/filezilla"
+                ".config/lsfg-vk"
+                ".local/bin"
+                ".local/lib"
+                ".local/state/nvim"
+                ".local/state/neovim"
+                ".local/state/wireplumber"
+                ".local/share/direnv"
+                ".local/state/home-manager"
+                ".local/state/nix"
+                ".local/state/syncthing"
+                ".local/share"
+                ".factorio"
+                ".steam"
+                ".xlcore"
+                ".ffxiv"
+                "ffxiv"
+                "olympus-nixos"
+                "Desktop"
+                "Documents"
+                "Downloads"
+                "Music"
+                "Pictures"
+                "Videos"
+              ];
+              files = [
+                ".histfile"
+              ];
+            };
+          };
+        };
+      };
+
+      systemd.services."systemd-machine-id-commit".enable = false;
+      systemd.services."systemd-backlight@.service".after = [ "preservation.target" ];
+
+      systemd.tmpfiles.settings.preservation = lib.mkMerge [
+        (lib.optionalAttrs (config.users.users ? foxtrot) {
+          "/home/foxtrot/.config".d = {
+            user = "foxtrot";
+            group = "users";
+            mode = "0755";
+          };
+          "/home/foxtrot/.local".d = {
+            user = "foxtrot";
+            group = "users";
+            mode = "0755";
+          };
+          "/home/foxtrot/.local/state".d = {
+            user = "foxtrot";
+            group = "users";
+            mode = "0755";
+          };
+        })
+        (lib.optionalAttrs (config.users.users ? deck) {
+          "/home/deck/.config".d = {
+            user = "deck";
+            group = "users";
+            mode = "0755";
+          };
+          "/home/deck/.local".d = {
+            user = "deck";
+            group = "users";
+            mode = "0755";
+          };
+          "/home/deck/.local/state".d = {
+            user = "deck";
+            group = "users";
+            mode = "0755";
+          };
+        })
+      ];
+    };
+}

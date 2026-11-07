@@ -19,6 +19,10 @@
       self.nixosModules.mouseModifiers
       self.nixosModules.foxtrot
       self.nixosModules.common
+      self.nixosModules.desktopBase
+      self.nixosModules.steam
+      self.nixosModules.gamescope
+      self.nixosModules.gamemode
       self.nixosModules.defaultNetwork
       self.nixosModules.defaultSops
       self.nixosModules.virtualisation
@@ -46,27 +50,9 @@
           self.packages.${pkgs.stdenv.hostPlatform.system}.greenlight
         ];
       networking.hostName = "athena-nixos";
-      time.timeZone = "America/New_York";
-      services = {
-        xserver.xkb = {
-          layout = "us";
-          variant = "";
-        };
-        pulseaudio.enable = false;
-        pipewire = {
-          enable = true;
-          alsa = {
-            enable = true;
-            support32Bit = true;
-          };
-        };
-        libinput.enable = true;
-      };
-      security.rtkit.enable = true;
       systemd.sleep.settings.Sleep = {
         HibernateDelaySec = "2h";
       };
-      nixpkgs.config.allowUnfree = true;
       system.stateVersion = "26.05";
 
       nix.settings.trusted-users = [

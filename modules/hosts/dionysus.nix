@@ -17,6 +17,10 @@
       self.nixosModules.system
       self.nixosModules.mouseModifiers
       self.nixosModules.common
+      self.nixosModules.desktopBase
+      self.nixosModules.steam
+      self.nixosModules.gamescope
+      self.nixosModules.gamemode
       self.nixosModules.systemHarden
       self.nixosModules.preservation
       self.nixosModules.vmTest
@@ -39,22 +43,8 @@
     }:
     {
       networking.hostName = "dionysus-nixos";
-      time.timeZone = "America/New_York";
       networking.networkmanager.enable = true;
       services = {
-        xserver.xkb = {
-          layout = "us";
-          variant = "";
-        };
-        pulseaudio.enable = false;
-        pipewire = {
-          enable = true;
-          alsa = {
-            enable = true;
-            support32Bit = true;
-          };
-        };
-        libinput.enable = true;
         openssh = {
           enable = true;
           openFirewall = true;
@@ -68,11 +58,9 @@
           };
         };
       };
-      security.rtkit.enable = true;
       systemd.sleep.settings.Sleep = {
         HibernateDelaySec = "2h";
       };
-      nixpkgs.config.allowUnfree = true;
       system.stateVersion = "26.05";
 
       security.protectKernelImage = false;

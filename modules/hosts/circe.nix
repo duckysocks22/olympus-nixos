@@ -19,6 +19,10 @@
       self.nixosModules.mouseModifiers
       self.nixosModules.foxtrot
       self.nixosModules.common
+      self.nixosModules.desktopBase
+      self.nixosModules.steam
+      self.nixosModules.gamescope
+      self.nixosModules.gamemode
       self.nixosModules.defaultNetwork
       self.nixosModules.defaultSops
       self.nixosModules.virtualisation
@@ -147,7 +151,6 @@
       '';
     in
     {
-
       environment.systemPackages =
         (with pkgs; [
           git
@@ -157,38 +160,22 @@
         ++ [
           self.packages.${pkgs.stdenv.hostPlatform.system}.greenlight
         ];
+
       networking.hostName = "circe-nixos";
-      time.timeZone = "America/New_York";
       services = {
-        xserver.xkb = {
-          layout = "us";
-          variant = "";
-        };
-        pulseaudio.enable = false;
-        pipewire = {
-          enable = true;
-          alsa = {
-            enable = true;
-            support32Bit = true;
-          };
-          pulse.enable = true;
-        };
-        libinput.enable = true;
         logind.settings.Login = {
           HandleLidSwitch = "suspend-then-hibernate";
           HandleLidSwitchExternalPower = "suspend-then-hibernate";
         };
+        pipewire.pulse.enable = true;
       };
-      security.rtkit.enable = true;
-      # This firmware never completes native ACPI S4: with the kernel default of
-      # HibernateMode=platform the image is written but the machine stays powered
-      # (backlight and keyboard lit, battery draining) until it is forced off, or the
-      # platform bounces straight back before the image write. S5 does work, so power
-      # down via shutdown instead of handing off to S4.
+      system.stateVersion = "26.05";
+
       systemd.sleep.settings.Sleep = {
         HibernateDelaySec = "1h";
         HibernateMode = "shutdown";
       };
+
       systemd.services.niri-resume-redraw = {
         description = "Repaint niri after resume";
         wantedBy = [
@@ -210,10 +197,12 @@
           ExecStart = niriResumeRedraw;
         };
       };
+
       # mt7921e (0000:62:00.0) fails pci_pm_restore with -ETIMEDOUT on every hibernation
       # resume and can wedge the machine after thaw; keep it out of the driver's PM list.
       systemd.services.systemd-hibernate.serviceConfig = wifiPmHooks;
       systemd.services.systemd-suspend-then-hibernate.serviceConfig = wifiPmHooks;
+
       systemd.services.resume-trace-userspace = {
         description = "Trace: userspace reached";
         wantedBy = [ "sysinit.target" ];
@@ -225,11 +214,13 @@
           ExecStart = "${resumeTrace} userspace";
         };
       };
+
       boot.initrd.availableKernelModules = [
         "vfat"
         "nls_cp437"
         "nls_iso8859-1"
       ];
+
       boot.initrd.systemd.services.resume-trace-initrd = {
         description = "Trace: initrd reached, before attempting resume";
         wantedBy = [ "sysinit.target" ];
@@ -250,14 +241,17 @@
         };
         script = initrdTrace;
       };
+
       boot.kernelParams = [
         "pcie_aspm.policy=powersave"
         "iommu.passthrough=1"
       ];
+
       boot.kernel.sysctl = {
         "kernel.sysrq" = 1;
         "kernel.printk" = "7 4 1 7";
       };
+
       boot.kernelPatches = [
         {
           name = "hibernate-lz4";
@@ -268,9 +262,6 @@
           };
         }
       ];
-
-      nixpkgs.config.allowUnfree = true;
-      system.stateVersion = "26.05";
 
       security.protectKernelImage = false;
       hardware.bluetooth.settings.Policy.AutoEnable = lib.mkForce false;

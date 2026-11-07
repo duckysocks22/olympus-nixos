@@ -16,6 +16,10 @@
       self.nixosModules.functions
       self.nixosModules.system
       self.nixosModules.common
+      self.nixosModules.desktopBase
+      self.nixosModules.steam
+      self.nixosModules.gamescope
+      self.nixosModules.gamemode
       self.nixosModules.preservation
       self.nixosModules.vmTest
       self.nixosModules.systemHarden
@@ -49,21 +53,7 @@
         ];
       networking.hostName = "ariadne-nixos";
       networking.networkmanager.enable = true;
-      time.timeZone = "America/New_York";
       services = {
-        xserver.xkb = {
-          layout = "us";
-          variant = "";
-        };
-        pulseaudio.enable = false;
-        pipewire = {
-          enable = true;
-          alsa = {
-            enable = true;
-            support32Bit = true;
-          };
-        };
-        libinput.enable = true;
         openssh = {
           enable = true;
           openFirewall = true;
@@ -77,7 +67,6 @@
           };
         };
       };
-      security.rtkit.enable = true;
       systemd.sleep.settings.Sleep = {
         HibernateDelaySec = "2h";
       };
@@ -109,7 +98,6 @@
         # Keep the Bluetooth radio from waking the deck when earbuds power on.
         ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="28de", ATTR{idProduct}=="1401", ATTR{power/wakeup}="disabled"
       '';
-      nixpkgs.config.allowUnfree = true;
       system.stateVersion = "26.05";
 
       security.protectKernelImage = false;

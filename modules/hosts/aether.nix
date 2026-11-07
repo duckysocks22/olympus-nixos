@@ -54,7 +54,6 @@
       networking.useDHCP = lib.mkForce false;
       networking.nameservers = [ "9.9.9.9" ];
 
-      time.timeZone = "America/New_York";
       i18n = {
         defaultLocale = "en_US.UTF-8";
         extraLocaleSettings = {
@@ -71,10 +70,6 @@
       };
 
       services = {
-        xserver.xkb = {
-          layout = "us";
-          variant = "";
-        };
         openssh = {
           enable = true;
           openFirewall = true;
@@ -90,7 +85,6 @@
         };
       };
 
-      nixpkgs.config.allowUnfree = true;
       programs.zsh.enable = true;
       environment.systemPackages = with pkgs; [
         vim
