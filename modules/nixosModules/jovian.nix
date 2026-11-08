@@ -92,6 +92,8 @@
         "L+ ${config.jovian.decky-loader.stateDir}/plugins/decky-lsfg-vk - ${config.jovian.decky-loader.user} - - ${
           inputs.self.packages.${pkgs.stdenv.hostPlatform.system}.decky-lsfg-vk
         }/Decky LSFG-VK"
+        # Plugins spawn helpers with a hardcoded /usr/bin/python3 (SteamOS path); NixOS has no /usr/bin/python3.
+        "L+ /usr/bin/python3 - - - - ${pkgs.python3}/bin/python3"
       ];
 
       services = {
