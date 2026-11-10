@@ -6,7 +6,7 @@
       packages.assets = pkgs.stdenv.mkDerivation (finalAttrs: {
         pname = "assets";
         version = "1.0";
-        src = ../../assets;
+        src = ../assets;
 
         dontConfigure = true;
         dontBuild = true;

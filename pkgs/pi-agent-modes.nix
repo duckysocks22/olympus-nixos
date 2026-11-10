@@ -20,7 +20,7 @@
         '';
         sourceRoot = "package";
 
-        patches = [ ../../patches/pi-agent-modes-0.3.0-ssh.patch ];
+        patches = [ ../patches/pi-agent-modes-0.3.0-ssh.patch ];
 
         nativeBuildInputs = [ pkgs.nodejs ];
 
