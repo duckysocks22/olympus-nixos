@@ -24,7 +24,7 @@
             ServerAliveInterval = 0;
             ServerAliveCountMax = 3;
             HashKnownHosts = false;
-            UserKnownHostFile = "~/.ssh/known_hosts";
+            UserKnownHostsFile = "~/.ssh/known_hosts";
             ControlMaster = "no";
             ControlPath = "~/.ssh/master-%r@%n:%p";
             ControlPersist = "no";

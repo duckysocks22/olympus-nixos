@@ -91,8 +91,6 @@
     {
       home.packages = with pkgs; [
         gimp-with-plugins
-        gpu-screen-recorder
-        gpu-screen-recorder-gtk
         handbrake
         davinci-resolveWrapped
         ffmpeg

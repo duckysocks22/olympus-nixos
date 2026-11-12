@@ -23,35 +23,47 @@
             "/var/lib/systemd/rfkill"
             "/var/lib/systemd/timers"
             "/var/lib/containers"
+            "/var/cache/mullvad-vpn"
+            "/var/log"
+            "/etc/mullvad-vpn"
+
+            {
+              directory = "/var/lib/netbird-wt0";
+              mode = "700";
+            }
+
             {
               directory = "/var/lib/iwd/";
               mode = "700";
             }
+
             {
               directory = "/etc/NetworkManager/system-connections";
               mode = "700";
             }
+
             {
               directory = "/etc/libvirt";
               mode = "755";
             }
+
             {
               directory = "/var/lib/nixos";
               inInitrd = true;
             }
+
             {
               directory = "/var/lib/sops-nix";
               inInitrd = true;
               mode = "0700";
             }
+
             {
               directory = "/media/ffxiv";
               mode = "755";
               group = "users";
             }
-            "/var/cache/mullvad-vpn"
-            "/var/log"
-            "/etc/mullvad-vpn"
+
             {
               directory = "/var/lib/decky-loader";
               user = "deck";

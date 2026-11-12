@@ -29,7 +29,6 @@
           "cdrom"
           "dailout"
           "input"
-          "libvirtd"
           "networkmanager"
           "wheel"
         ];

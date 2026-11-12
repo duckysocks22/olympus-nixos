@@ -48,6 +48,9 @@
         ];
       };
 
+      programs.gnupg.agent.enable = true;
+      programs.dconf.enable = true;
+
       services = {
         pulseaudio.enable = false;
         libinput.enable = true;
@@ -162,7 +165,7 @@
         enable = true;
         clean.enable = true;
         clean.extraArgs = "--keep-since 7d --keep 3";
-        flake = "/home/$(whoami)/olympus-nixos}";
+        flake = "/home/$(whoami)/olympus-nixos";
       };
     };
 }

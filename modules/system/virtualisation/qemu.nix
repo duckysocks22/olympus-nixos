@@ -3,10 +3,12 @@
   flake.nixosModules.qemu =
     {
       pkgs,
+      lib,
       ...
     }:
     {
       programs.virt-manager.enable = true;
+
       users.groups.libvirtd.members = [
         "foxtrot"
         "server"
@@ -22,5 +24,7 @@
         virtiofsd
         wl-clipboard
       ];
+
+      systemd.services.libvirtd.wantedBy = lib.mkForce [ ];
     };
 }

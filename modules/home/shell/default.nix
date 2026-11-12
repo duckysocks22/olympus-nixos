@@ -15,10 +15,12 @@
       imports = [
         inputs.nix-index-database.homeModules.nix-index
 
+        inputs.self.homeModules.fish
         inputs.self.homeModules.ssh
         inputs.self.homeModules.fastfetch
         inputs.self.homeModules.direnv
         inputs.self.homeModules.ranger
+        inputs.self.homeModules.fzf
         inputs.self.homeModules.git
         inputs.self.homeModules.download
         inputs.self.homeModules.atuin

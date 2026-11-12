@@ -27,6 +27,9 @@
       self.nixosModules.plymouth
       self.nixosModules.functions
 
+      # Keyring
+      self.nixosModules.gnome-keyring
+
       # Network
       self.nixosModules.defaultNetwork
       self.nixosModules.mullvad
@@ -40,6 +43,7 @@
 
       # Interface
       self.nixosModules.portals
+      self.nixosModules.fonts
       self.nixosModules.dms-greeter
 
       # Devices
@@ -49,11 +53,16 @@
       self.nixosModules.amdGPU
       self.nixosModules.finalMouse
       self.nixosModules.mouseModifiers
+      self.nixosModules.printing
+      self.nixosModules.olympus-canon
 
       # Software
       self.nixosModules.steam
       self.nixosModules.qemu
       self.nixosModules.vmTest
+      self.nixosModules.gpu-screen-recorder
+      self.nixosModules.localsend
+      self.nixosModules.appimage-run
 
       # Host-specific configuration
       ({ lib, ... }: {
@@ -69,6 +78,10 @@
               HIBERNATION_DEF_COMP = lib.kernel.freeform "lz4";
             };
           }
+        ];
+
+        boot.kernelParams = [
+          "pcie_aspm.policy=powersave"
         ];
 
         # Keep bluetooth radio from waking device when earbuds power on

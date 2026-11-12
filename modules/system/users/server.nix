@@ -25,7 +25,6 @@
           "cdrom"
           "dailout"
           "input"
-          "libvirtd"
           "networkmanager"
           "render"
           "video"

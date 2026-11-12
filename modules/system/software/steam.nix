@@ -71,7 +71,7 @@
         (with pkgs; [
           bubblewrap
 
-          (writeShellScriptBin "gamescope_run" ''
+          (writeShellScriptBin "gamescope-run" ''
             gamescope_args=()
             game_cmd=()
             sep_found=false
