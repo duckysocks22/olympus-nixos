@@ -124,8 +124,10 @@
 
       nix = {
         package = pkgs.lixPackageSets.stable.lix;
-        nixPath = lib.mapAttrsToList (n: v: "${n}flake:${n}") inputs;
-        registry = lib.mapAttrs (n: v: { flake = v; }) inputs;
+        nixPath = lib.mapAttrsToList (n: v: "${n}=flake:${n}") inputs;
+        # nixpkgs is left out on purpose: nixpkgs.flake pins it to the system's own
+        # nixpkgs, and forcing our input path clashes when the host tracks unstable.
+        registry = lib.mapAttrs (n: v: { flake = v; }) (removeAttrs inputs [ "nixpkgs" ]);
 
         optimise = {
           automatic = true;

@@ -39,17 +39,21 @@
         };
     in
     {
-      home.packages = with pkgs; [
-        gamemoderun
-        prismlauncher
-        r2modman
-        deadlock-mod-manager
-        xivlauncher
-        xodus-nexus
-        (wrapNoHardened heroic "heroic")
-        (wrapNoHardened vacuum-tube "VacuumTube")
-        (olympus.override { celesteWrapper = "steam-run"; })
-      ];
+      home.packages =
+        with pkgs;
+        [
+          gamemoderun
+          prismlauncher
+          r2modman
+          xivlauncher
+          xodus-nexus
+          (wrapNoHardened heroic "heroic")
+          (wrapNoHardened vacuum-tube "VacuumTube")
+          (olympus.override { celesteWrapper = "steam-run"; })
+        ]
+        # nixpkgs-unstable's cargo hook forces system AWS-LC, which
+        # deadlock-mod-manager does not provide; keep it off the deck user.
+        ++ lib.optionals (config.home.username != "deck") [ deadlock-mod-manager ];
 
       programs.mangohud = {
         enable = true;
