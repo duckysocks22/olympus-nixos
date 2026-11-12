@@ -2,6 +2,8 @@
 {
   flake.nixosModules.jovianPlasma =
     {
+      pkgs,
+      lib,
       ...
     }:
     let
@@ -78,7 +80,7 @@
 
         serviceConfig = {
           ExecStart = kwalletdActivate;
-          Restart = "on-falure";
+          Restart = "on-failure";
           RestartSec = 5;
         };
       };
