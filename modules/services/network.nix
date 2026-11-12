@@ -108,6 +108,24 @@
         dashboard.package = pkgs-unstable.netbird-dashboard;
       };
 
+      # management fetches OIDC discovery from sso.olympus.moe at startup and
+      # exits hard if the lookup fails; the resolver is this host's adguardhome,
+      # which starts at the same instant. Order it behind DNS and drop the
+      # start-rate limit so a transient miss can't leave the plane dead until a
+      # manual restart.
+      systemd.services.netbird-management = {
+        wants = [
+          "adguardhome.service"
+          "network-online.target"
+        ];
+        after = [
+          "adguardhome.service"
+          "network-online.target"
+        ];
+        startLimitIntervalSec = 0;
+        serviceConfig.RestartSec = "10s";
+      };
+
       # Relay covers peers that can't P2P (nyx has no public IP; coturn was never
       # reachable through aether's ingress). Plain rel:// rides the encrypted
       # wireguard payload over aether's caddy l4 passthrough. Hand-rolled unit:
