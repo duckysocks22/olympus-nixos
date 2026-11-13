@@ -29,7 +29,7 @@
 
             {
               directory = "/var/lib/netbird-wt0";
-              mode = "700";
+              mode = "755";
             }
 
             {

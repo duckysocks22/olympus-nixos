@@ -2,6 +2,7 @@
 {
   flake.nixosModules.systemHarden =
     {
+      config,
       pkgs,
       lib,
       ...
@@ -65,6 +66,11 @@
       };
 
       environment.memoryAllocator.provider = "graphene-hardened";
+
+      # redis aborts in malloc_usable_size (jemalloc) under a preloaded allocator
+      services.redis.package = lib.mkIf (
+        config.environment.memoryAllocator.provider != "libc"
+      ) pkgs.redis-libc-malloc;
 
       # kpti breaks some games/proton; kept off intentionally
       security.forcePageTableIsolation = false;

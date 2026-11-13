@@ -32,6 +32,7 @@
         tpm2-tss
         sbctl
         lixPackageSets.stable.colmena
+        kitty.terminfo
       ];
 
       environment.sessionVariables.XDG_DATA_DIRS = [

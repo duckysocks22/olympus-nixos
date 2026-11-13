@@ -2,8 +2,6 @@
   flake.nixosModules.files = { inputs, ... }: {
     imports = [
       self.nixosModules.samba
-      self.nixosModules.actual-budget
-      self.nixosModules.finance-summary
       self.nixosModules.immich
       self.nixosModules.copyparty
     ];
@@ -103,8 +101,19 @@
       systemd.services.actual-server = util.functions.mkSimpleService {
         description = "Headless Actual Finance Server";
         ExecStart = "${exec} --config ${config}";
-        user = "root";
+        user = "actual-budget";
       };
+
+      users.users.actual-budget = {
+        isSystemUser = true;
+        group = "actual-budget";
+      };
+
+      users.groups.actual-budget = { };
+
+      systemd.tmpfiles.rules = [
+        "d /media/hdd1/services/actual-finance 0600 actual-budget actual-budget"
+      ];
     };
 
   flake.nixosModules.samba = { config, pkgs, ... }: {

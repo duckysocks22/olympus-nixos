@@ -11,7 +11,10 @@
       nixosConfig = config;
     in
     {
-      imports = [ ];
+      imports = [
+        inputs.home-manager.nixosModules.home-manager
+        inputs.self.nixosModules.homeManagerCommon
+      ];
 
       users.users.server = {
         isNormalUser = true;
@@ -49,6 +52,20 @@
           imports = [
             # Shared home settings
             inputs.self.homeModules.homeCommon
+
+            # Functions
+            inputs.self.homeModules.functions
+
+            # Shell
+            inputs.self.homeModules.shell
+
+            # Software
+            inputs.self.homeModules.nixvim
+            inputs.self.homeModules.piAgent
+            inputs.self.homeModules.serverSops
+
+            # Theme
+            inputs.self.homeModules.stylix
           ];
 
           home = {

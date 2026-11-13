@@ -55,7 +55,7 @@
         '';
 
         virtualHosts."puppygirls.net, www.puppygirls.net".extraConfig = ''
-          root * ${puppygirls}
+          root * ${pkgs.puppygirls}
           file_server {
             precompressed br gzip
           }

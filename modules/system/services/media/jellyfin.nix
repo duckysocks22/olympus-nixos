@@ -5,6 +5,7 @@
       inputs,
       pkgs,
       pkgs-unstable,
+      lib,
       ...
     }:
     {

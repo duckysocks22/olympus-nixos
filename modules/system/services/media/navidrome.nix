@@ -25,5 +25,10 @@
       };
 
       systemd.services.navidrome.serviceConfig.ProtectHome = lib.mkForce "read-only";
+
+      # navidrome bind-mounts resolved's resolv.conf; during a switch it can
+      # start before resolved has written that file
+      systemd.services.navidrome.after = [ "systemd-resolved.service" ];
+      systemd.services.navidrome.wants = [ "systemd-resolved.service" ];
     };
 }

@@ -6,7 +6,6 @@
       inputs.self.nixosModules.avahi
       inputs.self.nixosModules.atticd
       inputs.self.nixosModules.ntfy
-      inputs.self.nixosModules.mollysocket
       inputs.self.nixosModules.sso
     ];
   };

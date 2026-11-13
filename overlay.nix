@@ -18,6 +18,7 @@
         pi-agent-modes
         proton-em
         puppygirls
+        redis-libc-malloc
         steamos-plymouth
         vm-test
         xlm

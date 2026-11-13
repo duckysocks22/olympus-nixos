@@ -77,6 +77,8 @@
         };
       };
 
+      networking.useDHCP = false;
+
       networking.firewall = {
         checkReversePath = "loose";
         allowedTCPPorts = [

@@ -10,7 +10,7 @@
         "nyx-nixos" = "192.168.10.253";
       };
 
-      hostSecrets = ../../../../secrets/${config.networking.hostName}.yaml;
+      hostSecrets = ../../../secrets/${config.networking.hostName}.yaml;
     in
     {
       services.syncthing = {
@@ -102,7 +102,7 @@
       };
       sops.secrets."syncthing/pass" = {
         owner = "syncthing";
-        sopsFile = ../../../../secrets/common.yaml;
+        sopsFile = ../../../secrets/common.yaml;
       };
     };
 }
