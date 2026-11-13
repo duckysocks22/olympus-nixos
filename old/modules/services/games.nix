@@ -70,7 +70,7 @@
             ${pkgs.steam-run}/bin/steam-run ./factorio-server-manager --dir /media/hdd1/game-servers/factorio/game --port "42702"
           fi
         ''}";
-        user = "server";
+        user = "factorio";
       };
     };
 }

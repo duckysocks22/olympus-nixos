@@ -20,7 +20,7 @@
     {
       config = lib.mkIf (builtins.hasAttr config.networking.hostName relayIp) {
         sops.secrets."wireguard/relay/${config.networking.hostName}/privateKey" = {
-          sopsFile = ../../secrets/${config.networking.hostName}.yaml;
+          sopsFile = ../../../../secrets/${config.networking.hostName}.yaml;
           mode = "640";
           owner = "systemd-network";
           group = "systemd-network";
