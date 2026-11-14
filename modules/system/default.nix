@@ -52,6 +52,16 @@
       programs.dconf.enable = true;
 
       services = {
+        openssh = {
+          enable = true;
+          openFirewall = true;
+          settings = {
+            PasswordAuthentication = false;
+            KbdInteractiveAuthentication = false;
+            PermitRootLogin = "no";
+          };
+        };
+
         pulseaudio.enable = false;
         libinput.enable = true;
         xserver.xkb = {
