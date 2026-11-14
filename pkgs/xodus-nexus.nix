@@ -10,11 +10,11 @@
     let
       pkgs = inputs.nixpkgs-unstable.legacyPackages.${system};
       pname = "xodus-nexus";
-      version = "0.3.11";
+      version = "0.5.0";
 
       src = pkgs.fetchurl {
         url = "https://github.com/domsvoboda/xodus-nexus/releases/download/v${version}/Xodus-Nexus-${version}-x86_64.AppImage";
-        hash = "sha256-r1hpK/5dFTDui8/o7hIGCKLqcZ5FzZN4jk4m9MudvgM=";
+        hash = "sha256-migpStsgNF3MVnPmCFtEgk1fzhBQYOgihnzp03WmM/8=";
       };
 
       appimageContents = pkgs.appimageTools.extract { inherit pname version src; };
