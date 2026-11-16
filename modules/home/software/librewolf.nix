@@ -162,9 +162,16 @@
                 installation_mode = "force_installed";
                 updates_disabled = false;
               };
+
               "knockoff@knockoff.shopping" = {
                 install_url = moz "knockoff-amazon-brand-filter";
                 installation_mode = "force_installed";
+                updates_disabled = false;
+              };
+
+              "{aff8af88-06a9-4eee-b383-3af08c47b8c8}" = {
+                install_url = moz "wikibuy-for-firefox";
+                installation_mode = "allowed";
                 updates_disabled = false;
               };
 
