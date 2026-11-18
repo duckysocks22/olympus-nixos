@@ -53,7 +53,7 @@
             # Functions
             inputs.self.homeModules.functions
 
-            # Interface
+            # Interfaces
             inputs.self.homeModules.niri
 
             # Shell
@@ -64,15 +64,20 @@
             inputs.self.homeModules.software
             inputs.self.homeModules.launchers
             inputs.self.homeModules.social
-            inputs.self.homeModules.creation
             inputs.self.homeModules.player
             inputs.self.homeModules.librewolf
             inputs.self.homeModules.nixvim
             inputs.self.homeModules.nixcord
             inputs.self.homeModules.piAgent
             inputs.self.homeModules.syncthing
+
+            # Development
             inputs.self.homeModules.development
+
+            # Creation
             inputs.self.homeModules.blender
+            inputs.self.homeModules.kdenLive
+            inputs.self.homeModules.obs
 
             # Theme
             inputs.self.homeModules.stylix
