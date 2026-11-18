@@ -72,6 +72,7 @@
             inputs.self.homeModules.piAgent
             inputs.self.homeModules.syncthing
             inputs.self.homeModules.development
+            inputs.self.homeModules.blender
 
             # Theme
             inputs.self.homeModules.stylix
