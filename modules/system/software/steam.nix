@@ -31,7 +31,7 @@
 
           extraCompatPackages = with pkgs; [
             proton-ge-bin
-            dwproton
+            dwproton-bin
             proton-em
             xlm
           ];

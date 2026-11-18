@@ -10,7 +10,6 @@
       inherit (self.packages.${system})
         assets
         decky-lsfg-vk
-        dwproton
         futo-notes
         greenlight
         moondeckbuddy
