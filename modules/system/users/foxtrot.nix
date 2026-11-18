@@ -71,6 +71,7 @@
             inputs.self.homeModules.nixcord
             inputs.self.homeModules.piAgent
             inputs.self.homeModules.syncthing
+            inputs.self.homeModules.development
 
             # Theme
             inputs.self.homeModules.stylix
