@@ -12,8 +12,12 @@
       hmLibrewolf = config.programs.librewolf.finalPackage;
       emptyFile = pkgs.writeText "empty" "";
       librewolfNoHardened = pkgs.writeShellScriptBin "librewolf" ''
-        exec ${pkgs.util-linux}/bin/unshare --mount --user --map-root-user \
-          ${pkgs.bash}/bin/bash -c "${pkgs.util-linux}/bin/mount --bind ${emptyFile} /etc/ld-nix.so.preload && exec ${hmLibrewolf}/bin/librewolf \"\$@\"" -- "$@"
+        preload="$(readlink -f /etc/ld-nix.so.preload 2>/dev/null || true)"
+        mask=()
+        if [ -e "''${preload:-/nonexistent}" ]; then
+          mask=(--ro-bind ${emptyFile} "$preload")
+        fi
+        exec ${pkgs.bubblewrap}/bin/bwrap --dev-bind / / "''${mask[@]}" ${hmLibrewolf}/bin/librewolf "$@"
       '';
     in
     {
