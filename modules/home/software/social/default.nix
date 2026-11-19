@@ -8,6 +8,7 @@
     {
       home.packages = with pkgs; [
         signal-desktop
+        tutanota-desktop
       ];
     };
 }
