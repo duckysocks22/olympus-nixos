@@ -3,6 +3,8 @@
   flake.homeModules.rider =
     {
       pkgs,
+      pkgs-unstable,
+      config,
       lib,
       ...
     }:
@@ -22,7 +24,7 @@
         # Additional Libraries
       ];
 
-      rider = pkgs.jetbrains.rider.overrideAttrs (attrs: {
+      rider = pkgs-unstable.jetbrains.rider.overrideAttrs (attrs: {
         postInstall = ''
           # Wrap rider with extra tools and libraries
           mv $out/bin/rider $out/bin/.rider-toolless
@@ -41,14 +43,14 @@
       });
     in
     {
-      home.packages = [ rider ];
+      home.packages = [ (config.lib.functions.wrapNoHardened rider "rider" { }) ];
 
       home.file.".local/share/applications/jetbrains-rider.desktop".source =
         let
           desktopFile = pkgs.makeDesktopItem {
             name = "jetbrains-rider";
             desktopName = "Rider";
-            exec = "\"${rider}/bin/rider\"";
+            exec = "rider";
             icon = "rider";
             type = "Application";
 
