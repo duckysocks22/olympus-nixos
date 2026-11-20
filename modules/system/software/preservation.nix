@@ -144,6 +144,7 @@
                 "Pictures"
                 "Videos"
                 "Git"
+                "Unity"
               ];
               files = [
                 ".histfile"
