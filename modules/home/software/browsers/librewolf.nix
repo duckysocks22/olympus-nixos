@@ -10,19 +10,10 @@
     }:
     let
       hmLibrewolf = config.programs.librewolf.finalPackage;
-      emptyFile = pkgs.writeText "empty" "";
-      librewolfNoHardened = pkgs.writeShellScriptBin "librewolf" ''
-        preload="$(readlink -f /etc/ld-nix.so.preload 2>/dev/null || true)"
-        mask=()
-        if [ -e "''${preload:-/nonexistent}" ]; then
-          mask=(--ro-bind ${emptyFile} "$preload")
-        fi
-        exec ${pkgs.bubblewrap}/bin/bwrap --dev-bind / / "''${mask[@]}" ${hmLibrewolf}/bin/librewolf "$@"
-      '';
     in
     {
       home.packages = [
-        (lib.hiPrio librewolfNoHardened)
+        (lib.hiPrio (config.lib.functions.wrapNoHardened hmLibrewolf "librewolf" { }))
       ];
 
       programs.librewolf = {

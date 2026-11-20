@@ -14,29 +14,6 @@
         exec env \
           ${pkgs.gamemode}/bin/gamemoderun "$@"
       '';
-
-      wrapNoHardened =
-        pkg: binName:
-        let
-          wrapper = pkgs.writeShellScript "${binName}-no-hardened" ''
-            unset LD_LIBRARY_PATH
-            unset LD_PRELOAD
-            exec ${gamemoderun}/bin/gamemoderun \
-              ${pkgs.bubblewrap}/bin/bwrap \
-                --dev-bind / / \
-                --bind /dev/null "$(readlink -f /etc/ld-nix.so.preload)" \
-                -- ${pkg}/bin/${binName} "$@"
-          '';
-        in
-        pkgs.symlinkJoin {
-          name = "${pkg.pname or pkg.name}-no-hardened";
-          paths = [ pkg ];
-          postBuild = ''
-            rm -f "$out/bin/${binName}"
-            cp ${wrapper} "$out/bin/${binName}"
-            chmod +x "$out/bin/${binName}"
-          '';
-        };
     in
     {
       home.packages =
@@ -47,8 +24,12 @@
           r2modman
           xivlauncher
           xodus-nexus
-          (wrapNoHardened heroic "heroic")
-          (wrapNoHardened vacuum-tube "VacuumTube")
+          (config.lib.functions.wrapNoHardened heroic "heroic" {
+            execPrefix = [ "${gamemoderun}/bin/gamemoderun" ];
+          })
+          (config.lib.functions.wrapNoHardened vacuum-tube "VacuumTube" {
+            execPrefix = [ "${gamemoderun}/bin/gamemoderun" ];
+          })
           (olympus.override { celesteWrapper = "steam-run"; })
         ]
         # nixpkgs-unstable's cargo hook forces system AWS-LC, which
