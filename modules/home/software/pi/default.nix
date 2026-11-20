@@ -74,7 +74,7 @@
           enableAnalytics = false;
           tuiMode = "fullscreen";
           hideThinkingBlock = true;
-          terminal.images = "kitty";
+          terminal.images = "auto";
           customUI = true;
         };
 
