@@ -25,24 +25,63 @@
 
         plugins = {
           dankBatteryAlerts = {
-            src = pkgs.fetchFromGitHub {
-              owner = "AvengeMedia";
-              repo = "dms-plugins";
-              rev = "bb90a1db7d540e64ae049c5906afba9b24baa865";
-              hash = "sha256-NYmw2wCZYAKNU1xcodKMDXs5wwtAguOUNazRxcLjsUE=";
-            };
             enable = true;
+
+            src = "${
+              pkgs.fetchFromGitHub {
+                owner = "AvengeMedia";
+                repo = "dms-plugins";
+                rev = "bb90a1db7d540e64ae049c5906afba9b24baa865";
+                hash = "sha256-NYmw2wCZYAKNU1xcodKMDXs5wwtAguOUNazRxcLjsUE=";
+              }
+            }/DankBatteryAlerts";
           };
-          dms-screen-recorder = {
-            src = pkgs.fetchFromGitHub {
-              owner = "arqueon";
-              repo = "dms-screen-recorder";
-              rev = "v1.2.0";
-              sha256 = "sha256-jkhrjgoLM2IGUgJUkoEGdsZVf9DIxY6j9X8Lh6rA05Y=";
-            };
+
+          screenRecorder = {
             enable = true;
+            settings = {
+              fps = "60";
+              quality = "very_high";
+              recordAudio = true;
+              recordCursor = true;
+              captureSource = "portal";
+              outputDir = ""; # empty = ~/Videos/Screencasting
+            };
+
+            src = lib.mkForce (
+              pkgs.fetchFromGitHub {
+                owner = "arqueon";
+                repo = "dms-screen-recorder";
+                rev = "v1.2.0";
+                sha256 = "sha256-jkhrjgoLM2IGUgJUkoEGdsZVf9DIxY6j9X8Lh6rA05Y=";
+              }
+            );
+          };
+
+          caffeineRedesigned = {
+            enable = true;
+            settings = {
+              presets = "5, 15, 30, 60, 120, infinity";
+              defaultDuraction = "infinity";
+              quickExtendMinutes = 5;
+              showToasts = true;
+              colorfulProgress = false;
+              customOsdPosition = "off";
+              osdOpacity = 0.85;
+            };
+
+            src = lib.mkForce (
+              pkgs.fetchFromGitHub {
+                owner = "JDKamalakar";
+                repo = "DMS-Caffeine";
+                rev = "v2.0.0";
+                sha256 = "sha256-I0OHDOth9sWP73lCdzjdB7HOCHYD+VxMJwbkDyor10Q=";
+              }
+            );
           };
         };
+
+        managePluginSettings = true;
 
         settings = {
           currentThemeName = "dynamic";
@@ -157,6 +196,11 @@
             }
             {
               id = "darkMode";
+              enabled = true;
+              width = 50;
+            }
+            {
+              id = "plugin_caffeineRedesigned";
               enabled = true;
               width = 50;
             }
@@ -478,11 +522,12 @@
               ];
               rightWidgets = [
                 "systemTray"
+                "notificationButton"
                 "clipboard"
+                "screenRecorder"
+                "battery"
                 "cpuUsage"
                 "memUsage"
-                "notificationButton"
-                "battery"
                 "controlCenterButton"
               ];
               spacing = 2;
@@ -667,6 +712,8 @@
           configVersion = 3;
         };
       };
+
+      xdg.configFile."dms/plugin_settings.json".force = true;
 
       systemd.user.services.dms.Service = {
         MemoryMax = "12G";
