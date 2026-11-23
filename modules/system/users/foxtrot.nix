@@ -76,6 +76,9 @@
             inputs.self.homeModules.piAgent
             inputs.self.homeModules.syncthing
 
+            # Download
+            inputs.self.homeModules.download
+
             # Development
             inputs.self.homeModules.development
 
