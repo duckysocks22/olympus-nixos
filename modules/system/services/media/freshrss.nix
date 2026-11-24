@@ -3,6 +3,7 @@
   flake.nixosModules.freshrss =
     {
       config,
+      lib,
       ...
     }:
     {
@@ -35,6 +36,20 @@
         };
         redis.enable = true;
       };
+
+      # php aborts on heap corruption while starting extensions (bcmath, curl,
+      # dom, intl, mbstring, pdo, ...) under the allocator preloaded by
+      # systemHarden, so mask the preload file out of these units' namespaces
+      systemd.services =
+        lib.genAttrs
+          [
+            "freshrss-config"
+            "freshrss-updater"
+            "phpfpm-freshrss"
+          ]
+          (_: {
+            serviceConfig.BindReadOnlyPaths = [ "/dev/null:/etc/ld-nix.so.preload" ];
+          });
 
       networking.firewall.allowedTCPPorts = [ 1200 ];
     };

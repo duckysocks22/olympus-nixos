@@ -76,5 +76,17 @@
       systemd.tmpfiles.rules = [
         "z /media/hdd1/media/immich 0700 immich immich"
       ];
+
+      # the api binds the netbird mesh address, which only exists once netbird is up
+      systemd.services.immich-server = {
+        after = [
+          "netbird-wt0.service"
+          "network-online.target"
+        ];
+        wants = [
+          "netbird-wt0.service"
+          "network-online.target"
+        ];
+      };
     };
 }
