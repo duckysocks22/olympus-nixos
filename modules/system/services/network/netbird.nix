@@ -152,6 +152,16 @@
         };
       };
 
+      # Management re-fetches its OIDC config on every start and exits at once
+      # if the IdP is unreachable. With systemd's default RestartSec=100ms all
+      # five allowed starts burn inside a brief uplink blip, permanently
+      # disabling the unit -- which is how it stayed dead after the 2026-11-23
+      # switch restarted systemd-networkd.
+      systemd.services.netbird-management = {
+        unitConfig.StartLimitIntervalSec = 0;
+        serviceConfig.RestartSec = "5s";
+      };
+
       services.coturn = {
         listening-ips = [ "172.17.100.1" ];
         relay-ips = [ "172.17.100.1" ];
