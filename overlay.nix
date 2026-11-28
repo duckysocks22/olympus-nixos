@@ -10,6 +10,7 @@
       inherit (self.packages.${system})
         assets
         decky-lsfg-vk
+        decky-helixsrmanager
         futo-notes
         greenlight
         moondeckbuddy

@@ -30,6 +30,17 @@
           enable = true;
           user = "deck";
           package = pkgs.jovianPackages.decky-loader-prerelease;
+          extraPackages = with pkgs; [
+            bash
+            coreutils
+            curl
+            unzip
+            xz
+            gnutar
+            gzip
+            zstd
+            (python3.withPackages (ps: [ ps.numpy ]))
+          ];
         };
 
         devices.steamdeck = lib.mkIf (config.networking.hostName == "dionysus-nixos") {
