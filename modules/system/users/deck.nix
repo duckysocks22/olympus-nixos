@@ -73,7 +73,7 @@
           home = {
             username = "deck";
             homeDirectory = nixosConfig.users.users.deck.home;
-            stateVersion = nixosConfig.system.stateVersion;
+            stateVersion = "26.11";
           };
 
           systemd.user.startServices = "sd-switch";

@@ -61,7 +61,7 @@
           "vm.dirty_writeback_centisecs" = 1500;
         };
 
-        system.stateVersion = "26.05";
+        system.stateVersion = "27.05";
       })
     ];
   };
