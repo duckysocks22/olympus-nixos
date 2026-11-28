@@ -54,9 +54,6 @@
             # Functions
             inputs.self.homeModules.functions
 
-            # Interface
-            inputs.self.homeModules.niri
-
             # Shell
             inputs.self.homeModules.shell
 
@@ -65,7 +62,6 @@
             inputs.self.homeModules.software
             inputs.self.homeModules.launchers
             inputs.self.homeModules.social
-            inputs.self.homeModules.creation
             inputs.self.homeModules.player
             inputs.self.homeModules.librewolf
             inputs.self.homeModules.nixvim
